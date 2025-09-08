@@ -8,6 +8,7 @@ import PricingSection from './components/PricingSection';
 import FAQSection from './components/FAQSection';
 import Footer from './components/Footer';
 import LoginPage from './components/LoginPage';
+import UserDashboard from './components/UserDashboard';
 
 function HomePage() {
   const [activeNav, setActiveNav] = useState('SECURITY');
@@ -39,6 +40,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login-auth" element={<LoginPage />} />
+        <Route path="/user-dashboard" element={<UserDashboard />} />
       </Routes>
     </Router>
   );
