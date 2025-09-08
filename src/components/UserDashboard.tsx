@@ -19,16 +19,13 @@ import {
 
 export default function UserDashboard() {
   const navigate = useNavigate();
-  const [activeMenuItem, setActiveMenuItem] = useState('Dashboard');
+  const [activeMenuItem, setActiveMenuItem] = useState('Home');
   const [showNotification, setShowNotification] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   const menuItems = [
     { name: 'Home', icon: Home, active: false },
-    { name: 'Dashboard', icon: BarChart3, active: true },
     { name: 'Repositories', icon: FolderOpen, active: false },
-    { name: 'Vulnerabilities', icon: AlertTriangle, active: false },
-    { name: 'Reports', icon: FileText, active: false },
-    { name: 'Team', icon: Users, active: false },
   ];
 
   const bottomMenuItems = [
@@ -39,31 +36,41 @@ export default function UserDashboard() {
   return (
     <div className="min-h-screen bg-gray-950 flex">
       {/* Sidebar */}
-      <div className="w-64 bg-gray-900 border-r border-gray-800 flex flex-col">
+      <div 
+        className={`bg-gray-900 border-r border-gray-800 flex flex-col transition-all duration-300 ease-in-out ${
+          isCollapsed ? 'w-16' : 'w-64'
+        }`}
+        onMouseEnter={() => setIsCollapsed(false)}
+        onMouseLeave={() => setIsCollapsed(true)}
+      >
         {/* Logo */}
-        <div className="p-6 border-b border-gray-800">
+        <div className="p-4 border-b border-gray-800">
           <div className="flex items-center">
-            <div className="w-8 h-8 bg-lime-400 rounded-lg flex items-center justify-center mr-3">
+            <div className="w-8 h-8 bg-lime-400 rounded-lg flex items-center justify-center flex-shrink-0">
               <div className="w-4 h-4 bg-gray-900 rounded-sm"></div>
             </div>
-            <div className="text-white">
-              <div className="text-lg font-bold tracking-tight">SECURE</div>
-              <div className="text-xs text-gray-400 -mt-1">CODE</div>
-            </div>
+            {!isCollapsed && (
+              <div className="text-white ml-3 transition-opacity duration-300">
+                <div className="text-lg font-bold tracking-tight">SECURE</div>
+                <div className="text-xs text-gray-400 -mt-1">CODE</div>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Search */}
-        <div className="p-4 border-b border-gray-800">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
-            <input
-              type="text"
-              placeholder="Search"
-              className="w-full bg-gray-800 text-white pl-10 pr-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-lime-400 focus:bg-gray-700 transition-colors"
-            />
+        {!isCollapsed && (
+          <div className="p-4 border-b border-gray-800">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
+              <input
+                type="text"
+                placeholder="Search"
+                className="w-full bg-gray-800 text-white pl-10 pr-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-lime-400 focus:bg-gray-700 transition-colors"
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Main Navigation */}
         <div className="flex-1 py-4">
@@ -75,14 +82,17 @@ export default function UserDashboard() {
                 <button
                   key={item.name}
                   onClick={() => setActiveMenuItem(item.name)}
-                  className={`w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors ${
+                  className={`w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors group ${
                     isActive
                       ? 'bg-gray-800 text-white'
                       : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
                   }`}
+                  title={isCollapsed ? item.name : ''}
                 >
-                  <IconComponent className="w-5 h-5 mr-3" />
-                  {item.name}
+                  <IconComponent className="w-5 h-5 flex-shrink-0" />
+                  {!isCollapsed && (
+                    <span className="ml-3 transition-opacity duration-300">{item.name}</span>
+                  )}
                 </button>
               );
             })}
@@ -98,9 +108,12 @@ export default function UserDashboard() {
                 <button
                   key={item.name}
                   className="w-full flex items-center px-3 py-2.5 text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800/50 rounded-lg transition-colors"
+                  title={isCollapsed ? item.name : ''}
                 >
-                  <IconComponent className="w-5 h-5 mr-3" />
-                  {item.name}
+                  <IconComponent className="w-5 h-5 flex-shrink-0" />
+                  {!isCollapsed && (
+                    <span className="ml-3 transition-opacity duration-300">{item.name}</span>
+                  )}
                 </button>
               );
             })}
@@ -108,8 +121,8 @@ export default function UserDashboard() {
         </div>
 
         {/* Notification Banner */}
-        {showNotification && (
-          <div className="m-3 bg-gradient-to-r from-lime-400/10 to-green-500/10 border border-lime-400/20 rounded-lg p-4 relative">
+        {showNotification && !isCollapsed && (
+          <div className="m-3 bg-gradient-to-r from-lime-400/10 to-green-500/10 border border-lime-400/20 rounded-lg p-4 relative transition-opacity duration-300">
             <button
               onClick={() => setShowNotification(false)}
               className="absolute top-2 right-2 text-gray-400 hover:text-white"
