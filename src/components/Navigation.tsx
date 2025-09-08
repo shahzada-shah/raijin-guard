@@ -52,6 +52,15 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
           inline: 'nearest'
         });
       }
+    } else if (item.name === 'PRICING') {
+      const pricingSection = document.getElementById('pricing');
+      if (pricingSection) {
+        pricingSection.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start',
+          inline: 'nearest'
+        });
+      }
     } else if (item.name === 'SECURITY') {
       window.scrollTo({ 
         top: 0, 

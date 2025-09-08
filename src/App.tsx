@@ -22,6 +22,7 @@ function App() {
       <HeroSection />
       <CoreBenefitsSection />
       <FeaturesSection />
+      <PricingSection />
     </div>
   );
 }
