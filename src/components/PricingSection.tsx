@@ -19,87 +19,69 @@ export default function PricingSection() {
         {/* Pricing Cards */}
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {/* Free Plan */}
-          <div className="bg-gray-900/30 border border-gray-800/50 rounded-2xl p-8">
+          <div className="bg-gray-900/40 rounded-2xl p-8 border border-gray-800/50">
             <div className="mb-8">
-              <h3 className="text-2xl font-bold text-white mb-2">Free</h3>
-              <div className="text-3xl font-bold text-white mb-2">$0</div>
-              <p className="text-gray-400">Free for everyone</p>
+              <h3 className="text-2xl font-bold text-white mb-4">Free</h3>
+              <div className="text-4xl font-bold text-white mb-4">$0</div>
+              <p className="text-gray-400 mb-8">Free for everyone</p>
             </div>
 
-            <div className="space-y-4 mb-8">
+            <div className="space-y-4 mb-12">
               <div className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-gray-500" />
+                <Check className="w-4 h-4 text-gray-500 flex-shrink-0" />
                 <span className="text-gray-300">Security dashboard</span>
               </div>
               <div className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-gray-500" />
+                <Check className="w-4 h-4 text-gray-500 flex-shrink-0" />
                 <span className="text-gray-300">Up to 2 repository scans</span>
               </div>
               <div className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-gray-500" />
+                <Check className="w-4 h-4 text-gray-500 flex-shrink-0" />
                 <span className="text-gray-300">Manual vulnerability reports</span>
               </div>
               <div className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-gray-500" />
+                <Check className="w-4 h-4 text-gray-500 flex-shrink-0" />
                 <span className="text-gray-300">Basic compliance checks</span>
               </div>
               <div className="flex items-center gap-3">
-                <Check className="w-5 h-5 text-gray-500" />
+                <Check className="w-4 h-4 text-gray-500 flex-shrink-0" />
                 <span className="text-gray-300">Basic security profile</span>
               </div>
             </div>
 
-            <button className="w-full bg-gray-700 hover:bg-gray-600 text-white py-3 px-6 rounded-lg font-semibold transition-colors duration-200">
+            <button className="w-full bg-gray-700/60 hover:bg-gray-700 text-white py-4 px-6 rounded-xl font-bold text-sm uppercase tracking-wider transition-colors duration-200">
               START NOW
             </button>
           </div>
 
           {/* Premium Plan */}
-          <div className="bg-gray-800/50 border border-gray-700/70 rounded-2xl p-8 relative">
+          <div className="bg-gray-800/60 rounded-2xl p-8 border border-gray-700/70 relative">
             <div className="mb-8">
-              <h3 className="text-2xl font-bold text-white mb-2">Premium</h3>
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-3xl font-bold text-white">$8</span>
+              <h3 className="text-2xl font-bold text-white mb-4">Premium</h3>
+              <div className="flex items-center gap-3 mb-2">
+                <span className="text-4xl font-bold text-white">$8</span>
                 <span className="text-gray-400">/ per month</span>
-                <span className="bg-lime-400 text-gray-900 text-xs font-bold px-2 py-1 rounded">-20%</span>
+                <span className="bg-lime-400 text-gray-900 text-xs font-bold px-2 py-1 rounded uppercase">-20%</span>
               </div>
-              <div className="flex items-center gap-2 mb-4">
+              <div className="flex items-center gap-2 mb-8">
                 <div className="w-2 h-2 bg-lime-400 rounded-full"></div>
                 <span className="text-gray-400">Billed yearly</span>
               </div>
             </div>
 
-            <div className="space-y-4 mb-8">
-              <div className="flex items-center gap-3">
-                <span className="text-gray-300">All free plan features and ...</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-gray-300">Unlimited repository scans</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-gray-300">Advanced security monitoring</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-gray-300">Advanced compliance reports</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-gray-300">Verify data and premium integrations</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-gray-300">Display in security leaderboard</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-gray-300">Unlimited data storage</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-gray-300">Import & Export security data</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="text-gray-300">Manual update of security profiles</span>
-              </div>
+            <div className="space-y-4 mb-12">
+              <div className="text-gray-300 mb-4">All free plan features and ...</div>
+              <div className="text-gray-300">Unlimited repository scans</div>
+              <div className="text-gray-300">Advanced security monitoring</div>
+              <div className="text-gray-300">Advanced compliance reports</div>
+              <div className="text-gray-300">Verify data and premium integrations</div>
+              <div className="text-gray-300">Display in security leaderboard</div>
+              <div className="text-gray-300">Unlimited data storage</div>
+              <div className="text-gray-300">Import & Export security data</div>
+              <div className="text-gray-300">Manual update of security profiles</div>
             </div>
 
-            <button className="w-full bg-lime-400 hover:bg-lime-300 text-gray-900 py-3 px-6 rounded-lg font-bold transition-colors duration-200">
+            <button className="w-full bg-cyan-400 hover:bg-cyan-300 text-gray-900 py-4 px-6 rounded-xl font-bold text-sm uppercase tracking-wider transition-colors duration-200">
               START NOW
             </button>
           </div>
@@ -107,7 +89,10 @@ export default function PricingSection() {
 
         {/* Footer Note */}
         <div className="text-center mt-12">
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-500 text-sm flex items-center justify-center gap-2">
+            <span className="w-4 h-4 border border-gray-600 rounded flex items-center justify-center">
+              <span className="text-xs">ℹ</span>
+            </span>
             Prices are displayed in USD and are subject to change in the future.
           </p>
         </div>
