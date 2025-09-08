@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navigation from './components/Navigation';
 import HeroSection from './components/HeroSection';
 import CoreBenefitsSection from './components/CoreBenefitsSection';
@@ -6,8 +7,9 @@ import FeaturesSection from './components/FeaturesSection';
 import PricingSection from './components/PricingSection';
 import FAQSection from './components/FAQSection';
 import Footer from './components/Footer';
+import LoginPage from './components/LoginPage';
 
-function App() {
+function HomePage() {
   const [activeNav, setActiveNav] = useState('SECURITY');
 
   return (
@@ -28,6 +30,17 @@ function App() {
       <FAQSection />
       <Footer />
     </div>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/login-auth" element={<LoginPage />} />
+      </Routes>
+    </Router>
   );
 }
 
