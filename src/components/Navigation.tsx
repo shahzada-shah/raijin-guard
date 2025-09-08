@@ -29,6 +29,7 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
     { name: 'ADVANTAGES', href: '#advantages' },
     { name: 'FEATURES', href: '#features' },
     { name: 'PRICING', href: '#pricing' },
+    { name: 'FAQ', href: '#faq' },
   ];
 
   const handleNavClick = (item: NavItem) => {
@@ -56,6 +57,15 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
       const pricingSection = document.getElementById('pricing');
       if (pricingSection) {
         pricingSection.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start',
+          inline: 'nearest'
+        });
+      }
+    } else if (item.name === 'FAQ') {
+      const faqSection = document.getElementById('faq');
+      if (faqSection) {
+        faqSection.scrollIntoView({ 
           behavior: 'smooth',
           block: 'start',
           inline: 'nearest'
