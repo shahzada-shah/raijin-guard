@@ -28,6 +28,7 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
     { name: 'SECURITY', href: '#security' },
     { name: 'ADVANTAGES', href: '#advantages' },
     { name: 'FEATURES', href: '#features' },
+    { name: 'PRICING', href: '#pricing' },
   ];
 
   const handleNavClick = (item: NavItem) => {
