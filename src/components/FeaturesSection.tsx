@@ -93,23 +93,30 @@ export default function FeaturesSection() {
         </div>
 
         {/* Features Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => {
             const IconComponent = feature.icon;
             return (
               <div 
                 key={index}
-                className="bg-gray-900/30 border border-gray-800/50 rounded-xl p-6 hover:bg-gray-900/50 transition-all duration-300"
+                className="group"
               >
-                <div className="mb-4">
-                  <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center mb-4">
-                    <IconComponent className="w-4 h-4 text-gray-400" />
+                <div className="flex items-start gap-4">
+                  {/* Icon */}
+                  <div className="flex-shrink-0 mt-1">
+                    <IconComponent className="w-5 h-5 text-white" />
                   </div>
-                  <h3 className="text-white font-semibold text-lg mb-3">{feature.title}</h3>
+                  
+                  {/* Content */}
+                  <div className="flex-1">
+                    <h3 className="text-white font-medium text-base mb-2 group-hover:text-lime-400 transition-colors duration-200">
+                      {feature.title}
+                    </h3>
+                    <p className="text-gray-400 text-sm leading-relaxed">
+                      {feature.description}
+                    </p>
+                  </div>
                 </div>
-                <p className="text-gray-400 text-sm leading-relaxed">
-                  {feature.description}
-                </p>
               </div>
             );
           })}
