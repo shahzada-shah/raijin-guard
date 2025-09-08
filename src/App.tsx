@@ -5,6 +5,7 @@ import CoreBenefitsSection from './components/CoreBenefitsSection';
 import FeaturesSection from './components/FeaturesSection';
 import PricingSection from './components/PricingSection';
 import FAQSection from './components/FAQSection';
+import Footer from './components/Footer';
 
 function App() {
   const [activeNav, setActiveNav] = useState('SECURITY');
@@ -25,6 +26,7 @@ function App() {
       <FeaturesSection />
       <PricingSection />
       <FAQSection />
+      <Footer />
     </div>
   );
 }
