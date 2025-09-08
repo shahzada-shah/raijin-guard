@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import Navigation from './components/Navigation';
 import HeroSection from './components/HeroSection';
-import AdvantagesSection from './components/AdvantagesSection';
 import CoreBenefitsSection from './components/CoreBenefitsSection';
 import FeaturesSection from './components/FeaturesSection';
+import PricingSection from './components/PricingSection';
 
 function App() {
   const [activeNav, setActiveNav] = useState('SECURITY');
@@ -22,6 +22,7 @@ function App() {
       <HeroSection />
       <CoreBenefitsSection />
       <FeaturesSection />
+      <PricingSection />
       <PricingSection />
     </div>
   );
