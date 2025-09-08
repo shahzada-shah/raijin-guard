@@ -3,6 +3,7 @@ import Navigation from './components/Navigation';
 import HeroSection from './components/HeroSection';
 import AdvantagesSection from './components/AdvantagesSection';
 import CoreBenefitsSection from './components/CoreBenefitsSection';
+import FeaturesSection from './components/FeaturesSection';
 
 function App() {
   const [activeNav, setActiveNav] = useState('SECURITY');
@@ -20,6 +21,7 @@ function App() {
       <Navigation activeNav={activeNav} setActiveNav={setActiveNav} />
       <HeroSection />
       <CoreBenefitsSection />
+      <FeaturesSection />
     </div>
   );
 }

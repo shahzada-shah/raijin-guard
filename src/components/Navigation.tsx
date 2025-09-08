@@ -27,6 +27,7 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
   const navItems: NavItem[] = [
     { name: 'SECURITY', href: '#security' },
     { name: 'ADVANTAGES', href: '#advantages' },
+    { name: 'FEATURES', href: '#features' },
   ];
 
   const handleNavClick = (item: NavItem) => {
@@ -36,6 +37,15 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
       const coreBenefitsSection = document.getElementById('core-benefits');
       if (coreBenefitsSection) {
         coreBenefitsSection.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start',
+          inline: 'nearest'
+        });
+      }
+    } else if (item.name === 'FEATURES') {
+      const featuresSection = document.getElementById('features');
+      if (featuresSection) {
+        featuresSection.scrollIntoView({ 
           behavior: 'smooth',
           block: 'start',
           inline: 'nearest'
