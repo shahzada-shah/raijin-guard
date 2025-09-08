@@ -23,7 +23,6 @@ function App() {
       <CoreBenefitsSection />
       <FeaturesSection />
       <PricingSection />
-      <PricingSection />
     </div>
   );
 }
