@@ -11,7 +11,7 @@ function App() {
   const [activeNav, setActiveNav] = useState('SECURITY');
 
   return (
-    <div className="bg-gray-950 relative">
+    <div className="bg-gray-950 relative min-h-screen">
       {/* Background geometric shapes */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-0 left-0 w-96 h-96 bg-gray-900 opacity-30 transform -rotate-45 -translate-x-48 -translate-y-48" />
