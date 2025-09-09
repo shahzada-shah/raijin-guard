@@ -14,7 +14,7 @@ function HomePage() {
   const [activeNav, setActiveNav] = useState('SECURITY');
 
   return (
-    <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative min-h-screen">
+    <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative min-h-screen flex flex-col">
       {/* Background geometric shapes */}
       <div className="absolute inset-0 z-0">
         <div className="absolute top-0 left-0 w-96 h-96 bg-gray-700 opacity-10 transform -rotate-45 -translate-x-48 -translate-y-48" />
@@ -24,11 +24,13 @@ function HomePage() {
       </div>
 
       <Navigation activeNav={activeNav} setActiveNav={setActiveNav} />
-      <HeroSection />
-      <CoreBenefitsSection />
-      <FeaturesSection />
-      <PricingSection />
-      <FAQSection />
+      <div className="flex-1">
+        <HeroSection />
+        <CoreBenefitsSection />
+        <FeaturesSection />
+        <PricingSection />
+        <FAQSection />
+      </div>
       <Footer />
     </div>
   );
