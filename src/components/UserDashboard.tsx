@@ -15,15 +15,21 @@ import {
   Search,
   X,
   Bell,
-  TrendingUp,
-  TrendingDown
+  ChevronDown,
+  LogOut,
+  User as UserIcon
 } from 'lucide-react';
+import { FaUser } from 'react-icons/fa';
+import { LineChart, Line, ResponsiveContainer, BarChart, Bar } from 'recharts';
 
 export default function UserDashboard() {
   const navigate = useNavigate();
   const [activeMenuItem, setActiveMenuItem] = useState('Home');
   const [showNotification, setShowNotification] = useState(true);
   const [isCollapsed, setIsCollapsed] = useState(true);
+  const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
+  const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const [activeNavItem, setActiveNavItem] = useState('MESSAGES');
 
   const menuItems = [
     { name: 'Home', icon: Home, active: false },
@@ -35,40 +41,33 @@ export default function UserDashboard() {
     { name: 'Settings', icon: Settings },
   ];
 
-  // Mock chart data points for mini charts
-  const generateMiniChart = (trend: 'up' | 'down' | 'stable') => {
-    const basePoints = [20, 25, 22, 28, 24, 30, 26, 32, 28, 35];
-    if (trend === 'up') return basePoints.map((p, i) => p + i * 2);
-    if (trend === 'down') return basePoints.map((p, i) => p - i * 1.5);
-    return basePoints;
-  };
+  const navItems = ['MESSAGES', 'PROTOCOLS', 'ANALYTICS', 'TOOLS', 'DNS'];
 
-  const MiniChart = ({ points, color = '#10b981' }: { points: number[], color?: string }) => {
-    const max = Math.max(...points);
-    const min = Math.min(...points);
-    const range = max - min || 1;
-    
-    const pathData = points
-      .map((point, index) => {
-        const x = (index / (points.length - 1)) * 60;
-        const y = 20 - ((point - min) / range) * 15;
-        return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
-      })
-      .join(' ');
+  // Mock data for charts
+  const messagesData = [
+    { value: 2200 }, { value: 2300 }, { value: 2100 }, { value: 2400 }, 
+    { value: 2350 }, { value: 2450 }, { value: 2400 }, { value: 2500 }
+  ];
 
-    return (
-      <svg width="60" height="20" className="opacity-80">
-        <path
-          d={pathData}
-          stroke={color}
-          strokeWidth="1.5"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    );
-  };
+  const protocolsData = [
+    { value: 25 }, { value: 28 }, { value: 30 }, { value: 27 }, 
+    { value: 32 }, { value: 30 }, { value: 29 }, { value: 30 }
+  ];
+
+  const analyticsData = [
+    { value: 95 }, { value: 97 }, { value: 99 }, { value: 98 }, 
+    { value: 99.5 }, { value: 99.9 }, { value: 99.8 }, { value: 99.9 }
+  ];
+
+  const securityData = [
+    { value: 20 }, { value: 18 }, { value: 15 }, { value: 12 }, 
+    { value: 10 }, { value: 15 }, { value: 13 }, { value: 15 }
+  ];
+
+  const errorsData = [
+    { value: 12 }, { value: 10 }, { value: 8 }, { value: 6 }, 
+    { value: 5 }, { value: 7 }, { value: 6 }, { value: 7 }
+  ];
 
   return (
     <div className="min-h-screen bg-zinc-950 flex">
@@ -202,23 +201,117 @@ export default function UserDashboard() {
         <header className="bg-zinc-900/30 border-b border-zinc-800/50 backdrop-blur-sm">
           <div className="px-6 py-4">
             <div className="flex items-center justify-between">
-              {/* Back Button */}
-              <button
-                onClick={() => navigate('/')}
-                className="group flex items-center text-zinc-400 hover:text-white transition-colors duration-200"
-              >
-                <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-200" />
-                <span className="text-sm font-medium">Back to home</span>
-              </button>
+              {/* Navigation Items */}
+              <div className="flex items-center space-x-8">
+                {navItems.map((item) => (
+                  <button
+                    key={item}
+                    onClick={() => setActiveNavItem(item)}
+                    className={`text-sm font-medium transition-colors ${
+                      activeNavItem === item
+                        ? 'text-white'
+                        : 'text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    {item}
+                  </button>
+                ))}
+              </div>
 
               {/* Header Actions */}
               <div className="flex items-center gap-4">
-                <button className="text-zinc-400 hover:text-white transition-colors relative">
-                  <Bell className="w-5 h-5" />
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
-                </button>
-                <div className="w-8 h-8 bg-lime-400 rounded-full flex items-center justify-center">
-                  <span className="text-zinc-900 font-bold text-sm">U</span>
+                {/* Notification Dropdown */}
+                <div className="relative">
+                  <button 
+                    onClick={() => setShowNotificationDropdown(!showNotificationDropdown)}
+                    className="text-zinc-400 hover:text-white transition-colors relative"
+                  >
+                    <Bell className="w-5 h-5" />
+                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
+                  </button>
+                  
+                  {showNotificationDropdown && (
+                    <div className="absolute right-0 mt-2 w-80 bg-zinc-900/95 border border-zinc-700/50 rounded-lg shadow-xl backdrop-blur-sm z-50">
+                      <div className="p-4 border-b border-zinc-800/50">
+                        <h3 className="text-white font-medium">Notifications</h3>
+                      </div>
+                      <div className="max-h-64 overflow-y-auto">
+                        <div className="p-4 border-b border-zinc-800/30 hover:bg-zinc-800/30 transition-colors">
+                          <div className="flex items-start gap-3">
+                            <div className="w-2 h-2 bg-red-400 rounded-full mt-2"></div>
+                            <div>
+                              <p className="text-white text-sm font-medium">Critical vulnerability detected</p>
+                              <p className="text-zinc-400 text-xs">SQL injection in main-app repository</p>
+                              <p className="text-zinc-500 text-xs mt-1">2 hours ago</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="p-4 border-b border-zinc-800/30 hover:bg-zinc-800/30 transition-colors">
+                          <div className="flex items-start gap-3">
+                            <div className="w-2 h-2 bg-green-400 rounded-full mt-2"></div>
+                            <div>
+                              <p className="text-white text-sm font-medium">Security scan completed</p>
+                              <p className="text-zinc-400 text-xs">api-service passed all checks</p>
+                              <p className="text-zinc-500 text-xs mt-1">4 hours ago</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="p-3 border-t border-zinc-800/50">
+                        <button className="text-lime-400 text-sm hover:text-lime-300 transition-colors">
+                          View all notifications
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* User Profile Dropdown */}
+                <div className="relative">
+                  <button 
+                    onClick={() => setShowUserDropdown(!showUserDropdown)}
+                    className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors"
+                  >
+                    <div className="w-8 h-8 bg-zinc-700 rounded-full flex items-center justify-center">
+                      <FaUser className="w-4 h-4 text-zinc-300" />
+                    </div>
+                    <ChevronDown className="w-4 h-4" />
+                  </button>
+                  
+                  {showUserDropdown && (
+                    <div className="absolute right-0 mt-2 w-48 bg-zinc-900/95 border border-zinc-700/50 rounded-lg shadow-xl backdrop-blur-sm z-50">
+                      <div className="p-4 border-b border-zinc-800/50">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-lime-400 rounded-full flex items-center justify-center">
+                            <span className="text-zinc-900 font-bold text-sm">JD</span>
+                          </div>
+                          <div>
+                            <p className="text-white font-medium text-sm">John Doe</p>
+                            <p className="text-zinc-400 text-xs">john@company.com</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="py-2">
+                        <button className="w-full px-4 py-2 text-left text-zinc-300 hover:text-white hover:bg-zinc-800/30 transition-colors flex items-center gap-3">
+                          <UserIcon className="w-4 h-4" />
+                          Profile Settings
+                        </button>
+                        <button className="w-full px-4 py-2 text-left text-zinc-300 hover:text-white hover:bg-zinc-800/30 transition-colors flex items-center gap-3">
+                          <Settings className="w-4 h-4" />
+                          Account Settings
+                        </button>
+                        <div className="border-t border-zinc-800/50 mt-2 pt-2">
+                          <button 
+                            onClick={() => navigate('/')}
+                            className="w-full px-4 py-2 text-left text-red-400 hover:text-red-300 hover:bg-zinc-800/30 transition-colors flex items-center gap-3"
+                          >
+                            <LogOut className="w-4 h-4" />
+                            Sign Out
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -232,60 +325,108 @@ export default function UserDashboard() {
             <p className="text-zinc-400">Monitor your repository security and manage your projects.</p>
           </div>
 
-          {/* Analytics Cards Row */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-            {/* Messages Card */}
+          {/* Analytics Row with Recharts */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-6 mb-8">
+            {/* Messages */}
             <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-2">
                 <div>
                   <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">Messages (24h)</p>
                   <p className="text-white text-2xl font-bold">2,450</p>
                 </div>
-                <MiniChart points={generateMiniChart('up')} color="#10b981" />
+              </div>
+              <div className="h-8">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={messagesData}>
+                    <Line 
+                      type="monotone" 
+                      dataKey="value" 
+                      stroke="#10b981" 
+                      strokeWidth={1.5}
+                      dot={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
             </div>
 
-            {/* Total ROI Card */}
+            {/* Protocols */}
             <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-2">
                 <div>
-                  <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">Total ROI</p>
+                  <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">Protocols</p>
                   <p className="text-white text-2xl font-bold">30</p>
                 </div>
-                <MiniChart points={generateMiniChart('stable')} color="#6b7280" />
+              </div>
+              <div className="h-8">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={protocolsData}>
+                    <Bar dataKey="value" fill="#6b7280" />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </div>
 
-            {/* API Usage Card */}
+            {/* Analytics */}
             <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-2">
                 <div>
-                  <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">API Usage</p>
+                  <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">API Uptime</p>
                   <p className="text-white text-2xl font-bold">99.9%</p>
                 </div>
-                <MiniChart points={generateMiniChart('up')} color="#10b981" />
+              </div>
+              <div className="h-8">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={analyticsData}>
+                    <Bar dataKey="value" fill="#6b7280" />
+                  </BarChart>
+                </ResponsiveContainer>
               </div>
             </div>
 
-            {/* Security Incidents Card */}
+            {/* Security Incidents */}
             <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-2">
                 <div>
                   <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">Security Incidents (24h)</p>
                   <p className="text-white text-2xl font-bold">15</p>
                 </div>
-                <MiniChart points={generateMiniChart('down')} color="#ef4444" />
+              </div>
+              <div className="h-8">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={securityData}>
+                    <Line 
+                      type="monotone" 
+                      dataKey="value" 
+                      stroke="#ef4444" 
+                      strokeWidth={1.5}
+                      dot={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
             </div>
 
-            {/* Errors Card */}
+            {/* Errors */}
             <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-2">
                 <div>
                   <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">Errors (24h)</p>
                   <p className="text-white text-2xl font-bold">7</p>
                 </div>
-                <MiniChart points={generateMiniChart('down')} color="#ef4444" />
+              </div>
+              <div className="h-8">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={errorsData}>
+                    <Line 
+                      type="monotone" 
+                      dataKey="value" 
+                      stroke="#ef4444" 
+                      strokeWidth={1.5}
+                      dot={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
             </div>
           </div>
