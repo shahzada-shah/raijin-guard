@@ -15,20 +15,20 @@ export default function HeroSection() {
             and code quality problems. Get detailed AI-generated reports and actionable insights.
           </p>
 
-          <div className="border-t border-neutral-800 pt-10">
+          <div className="border-t border-gray-800 pt-10">
             <div className="flex items-center justify-center mb-5">
-              <div className="w-2 h-2 bg-white rounded-full mr-3 animate-pulse"></div>
-              <p className="text-[10px] md:text-[11px] text-neutral-500 uppercase tracking-[0.2em] font-semibold">
+              <div className="w-2 h-2 bg-lime-400 rounded-full mr-3 animate-pulse"></div>
+              <p className="text-[10px] md:text-[11px] text-gray-500 uppercase tracking-[0.2em] font-semibold">
                 Expert analysis for multiple programming languages
               </p>
             </div>
             <div className="flex items-center justify-center gap-8 md:gap-12 opacity-40">
-              <div className="text-neutral-400 font-bold text-sm md:text-base tracking-wider">JAVASCRIPT</div>
-              <div className="text-neutral-400 font-bold text-sm md:text-base tracking-wider">PYTHON</div>
-              <div className="text-neutral-400 font-bold text-sm md:text-base tracking-wider">TYPESCRIPT</div>
-              <div className="text-neutral-400 font-bold text-sm md:text-base tracking-wider">JAVA</div>
-              <div className="text-neutral-400 font-bold text-sm md:text-base tracking-wider">GO</div>
-              <div className="text-neutral-400 font-bold text-sm md:text-base tracking-wider">RUST</div>
+              <div className="text-zinc-400 font-bold text-sm md:text-base tracking-wider">JAVASCRIPT</div>
+              <div className="text-zinc-400 font-bold text-sm md:text-base tracking-wider">PYTHON</div>
+              <div className="text-zinc-400 font-bold text-sm md:text-base tracking-wider">TYPESCRIPT</div>
+              <div className="text-zinc-400 font-bold text-sm md:text-base tracking-wider">JAVA</div>
+              <div className="text-zinc-400 font-bold text-sm md:text-base tracking-wider">GO</div>
+              <div className="text-zinc-400 font-bold text-sm md:text-base tracking-wider">RUST</div>
             </div>
           </div>
         </div>
