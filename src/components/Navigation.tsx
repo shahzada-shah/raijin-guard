@@ -88,7 +88,7 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${
       isScrolled 
-        ? 'bg-zinc-950/98 backdrop-blur-lg shadow-lg' 
+        ? 'bg-neutral-950/98 backdrop-blur-lg shadow-lg' 
         : 'bg-transparent'
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -124,7 +124,7 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
                             'after:-bottom-2 after:h-[2px] after:w-4 after:rounded-sm after:bg-white',
                             'after:shadow-[0_0_10px_rgba(255,255,255,0.6)]',
                           ].join(' ')
-                        : 'text-gray-400/70 hover:text-white',
+                        : 'text-neutral-400/70 hover:text-white',
                     ].join(' ')}
                   >
                     {item.name}
@@ -139,15 +139,14 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
             {/* text link (Sign in style) */}
             <button
               onClick={handleLoginClick}
-              className="uppercase text-xs tracking-widest font-semibold text-gray-300 hover:text-white transition-all duration-300 ease-out"
+              className="uppercase text-xs tracking-widest font-semibold text-neutral-300 hover:text-white transition-all duration-300 ease-out"
             >
               Login
             </button>
 
             {/* filled pill (Sign up style) */}
             <button
-              className="rounded-full px-5 py-2 uppercase text-[11px] font-extrabold tracking-widest
-                         bg-lime-400 text-gray-900 hover:brightness-105 transition-all duration-300 ease-out"
+              className="rounded-full px-5 py-2 uppercase text-[11px] font-extrabold tracking-widest bg-white text-black hover:bg-neutral-100 transition-all duration-300 ease-out"
             >
               Start Audit
             </button>
@@ -155,7 +154,7 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
 
           {/* Mobile hamburger */}
           <div className="md:hidden">
-            <button className="text-gray-400 hover:text-white focus:outline-none">
+            <button className="text-neutral-400 hover:text-white focus:outline-none">
               <svg className="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
               </svg>
@@ -166,7 +165,7 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
 
       {/* Mobile menu w/ simplified actions */}
       <div className="md:hidden">
-        <div className="px-2 pt-2 pb-3 space-y-1 border-t border-gray-800">
+        <div className="px-2 pt-2 pb-3 space-y-1 border-t border-neutral-800">
           {navItems.map((item) => (
             <a
               key={item.name}
@@ -177,23 +176,23 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
               }}
               className={`block px-3 py-2 text-base font-light uppercase ${
                 activeNav === item.name
-                  ? 'text-white bg-gray-900'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-900'
+                  ? 'text-white bg-neutral-900'
+                  : 'text-neutral-400 hover:text-white hover:bg-neutral-900'
               }`}
             >
               {item.name}
             </a>
           ))}
 
-          <div className="pt-4 pb-3 border-t border-gray-700">
+          <div className="pt-4 pb-3 border-t border-neutral-700">
             <div className="px-3 flex items-center gap-3">
               <button 
                 onClick={handleLoginClick}
-                className="uppercase text-xs tracking-widest font-semibold text-gray-300 hover:text-white transition-colors"
+                className="uppercase text-xs tracking-widest font-semibold text-neutral-300 hover:text-white transition-colors"
               >
                 Login
               </button>
-              <button className="ml-auto rounded-full px-5 py-2 uppercase text-[11px] font-extrabold tracking-widest bg-lime-400 text-gray-900 hover:brightness-105 transition">
+              <button className="ml-auto rounded-full px-5 py-2 uppercase text-[11px] font-extrabold tracking-widest bg-white text-black hover:bg-neutral-100 transition">
                 Start Audit
               </button>
             </div>

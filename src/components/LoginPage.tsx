@@ -59,14 +59,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-950 flex">
+    <div className="min-h-screen bg-neutral-950 flex">
       {/* Left Side - Login Form */}
       <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           {/* Back Button */}
           <button
             onClick={handleBackClick}
-            className="group flex items-center text-zinc-400 hover:text-white transition-colors duration-200 mb-8"
+            className="group flex items-center text-neutral-400 hover:text-white transition-colors duration-200 mb-8"
           >
             <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-200" />
             <span className="text-sm font-medium">
@@ -76,12 +76,12 @@ export default function LoginPage() {
 
           {/* Logo */}
           <div className="flex items-center mb-12">
-            <div className="w-8 h-8 bg-lime-400 rounded-lg flex items-center justify-center mr-3">
-              <div className="w-4 h-4 bg-gray-900 rounded-sm"></div>
+            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center mr-3">
+              <div className="w-4 h-4 bg-black rounded-sm"></div>
             </div>
             <div className="text-white">
               <div className="text-xl font-bold tracking-tight">SECURE</div>
-              <div className="text-xs text-zinc-400 -mt-1">CODE</div>
+              <div className="text-xs text-neutral-400 -mt-1">CODE</div>
             </div>
           </div>
 
@@ -103,7 +103,7 @@ export default function LoginPage() {
             {!showPassword ? (
               // Email Input
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-neutral-300 mb-2">
                   Enter your email
                 </label>
                 <div className="relative">
@@ -113,20 +113,20 @@ export default function LoginPage() {
                     type="email"
                     autoComplete="email"
                     required
-                    className="appearance-none relative block w-full px-4 py-3 border border-zinc-700 placeholder-zinc-500 text-white bg-zinc-900/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-transparent focus:z-10 sm:text-sm"
+                    className="appearance-none relative block w-full px-4 py-3 border border-neutral-700 placeholder-neutral-500 text-white bg-neutral-900/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent focus:z-10 sm:text-sm"
                     placeholder="your.email@company.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                    <Mail className="h-5 w-5 text-zinc-400" />
+                    <Mail className="h-5 w-5 text-neutral-400" />
                   </div>
                 </div>
               </div>
             ) : (
               // Password Input
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-zinc-300 mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-neutral-300 mb-2">
                   Enter your password
                 </label>
                 <div className="relative">
@@ -136,14 +136,14 @@ export default function LoginPage() {
                     type="password"
                     autoComplete="current-password"
                     required
-                    className="appearance-none relative block w-full px-4 py-3 border border-zinc-700 placeholder-zinc-500 text-white bg-zinc-900/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-transparent focus:z-10 sm:text-sm"
+                    className="appearance-none relative block w-full px-4 py-3 border border-neutral-700 placeholder-neutral-500 text-white bg-neutral-900/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent focus:z-10 sm:text-sm"
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     autoFocus
                   />
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                    <Lock className="h-5 w-5 text-zinc-400" />
+                    <Lock className="h-5 w-5 text-neutral-400" />
                   </div>
                 </div>
               </div>
@@ -152,7 +152,7 @@ export default function LoginPage() {
             <div>
               <button
                 type="submit"
-                className="group relative w-full flex justify-center items-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-gray-900 bg-lime-400 hover:bg-lime-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-lime-400 transition-colors duration-200"
+                className="group relative w-full flex justify-center items-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-black bg-white hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-colors duration-200"
               >
                 {showPassword ? 'Sign In' : 'Next'}
                 <ArrowRight className="ml-2 h-4 w-4" />
@@ -162,13 +162,13 @@ export default function LoginPage() {
             {!showPassword && (
               <>
                 <div className="text-center">
-                  <span className="text-zinc-500">Or</span>
+                  <span className="text-neutral-500">Or</span>
                 </div>
 
                 <div>
                   <button
                     type="button"
-                    className="group relative w-full flex justify-center items-center py-3 px-4 border border-zinc-700 text-sm font-medium rounded-lg text-white bg-zinc-800/50 hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-zinc-500 transition-colors duration-200"
+                    className="group relative w-full flex justify-center items-center py-3 px-4 border border-neutral-700 text-sm font-medium rounded-lg text-white bg-neutral-800/50 hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-500 transition-colors duration-200"
                   >
                     <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                       <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -183,7 +183,7 @@ export default function LoginPage() {
                 <div className="text-center">
                   <p className="text-sm text-zinc-400">
                     Don't have an account?{' '}
-                    <a href="#" className="font-medium text-lime-400 hover:text-lime-300">
+                    <a href="#" className="font-medium text-white hover:text-neutral-300">
                       Sign up
                     </a>
                   </p>
@@ -194,10 +194,10 @@ export default function LoginPage() {
 
           {/* Footer */}
           <div className="mt-8 pt-6 border-t border-zinc-800">
-            <p className="text-xs text-zinc-500 text-center">
+            <p className="text-xs text-neutral-500 text-center">
               By logging in, you acknowledge and agree to our{' '}
-              <a href="#" className="text-lime-400 hover:text-lime-300">Terms, Conditions</a>, and{' '}
-              <a href="#" className="text-lime-400 hover:text-lime-300">Usage Policy</a>, which outline how we protect your data and provide our services.
+              <a href="#" className="text-white hover:text-neutral-300">Terms, Conditions</a>, and{' '}
+              <a href="#" className="text-white hover:text-neutral-300">Usage Policy</a>, which outline how we protect your data and provide our services.
             </p>
           </div>
         </div>
@@ -212,13 +212,13 @@ export default function LoginPage() {
               index === currentImageIndex ? 'opacity-100' : 'opacity-0'
             }`}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-lime-400/20 to-green-600/20"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-neutral-600/20"></div>
             <img
               className="absolute inset-0 w-full h-full object-cover"
               src={image.url}
               alt={`Security professional ${index + 1}`}
             />
-            <div className="absolute inset-0 bg-zinc-900/40"></div>
+            <div className="absolute inset-0 bg-neutral-900/40"></div>
             
             {/* Quote overlay */}
             <div className="absolute bottom-8 left-8 right-8">
@@ -229,8 +229,8 @@ export default function LoginPage() {
                     key={i}
                     className={`h-1 rounded transition-all duration-300 ${
                       i === currentImageIndex 
-                        ? 'w-8 bg-lime-400' 
-                        : 'w-8 bg-zinc-600'
+                        ? 'w-8 bg-white' 
+                        : 'w-8 bg-neutral-600'
                     }`}
                   />
                 ))}

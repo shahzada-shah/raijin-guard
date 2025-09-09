@@ -41,14 +41,14 @@ export default function FAQSection() {
   };
 
   return (
-    <section id="faq" className="relative z-10 py-20 bg-zinc-950 min-h-screen flex items-center">
+    <section id="faq" className="relative z-10 py-20 bg-neutral-950 min-h-screen flex items-center">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-16 items-start">
           {/* Left Column - Header */}
           <div>
             <div className="flex items-center mb-6">
-              <div className="w-8 h-0.5 bg-lime-400 mr-4"></div>
-              <span className="text-sm text-zinc-400 uppercase tracking-wider font-medium">FAQ</span>
+              <div className="w-8 h-0.5 bg-white mr-4"></div>
+              <span className="text-sm text-neutral-400 uppercase tracking-wider font-medium">FAQ</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight">
               FREQUENTLY ASKED QUESTIONS
@@ -62,11 +62,11 @@ export default function FAQSection() {
             {faqItems.map((item, index) => (
               <div 
                 key={index}
-                className="border-b border-gray-800 last:border-b-0"
+                className="border-b border-neutral-800 last:border-b-0"
               >
                 <button
                   onClick={() => toggleFAQ(index)}
-                  className="w-full flex items-center justify-between py-6 text-left hover:text-lime-400 transition-colors duration-200"
+                  className="w-full flex items-center justify-between py-6 text-left hover:text-white transition-colors duration-200"
                 >
                   <span className="text-white font-medium text-lg pr-4">
                     {item.question}
@@ -82,7 +82,7 @@ export default function FAQSection() {
                 
                 {openIndex === index && (
                   <div className="pb-6 pr-8">
-                    <p className="text-gray-400 leading-relaxed">
+                    <p className="text-neutral-400 leading-relaxed">
                       {item.answer}
                     </p>
                   </div>
