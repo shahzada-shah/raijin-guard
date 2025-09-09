@@ -34,7 +34,7 @@ export default function UserDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-neutral-950 flex">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex">
       {/* Sidebar */}
       <div 
         className={`bg-neutral-900 border-r border-neutral-800 flex flex-col transition-all duration-300 ease-in-out ${
@@ -44,15 +44,15 @@ export default function UserDashboard() {
         onMouseLeave={() => setIsCollapsed(true)}
       >
         {/* Logo */}
-        <div className="p-4 border-b border-neutral-800">
+        <div className="p-4 border-b border-gray-700/30">
           <div className="flex items-center">
             <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
               <div className="w-4 h-4 bg-black rounded-sm"></div>
             </div>
             {!isCollapsed && (
-              <div className="text-white ml-3 transition-opacity duration-300">
+              <div className="text-gray-100 ml-3 transition-opacity duration-300">
                 <div className="text-lg font-bold tracking-tight">SECURE</div>
-                <div className="text-xs text-neutral-400 -mt-1">CODE</div>
+                <div className="text-xs text-gray-300 -mt-1">CODE</div>
               </div>
             )}
           </div>
@@ -60,13 +60,13 @@ export default function UserDashboard() {
 
         {/* Search */}
         {!isCollapsed && (
-          <div className="p-4 border-b border-neutral-800">
+          <div className="p-4 border-b border-gray-700/30">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-neutral-500" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
                 placeholder="Search"
-                className="w-full bg-neutral-800 text-white pl-10 pr-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white focus:bg-neutral-700 transition-colors"
+                className="w-full bg-gray-800/50 text-gray-100 placeholder-gray-400 pl-10 pr-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white focus:bg-gray-700/50 transition-colors backdrop-blur-sm border border-gray-700/30"
               />
             </div>
           </div>
@@ -84,8 +84,8 @@ export default function UserDashboard() {
                   onClick={() => setActiveMenuItem(item.name)}
                   className={`w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors group ${
                     isActive
-                      ? 'bg-neutral-800 text-white'
-                      : 'text-neutral-400 hover:text-white hover:bg-neutral-800/50'
+                      ? 'bg-gray-800/50 text-gray-100 backdrop-blur-sm'
+                      : 'text-gray-300 hover:text-gray-100 hover:bg-gray-800/30'
                   }`}
                   title={isCollapsed ? item.name : ''}
                 >
@@ -100,14 +100,14 @@ export default function UserDashboard() {
         </div>
 
         {/* Bottom Navigation */}
-        <div className="border-t border-neutral-800 p-3">
+        <div className="border-t border-gray-700/30 p-3">
           <nav className="space-y-1">
             {bottomMenuItems.map((item) => {
               const IconComponent = item.icon;
               return (
                 <button
                   key={item.name}
-                  className="w-full flex items-center px-3 py-2.5 text-sm font-medium text-neutral-400 hover:text-white hover:bg-neutral-800/50 rounded-lg transition-colors"
+                  className="w-full flex items-center px-3 py-2.5 text-sm font-medium text-gray-300 hover:text-gray-100 hover:bg-gray-800/30 rounded-lg transition-colors"
                   title={isCollapsed ? item.name : ''}
                 >
                   <IconComponent className="w-5 h-5 flex-shrink-0" />
@@ -122,17 +122,17 @@ export default function UserDashboard() {
 
         {/* Notification Banner */}
         {showNotification && !isCollapsed && (
-          <div className="m-3 bg-gradient-to-r from-white/10 to-neutral-500/10 border border-white/20 rounded-lg p-4 relative transition-opacity duration-300">
+          <div className="m-3 bg-gradient-to-r from-gray-800/50 to-gray-700/30 border border-gray-600/30 rounded-lg p-4 relative transition-opacity duration-300 backdrop-blur-sm">
             <button
               onClick={() => setShowNotification(false)}
-              className="absolute top-2 right-2 text-neutral-400 hover:text-white"
+              className="absolute top-2 right-2 text-gray-400 hover:text-gray-100"
             >
               <X className="w-4 h-4" />
             </button>
-            <div className="text-white text-sm font-medium mb-2">
+            <div className="text-gray-100 text-sm font-medium mb-2">
               New security features available!
             </div>
-            <p className="text-neutral-300 text-xs mb-3">
+            <p className="text-gray-300 text-xs mb-3">
               Enhanced vulnerability scanning and AI-powered threat detection are now live.
             </p>
             <div className="flex items-center gap-2 mb-3">
@@ -142,8 +142,8 @@ export default function UserDashboard() {
                 className="w-12 h-12 rounded-lg object-cover"
               />
               <div>
-                <div className="text-white text-xs font-medium">What's new?</div>
-                <div className="text-neutral-400 text-xs">Advanced AI scanning</div>
+                <div className="text-gray-100 text-xs font-medium">What's new?</div>
+                <div className="text-gray-300 text-xs">Advanced AI scanning</div>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -151,8 +151,8 @@ export default function UserDashboard() {
                 <span className="text-black font-bold text-xs">SC</span>
               </div>
               <div>
-                <div className="text-white text-xs font-medium">SecureCode Team</div>
-                <div className="text-neutral-400 text-xs">security@securecode.com</div>
+                <div className="text-gray-100 text-xs font-medium">SecureCode Team</div>
+                <div className="text-gray-300 text-xs">security@securecode.com</div>
               </div>
             </div>
           </div>
@@ -162,13 +162,13 @@ export default function UserDashboard() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Header */}
-        <header className="bg-neutral-900/50 border-b border-neutral-800">
+        <header className="bg-gray-900/30 border-b border-gray-700/30 backdrop-blur-sm">
           <div className="px-6 py-4">
             <div className="flex items-center justify-between">
               {/* Back Button */}
               <button
                 onClick={() => navigate('/')}
-                className="group flex items-center text-neutral-400 hover:text-white transition-colors duration-200"
+                className="group flex items-center text-gray-300 hover:text-gray-100 transition-colors duration-200"
               >
                 <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-200" />
                 <span className="text-sm font-medium">Back to home</span>
@@ -176,7 +176,7 @@ export default function UserDashboard() {
 
               {/* Header Actions */}
               <div className="flex items-center gap-4">
-                <button className="text-neutral-400 hover:text-white transition-colors relative">
+                <button className="text-gray-300 hover:text-gray-100 transition-colors relative">
                   <Bell className="w-5 h-5" />
                   <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
                 </button>
@@ -191,84 +191,84 @@ export default function UserDashboard() {
         {/* Dashboard Content */}
         <main className="flex-1 p-6">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">Security Dashboard</h1>
-            <p className="text-neutral-400">Monitor your repository security and manage your projects.</p>
+            <h1 className="text-3xl font-bold text-gray-100 mb-2">Security Dashboard</h1>
+            <p className="text-gray-300">Monitor your repository security and manage your projects.</p>
           </div>
 
           {/* Dashboard Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-6">
+            <div className="bg-gray-800/30 border border-gray-700/30 rounded-lg p-6 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-4">
-                <Shield className="w-8 h-8 text-white" />
-                <span className="text-2xl font-bold text-white">12</span>
+                <Shield className="w-8 h-8 text-gray-100" />
+                <span className="text-2xl font-bold text-gray-100">12</span>
               </div>
-              <h3 className="text-white font-medium mb-1">Repositories Scanned</h3>
-              <p className="text-neutral-400 text-sm">Active security monitoring</p>
+              <h3 className="text-gray-100 font-medium mb-1">Repositories Scanned</h3>
+              <p className="text-gray-300 text-sm">Active security monitoring</p>
             </div>
 
-            <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-6">
+            <div className="bg-gray-800/30 border border-gray-700/30 rounded-lg p-6 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-4">
                 <Activity className="w-8 h-8 text-red-400" />
-                <span className="text-2xl font-bold text-white">3</span>
+                <span className="text-2xl font-bold text-gray-100">3</span>
               </div>
-              <h3 className="text-white font-medium mb-1">Critical Issues</h3>
-              <p className="text-neutral-400 text-sm">Require immediate attention</p>
+              <h3 className="text-gray-100 font-medium mb-1">Critical Issues</h3>
+              <p className="text-gray-300 text-sm">Require immediate attention</p>
             </div>
 
-            <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-6">
+            <div className="bg-gray-800/30 border border-gray-700/30 rounded-lg p-6 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-4">
                 <Users className="w-8 h-8 text-blue-400" />
-                <span className="text-2xl font-bold text-white">8</span>
+                <span className="text-2xl font-bold text-gray-100">8</span>
               </div>
-              <h3 className="text-white font-medium mb-1">Team Members</h3>
-              <p className="text-neutral-400 text-sm">Collaborating on security</p>
+              <h3 className="text-gray-100 font-medium mb-1">Team Members</h3>
+              <p className="text-gray-300 text-sm">Collaborating on security</p>
             </div>
 
-            <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-6">
+            <div className="bg-gray-800/30 border border-gray-700/30 rounded-lg p-6 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-4">
                 <Shield className="w-8 h-8 text-green-400" />
-                <span className="text-2xl font-bold text-white">94%</span>
+                <span className="text-2xl font-bold text-gray-100">94%</span>
               </div>
-              <h3 className="text-white font-medium mb-1">Security Score</h3>
-              <p className="text-neutral-400 text-sm">Overall repository health</p>
+              <h3 className="text-gray-100 font-medium mb-1">Security Score</h3>
+              <p className="text-gray-300 text-sm">Overall repository health</p>
             </div>
           </div>
 
           {/* Recent Activity */}
-          <div className="bg-neutral-900/50 border border-neutral-800 rounded-lg p-6">
-            <h2 className="text-xl font-bold text-white mb-6">Recent Security Activity</h2>
+          <div className="bg-gray-800/30 border border-gray-700/30 rounded-lg p-6 backdrop-blur-sm">
+            <h2 className="text-xl font-bold text-gray-100 mb-6">Recent Security Activity</h2>
             <div className="space-y-4">
-              <div className="flex items-center justify-between py-3 border-b border-neutral-800 last:border-b-0">
+              <div className="flex items-center justify-between py-3 border-b border-gray-700/30 last:border-b-0">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-red-400 rounded-full"></div>
                   <div>
-                    <p className="text-white font-medium">Critical vulnerability detected in main-app</p>
-                    <p className="text-neutral-400 text-sm">SQL injection vulnerability in user authentication</p>
+                    <p className="text-gray-100 font-medium">Critical vulnerability detected in main-app</p>
+                    <p className="text-gray-300 text-sm">SQL injection vulnerability in user authentication</p>
                   </div>
                 </div>
-                <span className="text-neutral-400 text-sm">2 hours ago</span>
+                <span className="text-gray-400 text-sm">2 hours ago</span>
               </div>
               
-              <div className="flex items-center justify-between py-3 border-b border-neutral-800 last:border-b-0">
+              <div className="flex items-center justify-between py-3 border-b border-gray-700/30 last:border-b-0">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                   <div>
-                    <p className="text-white font-medium">Security scan completed for api-service</p>
-                    <p className="text-neutral-400 text-sm">No critical issues found, 2 minor warnings</p>
+                    <p className="text-gray-100 font-medium">Security scan completed for api-service</p>
+                    <p className="text-gray-300 text-sm">No critical issues found, 2 minor warnings</p>
                   </div>
                 </div>
-                <span className="text-neutral-400 text-sm">4 hours ago</span>
+                <span className="text-gray-400 text-sm">4 hours ago</span>
               </div>
               
-              <div className="flex items-center justify-between py-3 border-b border-neutral-800 last:border-b-0">
+              <div className="flex items-center justify-between py-3 border-b border-gray-700/30 last:border-b-0">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
                   <div>
-                    <p className="text-white font-medium">New team member added</p>
-                    <p className="text-neutral-400 text-sm">Sarah Johnson joined the security team</p>
+                    <p className="text-gray-100 font-medium">New team member added</p>
+                    <p className="text-gray-300 text-sm">Sarah Johnson joined the security team</p>
                   </div>
                 </div>
-                <span className="text-neutral-400 text-sm">1 day ago</span>
+                <span className="text-gray-400 text-sm">1 day ago</span>
               </div>
             </div>
           </div>
