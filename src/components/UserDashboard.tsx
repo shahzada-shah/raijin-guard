@@ -861,9 +861,9 @@ export default function UserDashboard() {
           {showDrawer && selectedRepo && (
             <div className="fixed inset-0 z-50 overflow-hidden">
               <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={closeDrawer}></div>
-              <div className="absolute right-0 top-0 h-full w-96 bg-zinc-900/95 border-l border-zinc-800/50 backdrop-blur-md overflow-y-auto">
+              <div className="absolute right-0 top-0 h-full w-[600px] bg-zinc-900/95 border-l border-zinc-800/50 backdrop-blur-md overflow-y-auto">
                 {/* Header */}
-                <div className="p-6 border-b border-zinc-800/30">
+                <div className="p-8 border-b border-zinc-800/30">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
                       <div className={`w-3 h-3 rounded-full ${
@@ -887,8 +887,8 @@ export default function UserDashboard() {
                     </button>
                   </div>
                   <h2 className="text-2xl font-bold text-white mb-2">{selectedRepo.repo}</h2>
-                  <p className="text-zinc-400 text-sm mb-4">{selectedRepo.description}</p>
-                  <div className="flex items-center gap-4 text-sm text-zinc-400">
+                  <p className="text-zinc-400 text-base mb-6 leading-relaxed">{selectedRepo.description}</p>
+                  <div className="flex items-center gap-6 text-sm text-zinc-400">
                     <span>github.com/company/{selectedRepo.repo}</span>
                     <span>•</span>
                     <span>{selectedRepo.language}</span>
@@ -896,12 +896,12 @@ export default function UserDashboard() {
                 </div>
 
                 {/* Metrics */}
-                <div className="p-6 border-b border-zinc-800/30">
-                  <div className="grid grid-cols-3 gap-4 mb-6">
+                <div className="p-8 border-b border-zinc-800/30">
+                  <div className="grid grid-cols-3 gap-8 mb-8">
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-white mb-1">{selectedRepo.messages}</div>
-                      <div className="text-xs text-zinc-400 uppercase tracking-wider">Messages (24h)</div>
-                      <div className="h-8 mt-2">
+                      <div className="text-3xl font-bold text-white mb-2">{selectedRepo.messages}</div>
+                      <div className="text-xs text-zinc-400 uppercase tracking-wider mb-3">Messages (24h)</div>
+                      <div className="h-12 mt-3">
                         <ResponsiveContainer width="100%" height="100%">
                           <BarChart data={[{v:1},{v:2},{v:1},{v:3},{v:2}]}>
                             <Bar dataKey="v" fill="#6b7280" />
@@ -910,9 +910,9 @@ export default function UserDashboard() {
                       </div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-white mb-1">{selectedRepo.uptime}</div>
-                      <div className="text-xs text-zinc-400 uppercase tracking-wider">Uptime (24h)</div>
-                      <div className="h-8 mt-2">
+                      <div className="text-3xl font-bold text-white mb-2">{selectedRepo.uptime}</div>
+                      <div className="text-xs text-zinc-400 uppercase tracking-wider mb-3">Uptime (24h)</div>
+                      <div className="h-12 mt-3">
                         <ResponsiveContainer width="100%" height="100%">
                           <BarChart data={[{v:99},{v:100},{v:99},{v:100},{v:99}]}>
                             <Bar dataKey="v" fill="#6b7280" />
@@ -921,9 +921,9 @@ export default function UserDashboard() {
                       </div>
                     </div>
                     <div className="text-center">
-                      <div className="text-2xl font-bold text-white mb-1">{selectedRepo.incidents}</div>
-                      <div className="text-xs text-zinc-400 uppercase tracking-wider">Incidents (24h)</div>
-                      <div className="h-8 mt-2">
+                      <div className="text-3xl font-bold text-white mb-2">{selectedRepo.incidents}</div>
+                      <div className="text-xs text-zinc-400 uppercase tracking-wider mb-3">Incidents (24h)</div>
+                      <div className="h-12 mt-3">
                         <ResponsiveContainer width="100%" height="100%">
                           <BarChart data={[{v:1},{v:0},{v:2},{v:1},{v:0}]}>
                             <Bar dataKey="v" fill="#6b7280" />
@@ -935,65 +935,65 @@ export default function UserDashboard() {
                 </div>
 
                 {/* Status Section */}
-                <div className="p-6 border-b border-zinc-800/30">
+                <div className="p-8 border-b border-zinc-800/30">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-white font-medium">Status</h3>
+                    <h3 className="text-white font-medium text-lg">Status</h3>
                     <button className="text-zinc-400 hover:text-white">
                       <ChevronUp className="w-4 h-4" />
                     </button>
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-zinc-400 text-sm">Uptime</span>
-                      <span className="text-white text-sm">{selectedRepo.uptime}</span>
+                      <span className="text-zinc-400">Uptime</span>
+                      <span className="text-white font-medium">{selectedRepo.uptime}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-zinc-400 text-sm">Last Scan</span>
-                      <span className="text-white text-sm">{selectedRepo.lastScan}</span>
+                      <span className="text-zinc-400">Last Scan</span>
+                      <span className="text-white font-medium">{selectedRepo.lastScan}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-zinc-400 text-sm">Branch</span>
-                      <span className="text-white text-sm font-mono">{selectedRepo.branch}</span>
+                      <span className="text-zinc-400">Branch</span>
+                      <span className="text-white font-medium font-mono">{selectedRepo.branch}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Performance Section */}
-                <div className="p-6 border-b border-zinc-800/30">
+                <div className="p-8 border-b border-zinc-800/30">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-white font-medium">Performance</h3>
+                    <h3 className="text-white font-medium text-lg">Performance</h3>
                     <button className="text-zinc-400 hover:text-white">
                       <ChevronUp className="w-4 h-4" />
                     </button>
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-zinc-400 text-sm">Messages (24h)</span>
-                      <span className="text-white text-sm">{selectedRepo.messages} messages</span>
+                      <span className="text-zinc-400">Messages (24h)</span>
+                      <span className="text-white font-medium">{selectedRepo.messages} messages</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-zinc-400 text-sm">Latency</span>
-                      <span className="text-white text-sm">45ms</span>
+                      <span className="text-zinc-400">Latency</span>
+                      <span className="text-white font-medium">45ms</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-zinc-400 text-sm">Success Rate</span>
-                      <span className="text-white text-sm">{selectedRepo.successRate}</span>
+                      <span className="text-zinc-400">Success Rate</span>
+                      <span className="text-white font-medium">{selectedRepo.successRate}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Security Section */}
-                <div className="p-6 border-b border-zinc-800/30">
+                <div className="p-8 border-b border-zinc-800/30">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-white font-medium">Security</h3>
+                    <h3 className="text-white font-medium text-lg">Security</h3>
                     <button className="text-zinc-400 hover:text-white text-sm text-lime-400">
                       See more
                     </button>
                   </div>
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <span className="text-zinc-400 text-sm">Security Score</span>
-                      <span className={`text-sm font-medium ${
+                      <span className="text-zinc-400">Security Score</span>
+                      <span className={`font-medium ${
                         selectedRepo.color === 'red' ? 'text-red-400' :
                         selectedRepo.color === 'yellow' ? 'text-yellow-400' :
                         selectedRepo.color === 'green' ? 'text-green-400' : 'text-gray-400'
@@ -1002,51 +1002,51 @@ export default function UserDashboard() {
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-zinc-400 text-sm">Active Alerts</span>
-                      <span className="text-white text-sm">{selectedRepo.activeAlerts}</span>
+                      <span className="text-zinc-400">Active Alerts</span>
+                      <span className="text-white font-medium">{selectedRepo.activeAlerts}</span>
                     </div>
                     <div className="flex items-center justify-between">
-                      <span className="text-zinc-400 text-sm">Success Rate</span>
-                      <span className="text-white text-sm">{selectedRepo.successRate}</span>
+                      <span className="text-zinc-400">Success Rate</span>
+                      <span className="text-white font-medium">{selectedRepo.successRate}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Incidents/Error Log */}
-                <div className="p-6">
+                <div className="p-8 pb-12">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-white font-medium">Incidents/Error Log</h3>
+                    <h3 className="text-white font-medium text-lg">Incidents/Error Log</h3>
                     <button className="text-zinc-400 hover:text-white text-sm text-lime-400">
                       See more
                     </button>
                   </div>
-                  <div className="space-y-3">
-                    <div className="text-zinc-400 text-sm mb-3">
+                  <div className="space-y-4">
+                    <div className="text-zinc-400 mb-4">
                       Status: {selectedRepo.vulnerabilities} • Timestamp: {selectedRepo.lastScan} • Type: Security
                     </div>
                     
                     {selectedRepo.vulnerabilities > 0 && (
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-3 p-3 bg-zinc-800/30 rounded-lg">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-4 p-4 bg-zinc-800/30 rounded-lg">
                           <div className={`w-2 h-2 rounded-full ${
                             selectedRepo.color === 'red' ? 'bg-red-400' :
                             selectedRepo.color === 'yellow' ? 'bg-yellow-400' : 'bg-green-400'
                           }`}></div>
                           <div className="flex-1">
-                            <div className="text-white text-sm font-medium">
+                            <div className="text-white font-medium">
                               {selectedRepo.color === 'red' ? 'Critical vulnerability detected' : 
                                selectedRepo.color === 'yellow' ? 'Security warning found' : 'Minor security issue'}
                             </div>
-                            <div className="text-zinc-400 text-xs">
+                            <div className="text-zinc-400 text-sm">
                               {selectedRepo.color === 'red' ? 'SQL injection in authentication module' :
                                selectedRepo.color === 'yellow' ? 'Outdated dependency detected' : 'Code quality improvement needed'}
                             </div>
-                            <div className="text-zinc-500 text-xs mt-1">{selectedRepo.lastScan}</div>
+                            <div className="text-zinc-500 text-sm mt-1">{selectedRepo.lastScan}</div>
                           </div>
-                          <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
+                          <div className={`w-5 h-5 rounded-full flex items-center justify-center ${
                             selectedRepo.color === 'red' ? 'bg-red-400/20' : 'bg-yellow-400/20'
                           }`}>
-                            <div className={`w-2 h-2 rounded-full ${
+                            <div className={`w-2.5 h-2.5 rounded-full ${
                               selectedRepo.color === 'red' ? 'bg-red-400' : 'bg-yellow-400'
                             }`}></div>
                           </div>
