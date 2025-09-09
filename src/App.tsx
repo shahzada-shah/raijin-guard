@@ -14,13 +14,13 @@ function HomePage() {
   const [activeNav, setActiveNav] = useState('SECURITY');
 
   return (
-    <div className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 relative min-h-screen">
+    <div className="bg-neutral-950 relative min-h-screen">
       {/* Background geometric shapes */}
       <div className="absolute inset-0 z-0">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-gray-700 opacity-10 transform -rotate-45 -translate-x-48 -translate-y-48" />
-        <div className="absolute top-20 right-0 w-80 h-80 bg-gray-600 opacity-8 transform rotate-12 translate-x-32 -translate-y-20" />
-        <div className="absolute bottom-0 left-1/4 w-64 h-64 bg-gray-700 opacity-10 transform -rotate-12 translate-y-32" />
-        <div className="absolute bottom-40 right-1/3 w-48 h-48 bg-gray-600 opacity-8 transform rotate-45" />
+        <div className="absolute top-0 left-0 w-96 h-96 bg-neutral-900 opacity-20 transform -rotate-45 -translate-x-48 -translate-y-48" />
+        <div className="absolute top-20 right-0 w-80 h-80 bg-neutral-800 opacity-15 transform rotate-12 translate-x-32 -translate-y-20" />
+        <div className="absolute bottom-0 left-1/4 w-64 h-64 bg-neutral-900 opacity-20 transform -rotate-12 translate-y-32" />
+        <div className="absolute bottom-40 right-1/3 w-48 h-48 bg-neutral-800 opacity-10 transform rotate-45" />
       </div>
 
       <Navigation activeNav={activeNav} setActiveNav={setActiveNav} />

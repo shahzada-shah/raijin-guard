@@ -41,14 +41,14 @@ export default function FAQSection() {
   };
 
   return (
-    <section id="faq" className="relative z-10 py-20 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 min-h-screen flex items-center">
+    <section id="faq" className="relative z-10 py-20 bg-neutral-950 min-h-screen flex items-center">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-16 items-start">
           {/* Left Column - Header */}
           <div>
             <div className="flex items-center mb-6">
               <div className="w-8 h-0.5 bg-white mr-4"></div>
-              <span className="text-sm text-gray-300 uppercase tracking-wider font-medium">FAQ</span>
+              <span className="text-sm text-neutral-400 uppercase tracking-wider font-medium">FAQ</span>
             </div>
             <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight">
               FREQUENTLY ASKED QUESTIONS
@@ -62,7 +62,7 @@ export default function FAQSection() {
             {faqItems.map((item, index) => (
               <div 
                 key={index}
-                className="border-b border-gray-700/50 last:border-b-0"
+                className="border-b border-neutral-800 last:border-b-0"
               >
                 <button
                   onClick={() => toggleFAQ(index)}
@@ -82,7 +82,7 @@ export default function FAQSection() {
                 
                 {openIndex === index && (
                   <div className="pb-6 pr-8">
-                    <p className="text-gray-300 leading-relaxed">
+                    <p className="text-neutral-400 leading-relaxed">
                       {item.answer}
                     </p>
                   </div>

@@ -3,9 +3,8 @@
 @tailwind utilities;
 
 html, body {
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%); /* Gradient dark background */
+  background-color: #0a0a0a; /* Deep dark mono background */
   margin: 0;
   padding: 0;
-  color: #f8fafc; /* Crisp white/silver text */
-  min-height: 100vh;
+  color: #e5e5e5;
 }
