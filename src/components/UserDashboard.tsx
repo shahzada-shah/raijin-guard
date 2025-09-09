@@ -340,7 +340,7 @@ export default function UserDashboard() {
     <div className="min-h-screen bg-zinc-950 flex relative">
       {/* Sidebar */}
       <div 
-        className={`fixed left-0 top-0 h-full bg-zinc-900/50 border-r border-zinc-800/50 flex flex-col transition-all duration-300 ease-in-out backdrop-blur-sm z-40 ${
+        className={`fixed left-0 top-0 h-full bg-zinc-900/50 border-r border-zinc-800/50 flex flex-col transition-all duration-300 ease-in-out backdrop-blur-sm z-50 ${
           isCollapsed ? 'w-16' : 'w-64'
         }`}
         onMouseEnter={() => setIsCollapsed(false)}
@@ -354,8 +354,8 @@ export default function UserDashboard() {
             </div>
             {!isCollapsed && (
               <div className="text-white ml-3 transition-opacity duration-300">
-                <div className="text-lg font-bold tracking-tight">SECURE</div>
-                <div className="text-xs text-zinc-400 -mt-1">CODE</div>
+                <div className="text-lg font-extrabold tracking-tight">RAIJIN</div>
+                <div className="text-xs text-zinc-400 -mt-1">GUARD</div>
               </div>
             )}
           </div>
@@ -385,16 +385,20 @@ export default function UserDashboard() {
                 <button
                   key={item.name}
                   onClick={() => setActiveMenuItem(item.name)}
-                  className={`w-full flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors group ${
+                  className={`w-full flex items-center ${isCollapsed ? 'justify-center' : ''} px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 ease-out group ${
                     isActive
                       ? 'bg-zinc-800/50 text-white backdrop-blur-sm'
                       : 'text-zinc-400 hover:text-white hover:bg-zinc-800/30'
                   }`}
                   title={isCollapsed ? item.name : ''}
                 >
-                  <IconComponent className="w-5 h-5 flex-shrink-0" />
+                  <IconComponent className={`w-5 h-5 flex-shrink-0 transition-all duration-300 ease-out ${
+                    isActive ? 'drop-shadow-[0_0_6px_rgba(255,255,255,0.25)]' : ''
+                  }`} />
                   {!isCollapsed && (
-                    <span className="ml-3 transition-opacity duration-300">{item.name}</span>
+                    <span className={`ml-3 transition-opacity duration-300 ${
+                      isActive ? 'drop-shadow-[0_0_6px_rgba(255,255,255,0.25)]' : ''
+                    }`}>{item.name}</span>
                   )}
                 </button>
               );
@@ -410,7 +414,7 @@ export default function UserDashboard() {
               return (
                 <button
                   key={item.name}
-                  className="w-full flex items-center px-3 py-2.5 text-sm font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/30 rounded-lg transition-colors"
+                  className="w-full flex items-center px-3 py-2.5 text-sm font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/30 rounded-lg transition-all duration-300 ease-out hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.2)]"
                   title={isCollapsed ? item.name : ''}
                 >
                   <IconComponent className="w-5 h-5 flex-shrink-0" />
@@ -451,11 +455,11 @@ export default function UserDashboard() {
             </div>
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
-                <span className="text-zinc-900 font-bold text-xs">SC</span>
+                <span className="text-zinc-900 font-bold text-xs">RG</span>
               </div>
               <div>
-                <div className="text-white text-xs font-medium">SecureCode Team</div>
-                <div className="text-zinc-400 text-xs">security@securecode.com</div>
+                <div className="text-white text-xs font-medium">RaijinGuard Team</div>
+                <div className="text-zinc-400 text-xs">security@raijinguard.com</div>
               </div>
             </div>
           </div>
@@ -465,7 +469,7 @@ export default function UserDashboard() {
       {/* Main Content */}
       <div className={`flex-1 flex flex-col transition-all duration-300 ${isCollapsed ? 'ml-16' : 'ml-64'}`}>
         {/* Header */}
-        <header className="fixed top-0 right-0 left-0 bg-zinc-900/30 border-b border-zinc-800/50 backdrop-blur-sm z-30" style={{ left: isCollapsed ? '64px' : '256px' }}>
+        <header className="fixed top-0 right-0 left-0 bg-zinc-900/30 border-b border-zinc-800/50 backdrop-blur-sm z-50" style={{ left: isCollapsed ? '64px' : '256px' }}>
           <div className="px-6 py-4">
             <div className="flex items-center justify-between">
               {/* Navigation Items */}
@@ -474,10 +478,10 @@ export default function UserDashboard() {
                   <button
                     key={item}
                     onClick={() => setActiveNavItem(item)}
-                    className={`text-sm font-medium transition-colors ${
+                    className={`text-sm font-medium transition-all duration-300 ease-out ${
                       activeNavItem === item
-                        ? 'text-white'
-                        : 'text-zinc-400 hover:text-white'
+                        ? 'text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.25)]'
+                        : 'text-zinc-400 hover:text-white hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.2)]'
                     }`}
                   >
                     {item}
@@ -498,7 +502,7 @@ export default function UserDashboard() {
                   </button>
                   
                   {showNotificationDropdown && (
-                    <div className="absolute right-0 mt-2 w-80 bg-zinc-900/98 border border-zinc-700/50 rounded-lg shadow-2xl backdrop-blur-md z-[60]">
+                    <div className="absolute right-0 mt-2 w-80 bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl backdrop-blur-md z-[100]">
                       <div className="p-4 border-b border-zinc-800/50">
                         <h3 className="text-white font-medium">Notifications</h3>
                       </div>
@@ -546,7 +550,7 @@ export default function UserDashboard() {
                   </button>
                   
                   {showUserDropdown && (
-                    <div className="absolute right-0 mt-2 w-48 bg-zinc-900/98 border border-zinc-700/50 rounded-lg shadow-2xl backdrop-blur-md z-[60]">
+                    <div className="absolute right-0 mt-2 w-48 bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl backdrop-blur-md z-[100]">
                       <div className="p-4 border-b border-zinc-800/50">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
@@ -839,7 +843,7 @@ export default function UserDashboard() {
                         <span className="text-zinc-400 text-sm font-mono">{repo.branch}</span>
                       </td>
                       <td className="py-4 px-6 text-right">
-                        <button className="bg-white hover:bg-zinc-200 text-zinc-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                        <button className="border border-white text-white hover:bg-white hover:text-zinc-900 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ease-out">
                           Scan Now
                         </button>
                       </td>

@@ -11,27 +11,27 @@ export default function FAQSection() {
 
   const faqItems: FAQItem[] = [
     {
-      question: "What is SecureCode, and who is it for?",
-      answer: "SecureCode is a comprehensive security platform designed for developers, security teams, and organizations who want to ensure their code repositories are secure and compliant with industry standards."
+      question: "What is RaijinGuard, and who is it for?",
+      answer: "RaijinGuard is a comprehensive security platform designed for developers, security teams, and organizations who want to ensure their code repositories are secure and compliant with industry standards."
     },
     {
-      question: "How does SecureCode improve development efficiency?",
-      answer: "SecureCode automates security scanning and vulnerability detection, reducing manual review time and allowing developers to focus on building features while maintaining security best practices."
+      question: "How does RaijinGuard improve development efficiency?",
+      answer: "RaijinGuard automates security scanning and vulnerability detection, reducing manual review time and allowing developers to focus on building features while maintaining security best practices."
     },
     {
-      question: "Can I integrate SecureCode with tools I already use?",
-      answer: "SecureCode is a SaaS platform built for development teams, providing them with an all-in-one ecosystem to manage repositories, collaborate with teams, and streamline security operations."
+      question: "Can I integrate RaijinGuard with tools I already use?",
+      answer: "RaijinGuard is a SaaS platform built for development teams, providing them with an all-in-one ecosystem to manage repositories, collaborate with teams, and streamline security operations."
     },
     {
-      question: "Is SecureCode designed for teams of all sizes?",
-      answer: "Yes, SecureCode scales from individual developers to enterprise teams, offering flexible pricing plans and features that grow with your organization's security needs."
+      question: "Is RaijinGuard designed for teams of all sizes?",
+      answer: "Yes, RaijinGuard scales from individual developers to enterprise teams, offering flexible pricing plans and features that grow with your organization's security needs."
     },
     {
-      question: "How does SecureCode handle repository data?",
-      answer: "SecureCode uses enterprise-grade encryption and follows strict data privacy protocols. Your code never leaves your environment during scanning, and all reports are securely stored with bank-level security."
+      question: "How does RaijinGuard handle repository data?",
+      answer: "RaijinGuard uses enterprise-grade encryption and follows strict data privacy protocols. Your code never leaves your environment during scanning, and all reports are securely stored with bank-level security."
     },
     {
-      question: "What kind of support does SecureCode provide?",
+      question: "What kind of support does RaijinGuard provide?",
       answer: "We offer comprehensive support including documentation, video tutorials, live chat support, and dedicated account managers for enterprise customers to ensure successful implementation."
     }
   ];
@@ -47,10 +47,10 @@ export default function FAQSection() {
           {/* Left Column - Header */}
           <div>
             <div className="flex items-center mb-6">
-              <div className="w-8 h-0.5 bg-lime-400 mr-4"></div>
+              <div className="w-2 h-2 bg-white rounded-full mr-4 animate-pulse"></div>
               <span className="text-sm text-zinc-400 uppercase tracking-wider font-medium">FAQ</span>
             </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight">
+            <h2 className="text-[40px] md:text-[56px] lg:text-[64px] font-extrabold text-white leading-[1.1] tracking-tight">
               FREQUENTLY ASKED QUESTIONS
               <br />
               ABOUT SECURECODE
@@ -62,29 +62,31 @@ export default function FAQSection() {
             {faqItems.map((item, index) => (
               <div 
                 key={index}
-                className="border-b border-gray-800 last:border-b-0"
+                className="border-b border-zinc-800/50 last:border-b-0 group"
               >
                 <button
                   onClick={() => toggleFAQ(index)}
-                  className="w-full flex items-center justify-between py-6 text-left hover:text-lime-400 transition-colors duration-200"
+                  className="w-full flex items-center justify-between py-6 text-left hover:text-white transition-all duration-300 ease-out group-hover:drop-shadow-[0_0_10px_rgba(255,255,255,0.45)]"
                 >
-                  <span className="text-white font-medium text-lg pr-4">
+                  <span className="text-zinc-400 font-semibold text-lg pr-4 group-hover:text-white transition-all duration-300 ease-out">
                     {item.question}
                   </span>
                   <div className="flex-shrink-0">
                     {openIndex === index ? (
-                      <Minus className="w-5 h-5 text-white" />
+                      <Minus className="w-5 h-5 text-zinc-400 group-hover:text-white group-hover:drop-shadow-[0_0_10px_rgba(255,255,255,0.45)] transition-all duration-300 ease-out" />
                     ) : (
-                      <Plus className="w-5 h-5 text-white" />
+                      <Plus className="w-5 h-5 text-zinc-400 group-hover:text-white group-hover:drop-shadow-[0_0_10px_rgba(255,255,255,0.45)] transition-all duration-300 ease-out" />
                     )}
                   </div>
                 </button>
                 
                 {openIndex === index && (
-                  <div className="pb-6 pr-8">
-                    <p className="text-gray-400 leading-relaxed">
-                      {item.answer}
-                    </p>
+                  <div className="pb-6 pr-8 overflow-hidden">
+                    <div className="animate-in slide-in-from-top-2 duration-300 ease-out">
+                      <p className="text-gray-300 text-sm leading-relaxed">
+                        {item.answer}
+                      </p>
+                    </div>
                   </div>
                 )}
               </div>

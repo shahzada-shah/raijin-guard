@@ -20,11 +20,35 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
     const handleScroll = () => {
       const scrollTop = window.scrollY;
       setIsScrolled(scrollTop > 20);
+
+      // Auto-update active nav based on scroll position
+      const sections = [
+        { id: 'hero', name: 'SECURITY' },
+        { id: 'core-benefits', name: 'ADVANTAGES' },
+        { id: 'features', name: 'FEATURES' },
+        { id: 'pricing', name: 'PRICING' },
+        { id: 'faq', name: 'FAQ' }
+      ];
+
+      let currentSection = 'SECURITY'; // Default to SECURITY
+
+      for (const section of sections) {
+        const element = document.getElementById(section.id);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          // Check if section is in view (top of section is above middle of viewport)
+          if (rect.top <= window.innerHeight / 2) {
+            currentSection = section.name;
+          }
+        }
+      }
+
+      setActiveNav(currentSection);
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [setActiveNav]);
 
   const navItems: NavItem[] = [
     { name: 'SECURITY', href: '#security' },
@@ -95,8 +119,8 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex-shrink-0 text-white">
-            <div className="text-xl font-bold tracking-tight">SECURE</div>
-            <div className="text-xs text-gray-400 -mt-1">CODE</div>
+            <div className="text-xl font-bold tracking-tight">RAIJIN</div>
+            <div className="text-xs text-gray-400 -mt-1">GUARD</div>
           </div>
 
           {/* Nav items — thin labels, glow + short divider when active */}
@@ -144,10 +168,10 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
               Login
             </button>
 
-            {/* filled pill (Sign up style) */}
+            {/* outline pill (Start Audit style) */}
             <button
-              className="rounded-full px-5 py-2 uppercase text-[11px] font-extrabold tracking-widest
-                         bg-lime-400 text-gray-900 hover:brightness-105 transition-all duration-300 ease-out"
+              className="rounded-full px-5 py-2 uppercase text-[11px] font-semibold tracking-widest
+                         border border-white text-white hover:bg-white hover:text-gray-900 transition-all duration-300 ease-out"
             >
               Start Audit
             </button>
@@ -193,7 +217,7 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
               >
                 Login
               </button>
-              <button className="ml-auto rounded-full px-5 py-2 uppercase text-[11px] font-extrabold tracking-widest bg-lime-400 text-gray-900 hover:brightness-105 transition">
+              <button className="ml-auto rounded-full px-5 py-2 uppercase text-[11px] font-semibold tracking-widest border border-white text-white hover:bg-white hover:text-gray-900 transition-all duration-300 ease-out">
                 Start Audit
               </button>
             </div>
