@@ -66,13 +66,13 @@ export default function FeaturesSection() {
   ];
 
   return (
-    <section id="features" className="relative z-10 py-20 bg-neutral-950 min-h-screen">
+    <section id="features" className="relative z-10 py-20 bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <div className="mb-20">
           <div className="flex items-center mb-6">
             <div className="w-8 h-0.5 bg-white mr-4"></div>
-            <span className="text-sm text-neutral-400 uppercase tracking-wider font-medium">Explore key features</span>
+            <span className="text-sm text-gray-300 uppercase tracking-wider font-medium">Explore key features</span>
           </div>
           
           <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -84,7 +84,7 @@ export default function FeaturesSection() {
               </h2>
             </div>
             <div>
-              <p className="text-neutral-400 text-lg leading-relaxed">
+              <p className="text-gray-300 text-lg leading-relaxed">
                 SecureCode is designed to eliminate the guesswork and inefficiencies of security 
                 management, giving you more time to focus on growing your business.
               </p>
@@ -109,10 +109,10 @@ export default function FeaturesSection() {
                   
                   {/* Content */}
                   <div className="flex-1">
-                    <h3 className="text-white font-medium text-base mb-2 group-hover:text-lime-400 transition-colors duration-200">
+                    <h3 className="text-white font-medium text-base mb-2 group-hover:text-gray-200 transition-colors duration-200">
                       {feature.title}
                     </h3>
-                    <p className="text-neutral-400 text-sm leading-relaxed">
+                    <p className="text-gray-300 text-sm leading-relaxed">
                       {feature.description}
                     </p>
                   </div>

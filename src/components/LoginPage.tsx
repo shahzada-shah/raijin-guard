@@ -59,14 +59,14 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-950 flex">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 flex">
       {/* Left Side - Login Form */}
       <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
         <div className="max-w-md w-full space-y-8">
           {/* Back Button */}
           <button
             onClick={handleBackClick}
-            className="group flex items-center text-neutral-400 hover:text-white transition-colors duration-200 mb-8"
+            className="group flex items-center text-gray-300 hover:text-white transition-colors duration-200 mb-8"
           >
             <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-200" />
             <span className="text-sm font-medium">
@@ -81,7 +81,7 @@ export default function LoginPage() {
             </div>
             <div className="text-white">
               <div className="text-xl font-bold tracking-tight">SECURE</div>
-              <div className="text-xs text-neutral-400 -mt-1">CODE</div>
+              <div className="text-xs text-gray-300 -mt-1">CODE</div>
             </div>
           </div>
 
@@ -90,7 +90,7 @@ export default function LoginPage() {
             <h2 className="text-3xl font-bold text-white mb-2">
               Access your SecureCode account
             </h2>
-            <p className="text-zinc-400">
+            <p className="text-gray-300">
               {showPassword 
                 ? 'Enter your password to continue securely.'
                 : 'Sign in to secure your repositories and keep building with confidence.'
@@ -103,7 +103,7 @@ export default function LoginPage() {
             {!showPassword ? (
               // Email Input
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-neutral-300 mb-2">
+                <label htmlFor="email" className="block text-sm font-medium text-gray-200 mb-2">
                   Enter your email
                 </label>
                 <div className="relative">
@@ -113,20 +113,20 @@ export default function LoginPage() {
                     type="email"
                     autoComplete="email"
                     required
-                    className="appearance-none relative block w-full px-4 py-3 border border-neutral-700 placeholder-neutral-500 text-white bg-neutral-900/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent focus:z-10 sm:text-sm"
+                    className="appearance-none relative block w-full px-4 py-3 border border-gray-600 placeholder-gray-400 text-white bg-gray-800/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent focus:z-10 sm:text-sm backdrop-blur-sm"
                     placeholder="your.email@company.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                    <Mail className="h-5 w-5 text-neutral-400" />
+                    <Mail className="h-5 w-5 text-gray-400" />
                   </div>
                 </div>
               </div>
             ) : (
               // Password Input
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-neutral-300 mb-2">
+                <label htmlFor="password" className="block text-sm font-medium text-gray-200 mb-2">
                   Enter your password
                 </label>
                 <div className="relative">
@@ -136,14 +136,14 @@ export default function LoginPage() {
                     type="password"
                     autoComplete="current-password"
                     required
-                    className="appearance-none relative block w-full px-4 py-3 border border-neutral-700 placeholder-neutral-500 text-white bg-neutral-900/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent focus:z-10 sm:text-sm"
+                    className="appearance-none relative block w-full px-4 py-3 border border-gray-600 placeholder-gray-400 text-white bg-gray-800/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent focus:z-10 sm:text-sm backdrop-blur-sm"
                     placeholder="Enter your password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     autoFocus
                   />
                   <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                    <Lock className="h-5 w-5 text-neutral-400" />
+                    <Lock className="h-5 w-5 text-gray-400" />
                   </div>
                 </div>
               </div>
@@ -168,7 +168,7 @@ export default function LoginPage() {
                 <div>
                   <button
                     type="button"
-                    className="group relative w-full flex justify-center items-center py-3 px-4 border border-neutral-700 text-sm font-medium rounded-lg text-white bg-neutral-800/50 hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-500 transition-colors duration-200"
+                    className="group relative w-full flex justify-center items-center py-3 px-4 border border-gray-600 text-sm font-medium rounded-lg text-white bg-gray-800/50 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors duration-200 backdrop-blur-sm"
                   >
                     <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24">
                       <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -181,9 +181,9 @@ export default function LoginPage() {
                 </div>
 
                 <div className="text-center">
-                  <p className="text-sm text-zinc-400">
+                  <p className="text-sm text-gray-300">
                     Don't have an account?{' '}
-                    <a href="#" className="font-medium text-white hover:text-neutral-300">
+                    <a href="#" className="font-medium text-white hover:text-gray-200">
                       Sign up
                     </a>
                   </p>
@@ -193,11 +193,11 @@ export default function LoginPage() {
           </form>
 
           {/* Footer */}
-          <div className="mt-8 pt-6 border-t border-zinc-800">
-            <p className="text-xs text-neutral-500 text-center">
+          <div className="mt-8 pt-6 border-t border-gray-700">
+            <p className="text-xs text-gray-400 text-center">
               By logging in, you acknowledge and agree to our{' '}
-              <a href="#" className="text-white hover:text-neutral-300">Terms, Conditions</a>, and{' '}
-              <a href="#" className="text-white hover:text-neutral-300">Usage Policy</a>, which outline how we protect your data and provide our services.
+              <a href="#" className="text-white hover:text-gray-200">Terms, Conditions</a>, and{' '}
+              <a href="#" className="text-white hover:text-gray-200">Usage Policy</a>, which outline how we protect your data and provide our services.
             </p>
           </div>
         </div>
@@ -212,13 +212,13 @@ export default function LoginPage() {
               index === currentImageIndex ? 'opacity-100' : 'opacity-0'
             }`}
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-neutral-600/20"></div>
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-gray-600/20"></div>
             <img
               className="absolute inset-0 w-full h-full object-cover"
               src={image.url}
               alt={`Security professional ${index + 1}`}
             />
-            <div className="absolute inset-0 bg-neutral-900/40"></div>
+            <div className="absolute inset-0 bg-gray-900/40"></div>
             
             {/* Quote overlay */}
             <div className="absolute bottom-8 left-8 right-8">
@@ -230,7 +230,7 @@ export default function LoginPage() {
                     className={`h-1 rounded transition-all duration-300 ${
                       i === currentImageIndex 
                         ? 'w-8 bg-white' 
-                        : 'w-8 bg-neutral-600'
+                        : 'w-8 bg-gray-600'
                     }`}
                   />
                 ))}
