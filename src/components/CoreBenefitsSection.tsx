@@ -3,12 +3,12 @@ import { Shield, Zap, CheckCircle } from 'lucide-react';
 
 export default function CoreBenefitsSection() {
   return (
-    <section id="core-benefits" className="relative z-10 py-20 bg-gray-950 min-h-screen flex items-center">
+    <section id="core-benefits" className="relative z-10 py-20 bg-zinc-950 min-h-screen flex items-center">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-16">
           <div className="flex items-center mb-6">
             <div className="w-8 h-0.5 bg-lime-400 mr-4"></div>
-            <span className="text-sm text-gray-400 uppercase tracking-wider font-medium">Core advantages</span>
+            <span className="text-sm text-zinc-400 uppercase tracking-wider font-medium">Core advantages</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-bold text-white leading-tight">
             MAIN BENEFITS OF SECURECODE

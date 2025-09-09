@@ -23,12 +23,12 @@ export default function HeroSection() {
               </p>
             </div>
             <div className="flex items-center justify-center gap-8 md:gap-12 opacity-40">
-              <div className="text-gray-400 font-bold text-sm md:text-base tracking-wider">JAVASCRIPT</div>
-              <div className="text-gray-400 font-bold text-sm md:text-base tracking-wider">PYTHON</div>
-              <div className="text-gray-400 font-bold text-sm md:text-base tracking-wider">TYPESCRIPT</div>
-              <div className="text-gray-400 font-bold text-sm md:text-base tracking-wider">JAVA</div>
-              <div className="text-gray-400 font-bold text-sm md:text-base tracking-wider">GO</div>
-              <div className="text-gray-400 font-bold text-sm md:text-base tracking-wider">RUST</div>
+              <div className="text-zinc-400 font-bold text-sm md:text-base tracking-wider">JAVASCRIPT</div>
+              <div className="text-zinc-400 font-bold text-sm md:text-base tracking-wider">PYTHON</div>
+              <div className="text-zinc-400 font-bold text-sm md:text-base tracking-wider">TYPESCRIPT</div>
+              <div className="text-zinc-400 font-bold text-sm md:text-base tracking-wider">JAVA</div>
+              <div className="text-zinc-400 font-bold text-sm md:text-base tracking-wider">GO</div>
+              <div className="text-zinc-400 font-bold text-sm md:text-base tracking-wider">RUST</div>
             </div>
           </div>
         </div>

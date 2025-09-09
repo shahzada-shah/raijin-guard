@@ -66,13 +66,13 @@ export default function FeaturesSection() {
   ];
 
   return (
-    <section id="features" className="relative z-10 py-20 bg-gray-950 min-h-screen">
+    <section id="features" className="relative z-10 py-20 bg-zinc-950 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header Section */}
         <div className="mb-20">
           <div className="flex items-center mb-6">
             <div className="w-8 h-0.5 bg-lime-400 mr-4"></div>
-            <span className="text-sm text-gray-400 uppercase tracking-wider font-medium">Explore key features</span>
+            <span className="text-sm text-zinc-400 uppercase tracking-wider font-medium">Explore key features</span>
           </div>
           
           <div className="grid lg:grid-cols-2 gap-12 items-center">

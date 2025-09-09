@@ -3,7 +3,7 @@ import { Check } from 'lucide-react';
 
 export default function PricingSection() {
   return (
-    <section id="pricing" className="relative z-10 py-20 bg-gray-950 min-h-screen flex items-center">
+    <section id="pricing" className="relative z-10 py-20 bg-zinc-950 min-h-screen flex items-center">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-16">
@@ -19,7 +19,7 @@ export default function PricingSection() {
         {/* Pricing Cards */}
         <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {/* Free Plan */}
-          <div className="bg-gray-900/40 rounded-2xl p-8 border border-gray-800/50">
+          <div className="bg-zinc-900/40 rounded-2xl p-8 border border-zinc-800/50">
             <div className="mb-8">
               <h3 className="text-2xl font-bold text-white mb-4">Free</h3>
               <div className="text-4xl font-bold text-white mb-4">$0</div>
@@ -49,13 +49,13 @@ export default function PricingSection() {
               </div>
             </div>
 
-            <button className="w-full bg-gray-700/60 hover:bg-gray-700 text-white py-4 px-6 rounded-xl font-bold text-sm uppercase tracking-wider transition-colors duration-200">
+            <button className="w-full bg-zinc-700/60 hover:bg-zinc-700 text-white py-4 px-6 rounded-xl font-bold text-sm uppercase tracking-wider transition-colors duration-200">
               START NOW
             </button>
           </div>
 
           {/* Premium Plan */}
-          <div className="bg-gray-800/60 rounded-2xl p-8 border border-gray-700/70 relative">
+          <div className="bg-zinc-800/60 rounded-2xl p-8 border border-zinc-700/70 relative">
             <div className="mb-8">
               <h3 className="text-2xl font-bold text-white mb-4">Premium</h3>
               <div className="flex items-center gap-3 mb-2">
@@ -65,7 +65,7 @@ export default function PricingSection() {
               </div>
               <div className="flex items-center gap-2 mb-8">
                 <div className="w-2 h-2 bg-lime-400 rounded-full"></div>
-                <span className="text-gray-400">Billed yearly</span>
+                <span className="text-zinc-400">Billed yearly</span>
               </div>
             </div>
 
