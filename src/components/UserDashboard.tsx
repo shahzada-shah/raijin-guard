@@ -107,7 +107,6 @@ export default function UserDashboard() {
               return (
                 <button
                   key={item.name}
-                  className="w-full flex items-center px-3 py-2.5 text-sm font-medium text-neutral-400 hover:text-white hover:bg-neutral-800/50 rounded-lg transition-colors"
                   className="w-full flex items-center px-3 py-2.5 text-sm font-medium text-gray-300 hover:text-gray-100 hover:bg-gray-800/30 rounded-lg transition-colors"
                   title={isCollapsed ? item.name : ''}
                 >
@@ -130,11 +129,9 @@ export default function UserDashboard() {
             >
               <X className="w-4 h-4" />
             </button>
-            <div className="text-white text-sm font-medium mb-2">
             <div className="text-gray-100 text-sm font-medium mb-2">
               New security features available!
             </div>
-            <p className="text-neutral-300 text-xs mb-3">
             <p className="text-gray-300 text-xs mb-3">
               Enhanced vulnerability scanning and AI-powered threat detection are now live.
             </p>
@@ -171,7 +168,6 @@ export default function UserDashboard() {
               {/* Back Button */}
               <button
                 onClick={() => navigate('/')}
-                className="group flex items-center text-neutral-400 hover:text-white transition-colors duration-200"
                 className="group flex items-center text-gray-300 hover:text-gray-100 transition-colors duration-200"
               >
                 <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-200" />
@@ -250,7 +246,6 @@ export default function UserDashboard() {
                     <p className="text-gray-300 text-sm">SQL injection vulnerability in user authentication</p>
                   </div>
                 </div>
-                <span className="text-neutral-400 text-sm">2 hours ago</span>
                 <span className="text-gray-400 text-sm">2 hours ago</span>
               </div>
               
@@ -262,7 +257,6 @@ export default function UserDashboard() {
                     <p className="text-gray-300 text-sm">No critical issues found, 2 minor warnings</p>
                   </div>
                 </div>
-                <span className="text-neutral-400 text-sm">4 hours ago</span>
                 <span className="text-gray-400 text-sm">4 hours ago</span>
               </div>
               
@@ -274,7 +268,6 @@ export default function UserDashboard() {
                     <p className="text-gray-300 text-sm">Sarah Johnson joined the security team</p>
                   </div>
                 </div>
-                <span className="text-neutral-400 text-sm">1 day ago</span>
                 <span className="text-gray-400 text-sm">1 day ago</span>
               </div>
             </div>
