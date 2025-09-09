@@ -456,42 +456,115 @@ export default function UserDashboard() {
             </div>
           </div>
 
-          {/* Recent Activity */}
-          <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-6 backdrop-blur-sm">
-            <h2 className="text-xl font-bold text-white mb-6">Recent Security Activity</h2>
-            <div className="space-y-4">
-              <div className="flex items-center justify-between py-3 border-b border-zinc-800/30 last:border-b-0">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-red-400 rounded-full"></div>
-                  <div>
-                    <p className="text-white font-medium">Critical vulnerability detected in main-app</p>
-                    <p className="text-zinc-400 text-sm">SQL injection vulnerability in user authentication</p>
-                  </div>
+          {/* Repository Security Table */}
+          <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg backdrop-blur-sm overflow-hidden">
+            {/* Table Header */}
+            <div className="p-6 border-b border-zinc-800/30">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-bold text-white">Repository Security Status</h2>
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                  <input
+                    type="text"
+                    placeholder="Search by repository name or address"
+                    className="bg-zinc-800/50 text-white pl-10 pr-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-lime-400 focus:bg-zinc-700/50 transition-colors backdrop-blur-sm w-80"
+                  />
                 </div>
-                <span className="text-zinc-400 text-sm">2 hours ago</span>
               </div>
-              
-              <div className="flex items-center justify-between py-3 border-b border-zinc-800/30 last:border-b-0">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                  <div>
-                    <p className="text-white font-medium">Security scan completed for api-service</p>
-                    <p className="text-zinc-400 text-sm">No critical issues found, 2 minor warnings</p>
-                  </div>
-                </div>
-                <span className="text-zinc-400 text-sm">4 hours ago</span>
-              </div>
-              
-              <div className="flex items-center justify-between py-3 border-b border-zinc-800/30 last:border-b-0">
-                <div className="flex items-center gap-3">
-                  <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                  <div>
-                    <p className="text-white font-medium">New team member added</p>
-                    <p className="text-zinc-400 text-sm">Sarah Johnson joined the security team</p>
-                  </div>
-                </div>
-                <span className="text-zinc-400 text-sm">1 day ago</span>
-              </div>
+            </div>
+
+            {/* Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-zinc-800/30">
+                    <th className="text-left py-4 px-6 text-zinc-400 font-medium text-sm uppercase tracking-wider">Status</th>
+                    <th className="text-left py-4 px-6 text-zinc-400 font-medium text-sm uppercase tracking-wider">Repository</th>
+                    <th className="text-left py-4 px-6 text-zinc-400 font-medium text-sm uppercase tracking-wider">Language</th>
+                    <th className="text-left py-4 px-6 text-zinc-400 font-medium text-sm uppercase tracking-wider">Risk Score</th>
+                    <th className="text-left py-4 px-6 text-zinc-400 font-medium text-sm uppercase tracking-wider">Last Scan</th>
+                    <th className="text-left py-4 px-6 text-zinc-400 font-medium text-sm uppercase tracking-wider">Vulnerabilities</th>
+                    <th className="text-left py-4 px-6 text-zinc-400 font-medium text-sm uppercase tracking-wider">Branch</th>
+                    <th className="text-right py-4 px-6 text-zinc-400 font-medium text-sm uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {[
+                    { status: 'Critical', repo: 'main-app', language: 'JavaScript', risk: '10.2%', lastScan: '2 hours ago', vulnerabilities: 15, branch: 'main', color: 'red' },
+                    { status: 'Critical', repo: 'auth-service', language: 'TypeScript', risk: '11.7%', lastScan: '4 hours ago', vulnerabilities: 12, branch: 'develop', color: 'red' },
+                    { status: 'Warning', repo: 'api-gateway', language: 'Python', risk: '7.9%', lastScan: '1 day ago', vulnerabilities: 8, branch: 'main', color: 'yellow' },
+                    { status: 'Warning', repo: 'user-dashboard', language: 'React', risk: '6.1%', lastScan: '2 days ago', vulnerabilities: 5, branch: 'feature/ui', color: 'yellow' },
+                    { status: 'Warning', repo: 'payment-processor', language: 'Java', risk: '8.4%', lastScan: '3 days ago', vulnerabilities: 7, branch: 'main', color: 'yellow' },
+                    { status: 'Healthy', repo: 'notification-service', language: 'Go', risk: '2.1%', lastScan: '1 hour ago', vulnerabilities: 2, branch: 'main', color: 'green' },
+                    { status: 'Healthy', repo: 'file-storage', language: 'Rust', risk: '1.8%', lastScan: '3 hours ago', vulnerabilities: 1, branch: 'main', color: 'green' },
+                    { status: 'Healthy', repo: 'analytics-engine', language: 'Python', risk: '3.2%', lastScan: '5 hours ago', vulnerabilities: 3, branch: 'develop', color: 'green' },
+                    { status: 'Healthy', repo: 'cache-layer', language: 'Redis', risk: '1.5%', lastScan: '6 hours ago', vulnerabilities: 1, branch: 'main', color: 'green' },
+                    { status: 'Offline', repo: 'legacy-system', language: 'PHP', risk: '99.9%', lastScan: '2 weeks ago', vulnerabilities: 45, branch: 'master', color: 'gray' },
+                    { status: 'Offline', repo: 'old-frontend', language: 'jQuery', risk: '95.2%', lastScan: '1 month ago', vulnerabilities: 38, branch: 'master', color: 'gray' },
+                    { status: 'Offline', repo: 'deprecated-api', language: 'PHP', risk: '87.6%', lastScan: '3 weeks ago', vulnerabilities: 29, branch: 'main', color: 'gray' },
+                  ].map((repo, index) => (
+                    <tr key={index} className="border-b border-zinc-800/20 hover:bg-zinc-800/20 transition-colors">
+                      <td className="py-4 px-6">
+                        <div className="flex items-center gap-2">
+                          <div className={`w-2 h-2 rounded-full ${
+                            repo.color === 'red' ? 'bg-red-400' :
+                            repo.color === 'yellow' ? 'bg-yellow-400' :
+                            repo.color === 'green' ? 'bg-green-400' : 'bg-gray-400'
+                          }`}></div>
+                          <span className={`text-sm font-medium ${
+                            repo.color === 'red' ? 'text-red-400' :
+                            repo.color === 'yellow' ? 'text-yellow-400' :
+                            repo.color === 'green' ? 'text-green-400' : 'text-gray-400'
+                          }`}>
+                            {repo.status}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="py-4 px-6">
+                        <div className="text-white font-medium">{repo.repo}</div>
+                        <div className="text-zinc-400 text-sm">github.com/company/{repo.repo}</div>
+                      </td>
+                      <td className="py-4 px-6">
+                        <span className="text-zinc-300 text-sm">{repo.language}</span>
+                      </td>
+                      <td className="py-4 px-6">
+                        <span className={`text-sm font-medium ${
+                          parseFloat(repo.risk) > 50 ? 'text-red-400' :
+                          parseFloat(repo.risk) > 5 ? 'text-yellow-400' : 'text-green-400'
+                        }`}>
+                          {repo.risk}
+                        </span>
+                      </td>
+                      <td className="py-4 px-6">
+                        <span className="text-zinc-400 text-sm">{repo.lastScan}</span>
+                      </td>
+                      <td className="py-4 px-6">
+                        <span className={`text-sm font-medium ${
+                          repo.vulnerabilities > 10 ? 'text-red-400' :
+                          repo.vulnerabilities > 5 ? 'text-yellow-400' : 'text-green-400'
+                        }`}>
+                          {repo.vulnerabilities}
+                        </span>
+                      </td>
+                      <td className="py-4 px-6">
+                        <span className="text-zinc-400 text-sm font-mono">{repo.branch}</span>
+                      </td>
+                      <td className="py-4 px-6 text-right">
+                        <button className="bg-lime-400 hover:bg-lime-300 text-zinc-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                          Scan Now
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Table Footer */}
+            <div className="p-4 border-t border-zinc-800/30 bg-zinc-900/20">
+              <p className="text-zinc-500 text-sm text-center">
+                The platform found only <span className="text-white font-medium">32 DVN</span> for your request
+              </p>
             </div>
           </div>
         </main>
