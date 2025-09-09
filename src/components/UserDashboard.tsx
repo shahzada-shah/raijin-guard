@@ -337,10 +337,10 @@ export default function UserDashboard() {
     setSelectedRepo(null);
   };
   return (
-    <div className="min-h-screen bg-zinc-950 flex">
+    <div className="min-h-screen bg-zinc-950 flex relative">
       {/* Sidebar */}
       <div 
-        className={`bg-zinc-900/50 border-r border-zinc-800/50 flex flex-col transition-all duration-300 ease-in-out backdrop-blur-sm ${
+        className={`fixed left-0 top-0 h-full bg-zinc-900/50 border-r border-zinc-800/50 flex flex-col transition-all duration-300 ease-in-out backdrop-blur-sm z-40 ${
           isCollapsed ? 'w-16' : 'w-64'
         }`}
         onMouseEnter={() => setIsCollapsed(false)}
@@ -349,7 +349,7 @@ export default function UserDashboard() {
         {/* Logo */}
         <div className="p-4 border-b border-zinc-800/50">
           <div className="flex items-center">
-            <div className="w-8 h-8 bg-lime-400 rounded-lg flex items-center justify-center flex-shrink-0">
+            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center flex-shrink-0">
               <div className="w-4 h-4 bg-zinc-900 rounded-sm"></div>
             </div>
             {!isCollapsed && (
@@ -369,7 +369,7 @@ export default function UserDashboard() {
               <input
                 type="text"
                 placeholder="Search"
-                className="w-full bg-zinc-800/50 text-white pl-10 pr-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-lime-400 focus:bg-zinc-700/50 transition-colors backdrop-blur-sm"
+                className="w-full bg-zinc-800/50 text-white pl-10 pr-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white focus:bg-zinc-700/50 transition-colors backdrop-blur-sm"
               />
             </div>
           </div>
@@ -425,14 +425,14 @@ export default function UserDashboard() {
 
         {/* Notification Banner */}
         {showNotification && !isCollapsed && (
-          <div className="m-3 bg-gradient-to-r from-lime-400/10 to-green-500/10 border border-lime-400/20 rounded-lg p-4 relative transition-opacity duration-300 backdrop-blur-sm">
+          <div className="m-3 bg-gradient-to-r from-white/10 to-zinc-300/10 border border-white/20 rounded-lg p-4 relative transition-opacity duration-300 backdrop-blur-sm">
             <button
               onClick={() => setShowNotification(false)}
               className="absolute top-2 right-2 text-zinc-400 hover:text-white"
             >
               <X className="w-4 h-4" />
             </button>
-            <div className="text-lime-400 text-sm font-medium mb-2">
+            <div className="text-white text-sm font-medium mb-2">
               New security features available!
             </div>
             <p className="text-zinc-300 text-xs mb-3">
@@ -450,7 +450,7 @@ export default function UserDashboard() {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 bg-lime-400 rounded-full flex items-center justify-center">
+              <div className="w-6 h-6 bg-white rounded-full flex items-center justify-center">
                 <span className="text-zinc-900 font-bold text-xs">SC</span>
               </div>
               <div>
@@ -463,9 +463,9 @@ export default function UserDashboard() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className={`flex-1 flex flex-col transition-all duration-300 ${isCollapsed ? 'ml-16' : 'ml-64'}`}>
         {/* Header */}
-        <header className="bg-zinc-900/30 border-b border-zinc-800/50 backdrop-blur-sm">
+        <header className="fixed top-0 right-0 left-0 bg-zinc-900/30 border-b border-zinc-800/50 backdrop-blur-sm z-30" style={{ left: isCollapsed ? '64px' : '256px' }}>
           <div className="px-6 py-4">
             <div className="flex items-center justify-between">
               {/* Navigation Items */}
@@ -525,7 +525,7 @@ export default function UserDashboard() {
                         </div>
                       </div>
                       <div className="p-3 border-t border-zinc-800/50">
-                        <button className="text-lime-400 text-sm hover:text-lime-300 transition-colors">
+                        <button className="text-white text-sm hover:text-zinc-300 transition-colors">
                           View all notifications
                         </button>
                       </div>
@@ -549,7 +549,7 @@ export default function UserDashboard() {
                     <div className="absolute right-0 mt-2 w-48 bg-zinc-900/98 border border-zinc-700/50 rounded-lg shadow-2xl backdrop-blur-md z-[60]">
                       <div className="p-4 border-b border-zinc-800/50">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-lime-400 rounded-full flex items-center justify-center">
+                          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
                             <span className="text-zinc-900 font-bold text-sm">JD</span>
                           </div>
                           <div>
@@ -586,7 +586,7 @@ export default function UserDashboard() {
         </header>
 
         {/* Dashboard Content */}
-        <main className="flex-1 p-6 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950">
+        <main className="flex-1 p-6 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 pt-24">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-white mb-2">Security Dashboard</h1>
             <p className="text-zinc-400">Monitor your repository security and manage your projects.</p>
@@ -608,7 +608,7 @@ export default function UserDashboard() {
                     <Line 
                       type="monotone" 
                       dataKey="value" 
-                      stroke="#10b981" 
+                      stroke="#ffffff" 
                       strokeWidth={1.5}
                       dot={false}
                     />
@@ -765,7 +765,7 @@ export default function UserDashboard() {
                     placeholder="Search by repository name or address"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="bg-zinc-800/50 text-white pl-10 pr-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-lime-400 focus:bg-zinc-700/50 transition-colors backdrop-blur-sm w-80"
+                    className="bg-zinc-800/50 text-white pl-10 pr-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white focus:bg-zinc-700/50 transition-colors backdrop-blur-sm w-80"
                   />
                 </div>
               </div>
@@ -839,7 +839,7 @@ export default function UserDashboard() {
                         <span className="text-zinc-400 text-sm font-mono">{repo.branch}</span>
                       </td>
                       <td className="py-4 px-6 text-right">
-                        <button className="bg-lime-400 hover:bg-lime-300 text-zinc-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                        <button className="bg-white hover:bg-zinc-200 text-zinc-900 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
                           Scan Now
                         </button>
                       </td>
@@ -986,7 +986,7 @@ export default function UserDashboard() {
                 <div className="p-8 border-b border-zinc-800/30">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-white font-medium text-lg">Security</h3>
-                    <button className="text-zinc-400 hover:text-white text-sm text-lime-400">
+                    <button className="text-zinc-400 hover:text-white text-sm text-white">
                       See more
                     </button>
                   </div>
@@ -1016,7 +1016,7 @@ export default function UserDashboard() {
                 <div className="p-8 pb-12">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-white font-medium text-lg">Incidents/Error Log</h3>
-                    <button className="text-zinc-400 hover:text-white text-sm text-lime-400">
+                    <button className="text-zinc-400 hover:text-white text-sm text-white">
                       See more
                     </button>
                   </div>
