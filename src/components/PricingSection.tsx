@@ -10,7 +10,6 @@ export default function PricingSection() {
           <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
             PRICING
           </h2>
-          <p className="text-neutral-400 max-w-3xl mx-auto text-lg">
           <p className="text-gray-300 max-w-3xl mx-auto text-lg">
             Use SecureCode for free with your whole team. Upgrade to enable unlimited security 
             scans, enhanced repository monitoring, and additional features.
