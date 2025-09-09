@@ -3,7 +3,7 @@ import { Linkedin, Twitter } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="relative z-20 bg-gradient-to-b from-gray-900 to-gray-800 py-16 border-t border-gray-700/30 mt-auto">
+    <footer className="relative z-20 bg-gradient-to-b from-gray-900 to-gray-800 py-16 border-t border-gray-700/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-12">
           {/* Logo */}
