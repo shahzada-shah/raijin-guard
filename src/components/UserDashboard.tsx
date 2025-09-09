@@ -31,6 +31,31 @@ export default function UserDashboard() {
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [activeNavItem, setActiveNavItem] = useState('MESSAGES');
 
+  // Close all dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Element;
+      if (!target.closest('.dropdown-container')) {
+        setShowNotificationDropdown(false);
+        setShowUserDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  // Ensure only one dropdown is open at a time
+  const handleNotificationToggle = () => {
+    setShowUserDropdown(false);
+    setShowNotificationDropdown(!showNotificationDropdown);
+  };
+
+  const handleUserToggle = () => {
+    setShowNotificationDropdown(false);
+    setShowUserDropdown(!showUserDropdown);
+  };
+
   const menuItems = [
     { name: 'Home', icon: Home, active: false },
     { name: 'Repositories', icon: FolderOpen, active: false },
@@ -221,9 +246,9 @@ export default function UserDashboard() {
               {/* Header Actions */}
               <div className="flex items-center gap-4">
                 {/* Notification Dropdown */}
-                <div className="relative">
+                <div className="relative dropdown-container">
                   <button 
-                    onClick={() => setShowNotificationDropdown(!showNotificationDropdown)}
+                    onClick={handleNotificationToggle}
                     className="text-zinc-400 hover:text-white transition-colors relative"
                   >
                     <Bell className="w-5 h-5" />
@@ -231,7 +256,7 @@ export default function UserDashboard() {
                   </button>
                   
                   {showNotificationDropdown && (
-                    <div className="absolute right-0 mt-2 w-80 bg-zinc-900/95 border border-zinc-700/50 rounded-lg shadow-xl backdrop-blur-sm z-50">
+                    <div className="absolute right-0 mt-2 w-80 bg-zinc-900/98 border border-zinc-700/50 rounded-lg shadow-2xl backdrop-blur-md z-[60]">
                       <div className="p-4 border-b border-zinc-800/50">
                         <h3 className="text-white font-medium">Notifications</h3>
                       </div>
@@ -267,9 +292,9 @@ export default function UserDashboard() {
                 </div>
 
                 {/* User Profile Dropdown */}
-                <div className="relative">
+                <div className="relative dropdown-container">
                   <button 
-                    onClick={() => setShowUserDropdown(!showUserDropdown)}
+                    onClick={handleUserToggle}
                     className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors"
                   >
                     <div className="w-8 h-8 bg-zinc-700 rounded-full flex items-center justify-center">
@@ -279,7 +304,7 @@ export default function UserDashboard() {
                   </button>
                   
                   {showUserDropdown && (
-                    <div className="absolute right-0 mt-2 w-48 bg-zinc-900/95 border border-zinc-700/50 rounded-lg shadow-xl backdrop-blur-sm z-50">
+                    <div className="absolute right-0 mt-2 w-48 bg-zinc-900/98 border border-zinc-700/50 rounded-lg shadow-2xl backdrop-blur-md z-[60]">
                       <div className="p-4 border-b border-zinc-800/50">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 bg-lime-400 rounded-full flex items-center justify-center">
