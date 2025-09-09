@@ -16,8 +16,13 @@ import {
   X,
   Bell,
   ChevronDown,
+  ChevronUp,
   LogOut,
-  User as UserIcon
+  User as UserIcon,
+  Clock,
+  TrendingUp,
+  TrendingDown,
+  Minus
 } from 'lucide-react';
 import { FaUser } from 'react-icons/fa';
 import { LineChart, Line, ResponsiveContainer, BarChart, Bar } from 'recharts';
@@ -30,6 +35,10 @@ export default function UserDashboard() {
   const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [activeNavItem, setActiveNavItem] = useState('MESSAGES');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedRepo, setSelectedRepo] = useState<any>(null);
+  const [showDrawer, setShowDrawer] = useState(false);
+  const [showRecentScans, setShowRecentScans] = useState(true);
 
   // Close all dropdowns when clicking outside
   useEffect(() => {
@@ -94,6 +103,239 @@ export default function UserDashboard() {
     { value: 5 }, { value: 7 }, { value: 6 }, { value: 7 }
   ];
 
+  // Repository data
+  const repositories = [
+    { 
+      status: 'Critical', 
+      repo: 'main-app', 
+      language: 'JavaScript', 
+      risk: '10.2%', 
+      lastScan: '2 hours ago', 
+      vulnerabilities: 15, 
+      branch: 'main', 
+      color: 'red',
+      description: 'Primary application with user authentication and core business logic',
+      uptime: '99.8%',
+      messages: '1430729',
+      incidents: '3',
+      securityScore: 'High (85/100)',
+      activeAlerts: 5,
+      successRate: '96.7%'
+    },
+    { 
+      status: 'Critical', 
+      repo: 'auth-service', 
+      language: 'TypeScript', 
+      risk: '11.7%', 
+      lastScan: '4 hours ago', 
+      vulnerabilities: 12, 
+      branch: 'develop', 
+      color: 'red',
+      description: 'Authentication and authorization microservice',
+      uptime: '99.9%',
+      messages: '892456',
+      incidents: '2',
+      securityScore: 'High (82/100)',
+      activeAlerts: 3,
+      successRate: '98.1%'
+    },
+    { 
+      status: 'Warning', 
+      repo: 'api-gateway', 
+      language: 'Python', 
+      risk: '7.9%', 
+      lastScan: '1 day ago', 
+      vulnerabilities: 8, 
+      branch: 'main', 
+      color: 'yellow',
+      description: 'API gateway handling external requests and routing',
+      uptime: '99.5%',
+      messages: '2156789',
+      incidents: '1',
+      securityScore: 'Medium (65/100)',
+      activeAlerts: 2,
+      successRate: '97.3%'
+    },
+    { 
+      status: 'Warning', 
+      repo: 'user-dashboard', 
+      language: 'React', 
+      risk: '6.1%', 
+      lastScan: '2 days ago', 
+      vulnerabilities: 5, 
+      branch: 'feature/ui', 
+      color: 'yellow',
+      description: 'User interface dashboard for customer management',
+      uptime: '99.7%',
+      messages: '567234',
+      incidents: '0',
+      securityScore: 'Medium (72/100)',
+      activeAlerts: 1,
+      successRate: '99.1%'
+    },
+    { 
+      status: 'Warning', 
+      repo: 'payment-processor', 
+      language: 'Java', 
+      risk: '8.4%', 
+      lastScan: '3 days ago', 
+      vulnerabilities: 7, 
+      branch: 'main', 
+      color: 'yellow',
+      description: 'Payment processing and transaction handling service',
+      uptime: '99.9%',
+      messages: '1234567',
+      incidents: '1',
+      securityScore: 'Medium (68/100)',
+      activeAlerts: 4,
+      successRate: '99.8%'
+    },
+    { 
+      status: 'Healthy', 
+      repo: 'notification-service', 
+      language: 'Go', 
+      risk: '2.1%', 
+      lastScan: '1 hour ago', 
+      vulnerabilities: 2, 
+      branch: 'main', 
+      color: 'green',
+      description: 'Email and push notification delivery service',
+      uptime: '99.9%',
+      messages: '345678',
+      incidents: '0',
+      securityScore: 'Low (25/100)',
+      activeAlerts: 0,
+      successRate: '99.9%'
+    },
+    { 
+      status: 'Healthy', 
+      repo: 'file-storage', 
+      language: 'Rust', 
+      risk: '1.8%', 
+      lastScan: '3 hours ago', 
+      vulnerabilities: 1, 
+      branch: 'main', 
+      color: 'green',
+      description: 'Secure file storage and retrieval system',
+      uptime: '100%',
+      messages: '123456',
+      incidents: '0',
+      securityScore: 'Low (18/100)',
+      activeAlerts: 0,
+      successRate: '100%'
+    },
+    { 
+      status: 'Healthy', 
+      repo: 'analytics-engine', 
+      language: 'Python', 
+      risk: '3.2%', 
+      lastScan: '5 hours ago', 
+      vulnerabilities: 3, 
+      branch: 'develop', 
+      color: 'green',
+      description: 'Data analytics and reporting engine',
+      uptime: '99.8%',
+      messages: '789012',
+      incidents: '0',
+      securityScore: 'Low (32/100)',
+      activeAlerts: 0,
+      successRate: '98.7%'
+    },
+    { 
+      status: 'Healthy', 
+      repo: 'cache-layer', 
+      language: 'Redis', 
+      risk: '1.5%', 
+      lastScan: '6 hours ago', 
+      vulnerabilities: 1, 
+      branch: 'main', 
+      color: 'green',
+      description: 'Redis-based caching layer for improved performance',
+      uptime: '99.9%',
+      messages: '456789',
+      incidents: '0',
+      securityScore: 'Low (15/100)',
+      activeAlerts: 0,
+      successRate: '99.5%'
+    },
+    { 
+      status: 'Offline', 
+      repo: 'legacy-system', 
+      language: 'PHP', 
+      risk: '99.9%', 
+      lastScan: '2 weeks ago', 
+      vulnerabilities: 45, 
+      branch: 'master', 
+      color: 'gray',
+      description: 'Legacy PHP system scheduled for decommission',
+      uptime: '0%',
+      messages: '0',
+      incidents: '12',
+      securityScore: 'Critical (99/100)',
+      activeAlerts: 15,
+      successRate: '0%'
+    },
+    { 
+      status: 'Offline', 
+      repo: 'old-frontend', 
+      language: 'jQuery', 
+      risk: '95.2%', 
+      lastScan: '1 month ago', 
+      vulnerabilities: 38, 
+      branch: 'master', 
+      color: 'gray',
+      description: 'Deprecated jQuery-based frontend application',
+      uptime: '0%',
+      messages: '0',
+      incidents: '8',
+      securityScore: 'Critical (95/100)',
+      activeAlerts: 12,
+      successRate: '0%'
+    },
+    { 
+      status: 'Offline', 
+      repo: 'deprecated-api', 
+      language: 'PHP', 
+      risk: '87.6%', 
+      lastScan: '3 weeks ago', 
+      vulnerabilities: 29, 
+      branch: 'main', 
+      color: 'gray',
+      description: 'Deprecated API endpoints no longer in use',
+      uptime: '0%',
+      messages: '0',
+      incidents: '5',
+      securityScore: 'High (87/100)',
+      activeAlerts: 8,
+      successRate: '0%'
+    },
+  ];
+
+  // Filter repositories based on search term
+  const filteredRepositories = repositories.filter(repo =>
+    repo.repo.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    repo.language.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    repo.status.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Recent scans data
+  const recentScans = [
+    { repo: 'main-app', status: 'Critical', time: '2 hours ago', type: 'Scheduled' },
+    { repo: 'notification-service', status: 'Healthy', time: '1 hour ago', type: 'Manual' },
+    { repo: 'auth-service', status: 'Critical', time: '4 hours ago', type: 'Triggered' },
+    { repo: 'file-storage', status: 'Healthy', time: '3 hours ago', type: 'Scheduled' },
+    { repo: 'analytics-engine', status: 'Healthy', time: '5 hours ago', type: 'Manual' },
+  ];
+
+  const handleRowClick = (repo: any) => {
+    setSelectedRepo(repo);
+    setShowDrawer(true);
+  };
+
+  const closeDrawer = () => {
+    setShowDrawer(false);
+    setSelectedRepo(null);
+  };
   return (
     <div className="min-h-screen bg-zinc-950 flex">
       {/* Sidebar */}
@@ -456,6 +698,60 @@ export default function UserDashboard() {
             </div>
           </div>
 
+          {/* Recent Scans Section */}
+          <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg backdrop-blur-sm overflow-hidden mb-8">
+            <div className="p-6 border-b border-zinc-800/30">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Clock className="w-5 h-5 text-zinc-400" />
+                  <h2 className="text-xl font-bold text-white">Recent Scans</h2>
+                </div>
+                <button
+                  onClick={() => setShowRecentScans(!showRecentScans)}
+                  className="text-zinc-400 hover:text-white transition-colors"
+                >
+                  {showRecentScans ? (
+                    <ChevronUp className="w-5 h-5" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+            </div>
+            
+            {showRecentScans && (
+              <div className="p-6">
+                <div className="space-y-3">
+                  {recentScans.map((scan, index) => (
+                    <div key={index} className="flex items-center justify-between py-3 px-4 bg-zinc-800/20 rounded-lg hover:bg-zinc-800/30 transition-colors">
+                      <div className="flex items-center gap-4">
+                        <div className={`w-2 h-2 rounded-full ${
+                          scan.status === 'Critical' ? 'bg-red-400' :
+                          scan.status === 'Warning' ? 'bg-yellow-400' :
+                          scan.status === 'Healthy' ? 'bg-green-400' : 'bg-gray-400'
+                        }`}></div>
+                        <div>
+                          <div className="text-white font-medium">{scan.repo}</div>
+                          <div className="text-zinc-400 text-sm">{scan.time}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <span className={`text-sm font-medium ${
+                          scan.status === 'Critical' ? 'text-red-400' :
+                          scan.status === 'Warning' ? 'text-yellow-400' :
+                          scan.status === 'Healthy' ? 'text-green-400' : 'text-gray-400'
+                        }`}>
+                          {scan.status}
+                        </span>
+                        <span className="text-zinc-500 text-sm">{scan.type}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Repository Security Table */}
           <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg backdrop-blur-sm overflow-hidden">
             {/* Table Header */}
@@ -467,6 +763,8 @@ export default function UserDashboard() {
                   <input
                     type="text"
                     placeholder="Search by repository name or address"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                     className="bg-zinc-800/50 text-white pl-10 pr-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-lime-400 focus:bg-zinc-700/50 transition-colors backdrop-blur-sm w-80"
                   />
                 </div>
@@ -489,21 +787,12 @@ export default function UserDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {[
-                    { status: 'Critical', repo: 'main-app', language: 'JavaScript', risk: '10.2%', lastScan: '2 hours ago', vulnerabilities: 15, branch: 'main', color: 'red' },
-                    { status: 'Critical', repo: 'auth-service', language: 'TypeScript', risk: '11.7%', lastScan: '4 hours ago', vulnerabilities: 12, branch: 'develop', color: 'red' },
-                    { status: 'Warning', repo: 'api-gateway', language: 'Python', risk: '7.9%', lastScan: '1 day ago', vulnerabilities: 8, branch: 'main', color: 'yellow' },
-                    { status: 'Warning', repo: 'user-dashboard', language: 'React', risk: '6.1%', lastScan: '2 days ago', vulnerabilities: 5, branch: 'feature/ui', color: 'yellow' },
-                    { status: 'Warning', repo: 'payment-processor', language: 'Java', risk: '8.4%', lastScan: '3 days ago', vulnerabilities: 7, branch: 'main', color: 'yellow' },
-                    { status: 'Healthy', repo: 'notification-service', language: 'Go', risk: '2.1%', lastScan: '1 hour ago', vulnerabilities: 2, branch: 'main', color: 'green' },
-                    { status: 'Healthy', repo: 'file-storage', language: 'Rust', risk: '1.8%', lastScan: '3 hours ago', vulnerabilities: 1, branch: 'main', color: 'green' },
-                    { status: 'Healthy', repo: 'analytics-engine', language: 'Python', risk: '3.2%', lastScan: '5 hours ago', vulnerabilities: 3, branch: 'develop', color: 'green' },
-                    { status: 'Healthy', repo: 'cache-layer', language: 'Redis', risk: '1.5%', lastScan: '6 hours ago', vulnerabilities: 1, branch: 'main', color: 'green' },
-                    { status: 'Offline', repo: 'legacy-system', language: 'PHP', risk: '99.9%', lastScan: '2 weeks ago', vulnerabilities: 45, branch: 'master', color: 'gray' },
-                    { status: 'Offline', repo: 'old-frontend', language: 'jQuery', risk: '95.2%', lastScan: '1 month ago', vulnerabilities: 38, branch: 'master', color: 'gray' },
-                    { status: 'Offline', repo: 'deprecated-api', language: 'PHP', risk: '87.6%', lastScan: '3 weeks ago', vulnerabilities: 29, branch: 'main', color: 'gray' },
-                  ].map((repo, index) => (
-                    <tr key={index} className="border-b border-zinc-800/20 hover:bg-zinc-800/20 transition-colors">
+                  {filteredRepositories.map((repo, index) => (
+                    <tr 
+                      key={index} 
+                      className="border-b border-zinc-800/20 hover:bg-zinc-800/20 transition-colors cursor-pointer"
+                      onClick={() => handleRowClick(repo)}
+                    >
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-2">
                           <div className={`w-2 h-2 rounded-full ${
@@ -563,10 +852,212 @@ export default function UserDashboard() {
             {/* Table Footer */}
             <div className="p-4 border-t border-zinc-800/30 bg-zinc-900/20">
               <p className="text-zinc-500 text-sm text-center">
-                The platform found only <span className="text-white font-medium">32 DVN</span> for your request
+                The platform found <span className="text-white font-medium">{filteredRepositories.reduce((sum, repo) => sum + repo.vulnerabilities, 0)} DVN</span> for your request
               </p>
             </div>
           </div>
+
+          {/* Repository Details Drawer */}
+          {showDrawer && selectedRepo && (
+            <div className="fixed inset-0 z-50 overflow-hidden">
+              <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={closeDrawer}></div>
+              <div className="absolute right-0 top-0 h-full w-96 bg-zinc-900/95 border-l border-zinc-800/50 backdrop-blur-md overflow-y-auto">
+                {/* Header */}
+                <div className="p-6 border-b border-zinc-800/30">
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-3 h-3 rounded-full ${
+                        selectedRepo.color === 'red' ? 'bg-red-400' :
+                        selectedRepo.color === 'yellow' ? 'bg-yellow-400' :
+                        selectedRepo.color === 'green' ? 'bg-green-400' : 'bg-gray-400'
+                      }`}></div>
+                      <span className={`text-sm font-medium ${
+                        selectedRepo.color === 'red' ? 'text-red-400' :
+                        selectedRepo.color === 'yellow' ? 'text-yellow-400' :
+                        selectedRepo.color === 'green' ? 'text-green-400' : 'text-gray-400'
+                      }`}>
+                        {selectedRepo.status}
+                      </span>
+                    </div>
+                    <button
+                      onClick={closeDrawer}
+                      className="text-zinc-400 hover:text-white transition-colors"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+                  <h2 className="text-2xl font-bold text-white mb-2">{selectedRepo.repo}</h2>
+                  <p className="text-zinc-400 text-sm mb-4">{selectedRepo.description}</p>
+                  <div className="flex items-center gap-4 text-sm text-zinc-400">
+                    <span>github.com/company/{selectedRepo.repo}</span>
+                    <span>•</span>
+                    <span>{selectedRepo.language}</span>
+                  </div>
+                </div>
+
+                {/* Metrics */}
+                <div className="p-6 border-b border-zinc-800/30">
+                  <div className="grid grid-cols-3 gap-4 mb-6">
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-white mb-1">{selectedRepo.messages}</div>
+                      <div className="text-xs text-zinc-400 uppercase tracking-wider">Messages (24h)</div>
+                      <div className="h-8 mt-2">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={[{v:1},{v:2},{v:1},{v:3},{v:2}]}>
+                            <Bar dataKey="v" fill="#6b7280" />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-white mb-1">{selectedRepo.uptime}</div>
+                      <div className="text-xs text-zinc-400 uppercase tracking-wider">Uptime (24h)</div>
+                      <div className="h-8 mt-2">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={[{v:99},{v:100},{v:99},{v:100},{v:99}]}>
+                            <Bar dataKey="v" fill="#6b7280" />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                    <div className="text-center">
+                      <div className="text-2xl font-bold text-white mb-1">{selectedRepo.incidents}</div>
+                      <div className="text-xs text-zinc-400 uppercase tracking-wider">Incidents (24h)</div>
+                      <div className="h-8 mt-2">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart data={[{v:1},{v:0},{v:2},{v:1},{v:0}]}>
+                            <Bar dataKey="v" fill="#6b7280" />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status Section */}
+                <div className="p-6 border-b border-zinc-800/30">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-white font-medium">Status</h3>
+                    <button className="text-zinc-400 hover:text-white">
+                      <ChevronUp className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-zinc-400 text-sm">Uptime</span>
+                      <span className="text-white text-sm">{selectedRepo.uptime}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-zinc-400 text-sm">Last Scan</span>
+                      <span className="text-white text-sm">{selectedRepo.lastScan}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-zinc-400 text-sm">Branch</span>
+                      <span className="text-white text-sm font-mono">{selectedRepo.branch}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Performance Section */}
+                <div className="p-6 border-b border-zinc-800/30">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-white font-medium">Performance</h3>
+                    <button className="text-zinc-400 hover:text-white">
+                      <ChevronUp className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-zinc-400 text-sm">Messages (24h)</span>
+                      <span className="text-white text-sm">{selectedRepo.messages} messages</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-zinc-400 text-sm">Latency</span>
+                      <span className="text-white text-sm">45ms</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-zinc-400 text-sm">Success Rate</span>
+                      <span className="text-white text-sm">{selectedRepo.successRate}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Security Section */}
+                <div className="p-6 border-b border-zinc-800/30">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-white font-medium">Security</h3>
+                    <button className="text-zinc-400 hover:text-white text-sm text-lime-400">
+                      See more
+                    </button>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-zinc-400 text-sm">Security Score</span>
+                      <span className={`text-sm font-medium ${
+                        selectedRepo.color === 'red' ? 'text-red-400' :
+                        selectedRepo.color === 'yellow' ? 'text-yellow-400' :
+                        selectedRepo.color === 'green' ? 'text-green-400' : 'text-gray-400'
+                      }`}>
+                        {selectedRepo.securityScore}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-zinc-400 text-sm">Active Alerts</span>
+                      <span className="text-white text-sm">{selectedRepo.activeAlerts}</span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-zinc-400 text-sm">Success Rate</span>
+                      <span className="text-white text-sm">{selectedRepo.successRate}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Incidents/Error Log */}
+                <div className="p-6">
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-white font-medium">Incidents/Error Log</h3>
+                    <button className="text-zinc-400 hover:text-white text-sm text-lime-400">
+                      See more
+                    </button>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="text-zinc-400 text-sm mb-3">
+                      Status: {selectedRepo.vulnerabilities} • Timestamp: {selectedRepo.lastScan} • Type: Security
+                    </div>
+                    
+                    {selectedRepo.vulnerabilities > 0 && (
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-3 p-3 bg-zinc-800/30 rounded-lg">
+                          <div className={`w-2 h-2 rounded-full ${
+                            selectedRepo.color === 'red' ? 'bg-red-400' :
+                            selectedRepo.color === 'yellow' ? 'bg-yellow-400' : 'bg-green-400'
+                          }`}></div>
+                          <div className="flex-1">
+                            <div className="text-white text-sm font-medium">
+                              {selectedRepo.color === 'red' ? 'Critical vulnerability detected' : 
+                               selectedRepo.color === 'yellow' ? 'Security warning found' : 'Minor security issue'}
+                            </div>
+                            <div className="text-zinc-400 text-xs">
+                              {selectedRepo.color === 'red' ? 'SQL injection in authentication module' :
+                               selectedRepo.color === 'yellow' ? 'Outdated dependency detected' : 'Code quality improvement needed'}
+                            </div>
+                            <div className="text-zinc-500 text-xs mt-1">{selectedRepo.lastScan}</div>
+                          </div>
+                          <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
+                            selectedRepo.color === 'red' ? 'bg-red-400/20' : 'bg-yellow-400/20'
+                          }`}>
+                            <div className={`w-2 h-2 rounded-full ${
+                              selectedRepo.color === 'red' ? 'bg-red-400' : 'bg-yellow-400'
+                            }`}></div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </main>
       </div>
     </div>
