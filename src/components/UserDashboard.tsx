@@ -277,5 +277,3 @@ export default function UserDashboard() {
     </div>
   );
 }
-
-export default UserDashboard
