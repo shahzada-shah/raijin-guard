@@ -11,6 +11,7 @@ import FAQSection from './components/FAQSection';
 import Footer from './components/Footer';
 import LoginPage from './components/LoginPage';
 import UserDashboard from './components/UserDashboard';
+import GitHubCallback from './components/GitHubCallback';
 
 function HomePage() {
   const [activeNav, setActiveNav] = useState('SECURITY');
@@ -54,7 +55,9 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/login-auth" element={<LoginPage />} />
+        <Route path="/dashboard" element={<UserDashboard />} />
         <Route path="/user-dashboard" element={<UserDashboard />} />
+        <Route path="/auth/github/callback" element={<GitHubCallback />} />
       </Routes>
     </Router>
   );

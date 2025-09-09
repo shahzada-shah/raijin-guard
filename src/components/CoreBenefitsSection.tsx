@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shield, Zap, TrendingUp, Lock, Users, Eye } from 'lucide-react';
+import { Shield, Zap, TrendingUp } from 'lucide-react';
 
 export default function CoreBenefitsSection() {
   return (

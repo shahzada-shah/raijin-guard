@@ -30,7 +30,7 @@ export default function HeroSection() {
     return () => {
       clearTimeout(startDelay);
     };
-  }, []); // Remove dependencies to prevent re-creation
+  }, [languages.length]); // Include languages.length dependency
 
   return (
     <main id="hero" className="relative z-10 flex-1">
