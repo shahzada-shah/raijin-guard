@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ArrowRight, Mail, Lock, ArrowLeft } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowRight, Mail, Lock, Eye, EyeOff, Github, BookOpen } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function LoginPage() {
@@ -7,288 +7,397 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [signupStage, setSignupStage] = useState<'email' | 'password'>('email');
+  const [isGitHubLoading, setIsGitHubLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Slideshow images
-  const images = [
-    {
-      url: "https://images.pexels.com/photos/5380664/pexels-photo-5380664.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-      quote: "A secure development environment where code quality meets enterprise-grade protection, creating a foundation for reliable and trustworthy software."
-    },
-    {
-      url: "https://images.pexels.com/photos/4164418/pexels-photo-4164418.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-      quote: "Advanced security monitoring and threat detection systems working around the clock to protect your valuable code repositories."
-    },
-    {
-      url: "https://images.pexels.com/photos/3861969/pexels-photo-3861969.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
-      quote: "Collaborative security workflows that empower development teams to build faster while maintaining the highest security standards."
-    }
+  // Password validation rules
+  const passwordRules = [
+    { text: 'At least 8 characters', valid: password.length >= 8 },
+    { text: 'Contains uppercase letter', valid: /[A-Z]/.test(password) },
+    { text: 'Contains lowercase letter', valid: /[a-z]/.test(password) },
+    { text: 'Contains number', valid: /\d/.test(password) },
+    { text: 'Contains special character', valid: /[!@#$%^&*(),.?":{}|<>]/.test(password) }
   ];
 
-  // Auto-advance slideshow
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 5000); // Change image every 5 seconds
-
-    return () => clearInterval(interval);
-  }, [images.length]);
+  const isPasswordValid = passwordRules.every(rule => rule.valid);
+  const passwordsMatch = password === confirmPassword;
 
   const handleEmailSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email && !showPassword) {
-      setShowPassword(true);
+    if (email && isSignUp) {
+      setSignupStage('password');
     }
+    // For login, we don't need to change stage - both fields are shown
   };
 
   const handlePasswordSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email && password) {
-      if (isSignUp) {
-        // Check if passwords match
-        if (password !== confirmPassword) {
-          alert('Passwords do not match. Please try again.');
-          return;
-        }
+    if (isSignUp) {
+      if (isPasswordValid && passwordsMatch) {
         // Mock sign up process - show success message
         alert('Account created successfully! Welcome to RaijinGuard.');
-        setIsSignUp(false);
-        setShowPassword(false);
-        setEmail('');
-        setPassword('');
-        setConfirmPassword('');
-      } else {
-        // Route to user dashboard for login
-        navigate('/user-dashboard');
+        resetForm();
       }
-    }
-  };
-
-  const handleBackClick = () => {
-    if (showPassword) {
-      setShowPassword(false);
-      setPassword('');
-      setConfirmPassword('');
-    } else if (isSignUp) {
-      setIsSignUp(false);
-      setEmail('');
-      setPassword('');
-      setConfirmPassword('');
     } else {
-      navigate('/');
+      // Route to user dashboard for login
+      navigate('/user-dashboard');
     }
   };
 
-  const handleSignUpClick = () => {
-    setIsSignUp(true);
-    setShowPassword(false);
+  const handleLoginSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email && password) {
+      // Route to user dashboard for login
+      navigate('/user-dashboard');
+    }
+  };
+
+  const handleGitHubAuth = () => {
+    setIsGitHubLoading(true);
+    // Redirect to GitHub OAuth
+    window.location.href = 'http://localhost:3001/api/auth/github';
+  };
+
+  const resetForm = () => {
+    setIsSignUp(false);
+    setSignupStage('email');
     setEmail('');
     setPassword('');
     setConfirmPassword('');
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+  };
+
+  const handleBackToEmail = () => {
+    setSignupStage('email');
+    setPassword('');
+    setConfirmPassword('');
+    setShowPassword(false);
+    setShowConfirmPassword(false);
+  };
+
+  const handleToggleMode = () => {
+    setIsSignUp(!isSignUp);
+    setSignupStage('email');
+    setEmail('');
+    setPassword('');
+    setConfirmPassword('');
+    setShowPassword(false);
+    setShowConfirmPassword(false);
   };
 
   return (
     <div className="min-h-screen bg-zinc-950 flex">
-      {/* Left Side - Login Form */}
-      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8">
-          {/* Back Button */}
-          <button
-            onClick={handleBackClick}
-            className="group flex items-center text-zinc-400 hover:text-white transition-colors duration-200 mb-8"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform duration-200" />
-            <span className="text-sm font-medium">
-              {showPassword ? 'Back to email' : isSignUp ? 'Back to login' : 'Back to home'}
-            </span>
-          </button>
-
-          {/* Logo */}
-          <div className="flex items-center mb-12 group">
-            <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center mr-3 group-hover:drop-shadow-[0_0_15px_rgba(255,255,255,0.6)] transition-all duration-300 ease-out">
-              <div className="w-4 h-4 bg-zinc-900 rounded-sm"></div>
-            </div>
-            <div className="text-white">
-              <div className="text-xl font-extrabold tracking-tight group-hover:drop-shadow-[0_0_10px_rgba(255,255,255,0.45)] transition-all duration-300 ease-out">RAIJIN</div>
-              <div className="text-xs text-zinc-400 -mt-1">GUARD</div>
-            </div>
+      {/* Top Navigation */}
+      <div className="absolute top-0 left-0 right-0 z-10 flex justify-start items-center p-6">
+        {/* Logo */}
+        <div className="flex items-center">
+          <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center mr-3">
+            <div className="w-4 h-4 bg-zinc-900 rounded-sm"></div>
           </div>
+          <span className="text-white text-xl font-bold">raijinguard</span>
+        </div>
+      </div>
 
+      {/* Left Column - Form (40% width) */}
+      <div className="w-full lg:w-2/5 flex items-center justify-center px-8 py-16">
+        <div className="w-full max-w-md">
           {/* Header */}
-          <div>
-            <h2 className="text-3xl font-bold text-white mb-2">
-              {isSignUp 
-                ? 'Create your RaijinGuard account'
-                : 'Access your RaijinGuard account'
-              }
-            </h2>
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-white mb-2">
+              {isSignUp ? 'Get started' : 'Welcome back'}
+            </h1>
             <p className="text-zinc-400">
-              {showPassword 
-                ? (isSignUp 
-                    ? 'Create a secure password for your account.'
-                    : 'Enter your password to continue securely.'
-                  )
-                : (isSignUp 
-                    ? 'Join thousands of developers securing their code with AI-powered audits.'
-                    : 'Sign in to secure your repositories and keep building with confidence.'
-                  )
-              }
+              {isSignUp ? 'Create a new account' : 'Sign in to your account'}
             </p>
           </div>
 
-          {/* Form */}
-          <form className="mt-8 space-y-6" onSubmit={showPassword ? handlePasswordSubmit : handleEmailSubmit}>
-            {!showPassword ? (
-              // Email Input
+          {/* GitHub Auth Button */}
+          <button
+            onClick={handleGitHubAuth}
+            disabled={isGitHubLoading}
+            className="w-full flex items-center justify-center px-4 py-3 bg-zinc-800 hover:bg-zinc-700 disabled:bg-zinc-700 disabled:cursor-not-allowed text-white rounded-lg transition-colors mb-4"
+          >
+            {isGitHubLoading ? (
+              <>
+                <div className="w-5 h-5 mr-3 border-2 border-zinc-400 border-t-white rounded-full animate-spin"></div>
+                Connecting to GitHub...
+              </>
+            ) : (
+              <>
+                <Github className="w-5 h-5 mr-3" />
+                Continue with GitHub
+              </>
+            )}
+          </button>
+
+          {/* Divider */}
+          <div className="relative my-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-zinc-700"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-2 bg-zinc-950 text-zinc-400">or</span>
+            </div>
+          </div>
+
+          {/* Email Stage - Only for Sign Up */}
+          {signupStage === 'email' && isSignUp && (
+            <form onSubmit={handleEmailSubmit} className="space-y-4">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-2">
-                  {isSignUp ? 'Enter your email address' : 'Enter your email'}
+                <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
+                  Email
+                </label>
+                <input
+                  id="email"
+                  type="email"
+                  required
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck="false"
+                  className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-white text-zinc-900 py-3 px-4 rounded-lg font-medium hover:bg-zinc-100 transition-colors"
+              >
+                Continue
+                <ArrowRight className="w-4 h-4 ml-2 inline" />
+              </button>
+            </form>
+          )}
+
+          {/* Login Form - Shows both email and password */}
+          {!isSignUp && (
+            <form onSubmit={handleLoginSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="login-email" className="block text-sm font-medium text-white mb-2">
+                  Email
+                </label>
+                <input
+                  id="login-email"
+                  type="email"
+                  required
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck="false"
+                  className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent"
+                  placeholder="you@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="login-password" className="block text-sm font-medium text-white mb-2">
+                  Password
                 </label>
                 <div className="relative">
                   <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
+                    id="login-password"
+                    type={showPassword ? 'text' : 'password'}
                     required
-                    className="appearance-none relative block w-full px-4 py-3 border border-zinc-700 placeholder-zinc-500 text-white bg-zinc-900/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent focus:z-10 sm:text-sm"
-                    placeholder="your.email@company.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="new-password"
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    spellCheck="false"
+                    className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent pr-12"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
                   />
-                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                    <Mail className="h-5 w-5 text-zinc-400" />
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-zinc-400 hover:text-white"
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
                 </div>
               </div>
-            ) : (
-              // Password Input
+
+              <button
+                type="submit"
+                className="w-full bg-white text-zinc-900 py-3 px-4 rounded-lg font-medium hover:bg-zinc-100 transition-colors"
+              >
+                Sign In
+              </button>
+            </form>
+          )}
+
+          {/* Password Stage - Only for Sign Up */}
+          {signupStage === 'password' && isSignUp && (
+            <form onSubmit={handlePasswordSubmit} className="space-y-4">
+              {/* Back button */}
+              <button
+                type="button"
+                onClick={handleBackToEmail}
+                className="flex items-center text-zinc-400 hover:text-white transition-colors mb-4"
+              >
+                <ArrowRight className="w-4 h-4 mr-2 rotate-180" />
+                <span className="text-sm">Back to email</span>
+              </button>
+
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-zinc-300 mb-2">
-                  {isSignUp ? 'Create a password' : 'Enter your password'}
+                <label htmlFor="password" className="block text-sm font-medium text-white mb-2">
+                  {isSignUp ? 'Create a password' : 'Password'}
                 </label>
                 <div className="relative">
                   <input
                     id="password"
-                    name="password"
-                    type="password"
-                    autoComplete="current-password"
+                    type={showPassword ? 'text' : 'password'}
                     required
-                    className="appearance-none relative block w-full px-4 py-3 border border-zinc-700 placeholder-zinc-500 text-white bg-zinc-900/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent focus:z-10 sm:text-sm"
-                    placeholder={isSignUp ? "Create a secure password" : "Enter your password"}
+                    autoComplete="new-password"
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    spellCheck="false"
+                    className="w-full px-4 py-3 bg-zinc-900 border border-zinc-700 rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent pr-12"
+                    placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    autoFocus
                   />
-                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                    <Lock className="h-5 w-5 text-zinc-400" />
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-zinc-400 hover:text-white"
+                  >
+                    {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  </button>
                 </div>
               </div>
-            )}
 
-            {/* Confirm Password Input - Only show during sign up */}
-            {showPassword && isSignUp && (
-              <div>
-                <label htmlFor="confirmPassword" className="block text-sm font-medium text-zinc-300 mb-2">
-                  Confirm your password
-                </label>
-                <div className="relative">
-                  <input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type="password"
-                    autoComplete="new-password"
-                    required
-                    className="appearance-none relative block w-full px-4 py-3 border border-zinc-700 placeholder-zinc-500 text-white bg-zinc-900/50 rounded-lg focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent focus:z-10 sm:text-sm"
-                    placeholder="Confirm your password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                  />
-                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
-                    <Lock className="h-5 w-5 text-zinc-400" />
-                  </div>
+              {/* Password validation rules - only show during signup */}
+              {isSignUp && password && (
+                <div className="space-y-2">
+                  <div className="text-sm text-zinc-400">Password requirements:</div>
+                  {passwordRules.map((rule, index) => (
+                    <div key={index} className="flex items-center space-x-2">
+                      <div className={`w-4 h-4 rounded-full flex items-center justify-center ${
+                        rule.valid ? 'bg-green-500' : 'bg-zinc-600'
+                      }`}>
+                        {rule.valid && (
+                          <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </div>
+                      <span className={`text-sm ${rule.valid ? 'text-green-400' : 'text-zinc-400'}`}>
+                        {rule.text}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-              </div>
-            )}
+              )}
 
-            <div>
+              {/* Confirm Password - only show during signup */}
+              {isSignUp && (
+                <div>
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-white mb-2">
+                    Confirm password
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="confirmPassword"
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      required
+                      autoComplete="new-password"
+                      autoCorrect="off"
+                      autoCapitalize="off"
+                      spellCheck="false"
+                      className={`w-full px-4 py-3 bg-zinc-900 border rounded-lg text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent pr-12 ${
+                        confirmPassword && !passwordsMatch ? 'border-red-500' : 'border-zinc-700'
+                      }`}
+                      placeholder="••••••••"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-zinc-400 hover:text-white"
+                    >
+                      {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                  {confirmPassword && !passwordsMatch && (
+                    <p className="text-red-400 text-sm mt-1">Passwords do not match</p>
+                  )}
+                </div>
+              )}
+
               <button
                 type="submit"
-                className="group relative w-full flex justify-center items-center py-3 px-4 border border-white text-sm font-medium rounded-lg text-white bg-transparent hover:bg-white hover:text-zinc-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-all duration-300 ease-out"
+                disabled={isSignUp && (!isPasswordValid || !passwordsMatch)}
+                className={`w-full py-3 px-4 rounded-lg font-medium transition-colors ${
+                  isSignUp && (!isPasswordValid || !passwordsMatch)
+                    ? 'bg-zinc-700 text-zinc-400 cursor-not-allowed'
+                    : 'bg-white text-zinc-900 hover:bg-zinc-100'
+                }`}
               >
-{showPassword ? (isSignUp ? 'Create Account' : 'Sign In') : 'Next'}
-                <ArrowRight className="ml-2 h-4 w-4" />
+                {isSignUp ? 'Create Account' : 'Sign In'}
               </button>
+            </form>
+          )}
+
+          {/* Toggle Sign Up/Sign In - only show on email stage */}
+          {signupStage === 'email' && (
+            <div className="text-center mt-6">
+              <p className="text-zinc-400">
+                {isSignUp ? 'Have an account? ' : "Don't have an account? "}
+                <button
+                  type="button"
+                  onClick={handleToggleMode}
+                  className="text-white hover:underline"
+                >
+                  {isSignUp ? 'Sign In Now' : 'Sign Up Now'}
+                </button>
+              </p>
             </div>
+          )}
 
-            {!showPassword && !isSignUp && (
-              <div className="text-center">
-                <p className="text-sm text-zinc-400">
-                  Don't have an account?{' '}
-                  <button 
-                    type="button"
-                    onClick={handleSignUpClick}
-                    className="font-medium text-white hover:drop-shadow-[0_0_10px_rgba(255,255,255,0.45)] transition-all duration-300 ease-out"
-                  >
-                    Sign up
-                  </button>
-                </p>
-              </div>
-            )}
-          </form>
-
-          {/* Footer */}
-          <div className="mt-8 pt-6 border-t border-zinc-800">
-            <p className="text-xs text-zinc-500 text-center">
-              By logging in, you acknowledge and agree to our{' '}
-              <a href="#" className="text-white hover:drop-shadow-[0_0_10px_rgba(255,255,255,0.45)] transition-all duration-300 ease-out">Terms, Conditions</a>, and{' '}
-              <a href="#" className="text-white hover:drop-shadow-[0_0_10px_rgba(255,255,255,0.45)] transition-all duration-300 ease-out">Usage Policy</a>, which outline how we protect your data and provide our services.
-            </p>
-          </div>
+          {/* Legal Text */}
+          <p className="text-xs text-zinc-500 text-center mt-8">
+            By continuing, you agree to RaijinGuard's{' '}
+            <a href="#" className="text-white hover:underline">Terms of Service</a> and{' '}
+            <a href="#" className="text-white hover:underline">Privacy Policy</a>, and to receive periodic emails with updates.
+          </p>
         </div>
       </div>
 
-      {/* Right Side - Animated Slideshow */}
-      <div className="hidden lg:block relative w-1/2 overflow-hidden">
-        {images.map((image, index) => (
-          <div
-            key={index}
-            className={`absolute inset-0 transition-opacity duration-1000 ${
-              index === currentImageIndex ? 'opacity-100' : 'opacity-0'
-            }`}
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-zinc-400/10"></div>
-            <img
-              className="absolute inset-0 w-full h-full object-cover"
-              src={image.url}
-              alt={`Security professional ${index + 1}`}
-            />
-            <div className="absolute inset-0 bg-zinc-900/40"></div>
-            
-            {/* Quote overlay */}
-            <div className="absolute bottom-8 left-8 right-8">
-              {/* Progress indicators */}
-              <div className="flex space-x-2 mb-4">
-                {images.map((_, i) => (
-                  <div
-                    key={i}
-                    className={`h-1 rounded transition-all duration-300 ${
-                      i === currentImageIndex 
-                        ? 'w-8 bg-white' 
-                        : 'w-8 bg-zinc-600'
-                    }`}
-                  />
-                ))}
-              </div>
-              <blockquote className="text-white text-lg font-medium leading-relaxed">
-                "{image.quote}"
-              </blockquote>
+      {/* Right Column - Testimonial (60% width) */}
+      <div className="hidden lg:flex lg:w-3/5 bg-gradient-to-br from-zinc-900 to-zinc-800 items-center justify-center p-16">
+        <div className="max-w-lg">
+          {/* Large Quote Mark */}
+          <div className="text-8xl text-zinc-600 mb-8">"</div>
+          
+          {/* Testimonial */}
+          <blockquote className="text-white text-xl leading-relaxed mb-8">
+            RaijinGuard is just 🔥. Now I see why a lot of developers love using it for their security audits. 
+            I am really impressed with how easy it is to set up automated scanning and then just focus on building. 
+            The AI-powered vulnerability detection is incredible! #security #devtools
+          </blockquote>
+          
+          {/* Author */}
+          <div className="flex items-center">
+            <div className="w-12 h-12 bg-zinc-700 rounded-full flex items-center justify-center mr-4">
+              <span className="text-white font-bold text-lg">JD</span>
+            </div>
+            <div>
+              <div className="text-white font-medium">@johndoe</div>
+              <div className="text-zinc-400 text-sm">Senior Developer</div>
             </div>
           </div>
-        ))}
+        </div>
       </div>
     </div>
   );

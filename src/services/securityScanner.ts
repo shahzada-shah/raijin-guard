@@ -26,12 +26,22 @@ export interface SecurityScanSummary {
   scan_duration_ms: number;
 }
 
+export interface AIRecommendation {
+  title: string;
+  description: string;
+  priority: 'High' | 'Medium' | 'Low';
+  category: 'authentication' | 'authorization' | 'data-protection' | 'input-validation' | 'logging' | 'dependencies' | 'infrastructure';
+}
+
 export interface RepositorySecurityReport {
   repository: string;
   summary: SecurityScanSummary;
   vulnerabilities: VulnerabilityScanResult[];
   dependencies_scanned: number;
   files_scanned: number;
+  ai_files_analyzed?: number;
+  ai_vulnerabilities?: VulnerabilityScanResult[];
+  ai_recommendations?: AIRecommendation[];
   scan_status: 'completed' | 'in_progress' | 'failed';
   scan_error?: string;
 }
@@ -40,54 +50,51 @@ class SecurityScannerService {
   private readonly apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
 
   /**
-   * Scan a repository for vulnerabilities using multiple sources
+   * Scan a repository for vulnerabilities using the server endpoint
    */
   async scanRepository(owner: string, repo: string): Promise<RepositorySecurityReport> {
-    const startTime = Date.now();
+    console.log(`🚀 [Security Scanner] Starting comprehensive scan for ${owner}/${repo}`);
+    console.log(`⏰ [Security Scanner] Scan started at: ${new Date().toLocaleString()}`);
     
     try {
-      // Run multiple scans in parallel
-      const [
-        githubAlerts,
-        dependencyScan,
-        codeScan,
-        secretScan
-      ] = await Promise.allSettled([
-        this.scanGitHubSecurityAlerts(owner, repo),
-        this.scanDependencies(owner, repo),
-        this.scanCodeWithAI(owner, repo),
-        this.scanForSecrets(owner, repo)
-      ]);
+      const response = await fetch(`${this.apiBase}/api/security/scan/${owner}/${repo}`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
 
-      // Combine all vulnerability results
-      const allVulnerabilities: VulnerabilityScanResult[] = [];
+      if (!response.ok) {
+        throw new Error(`Failed to scan repository: ${response.statusText}`);
+      }
+
+      const report = await response.json();
       
-      if (githubAlerts.status === 'fulfilled') {
-        allVulnerabilities.push(...githubAlerts.value);
+      console.log(`✅ [Security Scanner] Scan completed for ${owner}/${repo}`);
+      console.log(`📊 [Security Scanner] Scan Results Summary:`);
+      console.log(`   📁 Files Scanned: ${report.files_scanned || 0}`);
+      console.log(`   🤖 AI Files Analyzed: ${report.ai_files_analyzed || 0}`);
+      console.log(`   📦 Dependencies Scanned: ${report.dependencies_scanned || 0}`);
+      console.log(`   🚨 Total Vulnerabilities: ${report.summary.total_vulnerabilities}`);
+      console.log(`   ⚠️  Critical: ${report.summary.critical}, High: ${report.summary.high}, Medium: ${report.summary.medium}, Low: ${report.summary.low}`);
+      console.log(`   📈 Risk Score: ${report.summary.risk_score}/100`);
+      console.log(`   ⏱️  Scan Duration: ${report.summary.scan_duration_ms}ms`);
+      
+      if (report.ai_vulnerabilities && report.ai_vulnerabilities.length > 0) {
+        console.log(`🤖 [AI Scanner] AI Found ${report.ai_vulnerabilities.length} security issues:`);
+        report.ai_vulnerabilities.forEach((vuln, index) => {
+          console.log(`   ${index + 1}. [${vuln.severity}] ${vuln.title} in ${vuln.file_path}`);
+          console.log(`      Category: ${vuln.category}`);
+          console.log(`      Remediation: ${vuln.remediation}`);
+        });
+      } else if (report.ai_files_analyzed > 0) {
+        console.log(`✅ [AI Scanner] No security vulnerabilities detected in ${report.ai_files_analyzed} analyzed files`);
       }
-      if (dependencyScan.status === 'fulfilled') {
-        allVulnerabilities.push(...dependencyScan.value);
-      }
-      if (codeScan.status === 'fulfilled') {
-        allVulnerabilities.push(...codeScan.value);
-      }
-      if (secretScan.status === 'fulfilled') {
-        allVulnerabilities.push(...secretScan.value);
-      }
-
-      // Calculate risk score and summary
-      const summary = this.calculateSecuritySummary(allVulnerabilities, Date.now() - startTime);
-
-      return {
-        repository: `${owner}/${repo}`,
-        summary,
-        vulnerabilities: allVulnerabilities,
-        dependencies_scanned: await this.getDependencyCount(owner, repo),
-        files_scanned: await this.getFileCount(owner, repo),
-        scan_status: 'completed'
-      };
-
+      
+      return report;
     } catch (error) {
+      console.error(`❌ [Security Scanner] Scan failed for ${owner}/${repo}:`, error);
       return {
         repository: `${owner}/${repo}`,
         summary: {
@@ -99,7 +106,7 @@ class SecurityScannerService {
           info: 0,
           risk_score: 0,
           last_scan: new Date().toISOString(),
-          scan_duration_ms: Date.now() - startTime
+          scan_duration_ms: 0
         },
         vulnerabilities: [],
         dependencies_scanned: 0,
@@ -172,14 +179,47 @@ class SecurityScannerService {
     const files = await this.getRepositoryFiles(owner, repo);
     const vulnerabilities: VulnerabilityScanResult[] = [];
 
-    // Analyze each file with AI
-    for (const file of files.slice(0, 10)) { // Limit to first 10 files for demo
-      if (this.isCodeFile(file.name)) {
+    console.log(`🔍 [AI Scanner] Starting analysis for ${owner}/${repo}`);
+    console.log(`📁 [AI Scanner] Found ${files.length} total files in repository`);
+
+    const codeFiles = files.filter(file => this.isCodeFile(file.name));
+    console.log(`💻 [AI Scanner] Found ${codeFiles.length} code files to analyze:`);
+    codeFiles.forEach((file, index) => {
+      console.log(`   ${index + 1}. ${file.name} (${file.type})`);
+    });
+
+    // Analyze each file with AI - analyze all code files found
+    for (let i = 0; i < codeFiles.length; i++) {
+      const file = codeFiles[i];
+      console.log(`🤖 [AI Scanner] Analyzing file ${i + 1}/${codeFiles.length}: ${file.name}`);
+      
+      try {
         const content = await this.getFileContent(owner, repo, file.path);
+        console.log(`📄 [AI Scanner] Retrieved content for ${file.name} (${content.length} characters)`);
+        
         const aiAnalysis = await this.analyzeCodeWithAI(content, file.name);
+        console.log(`🔍 [AI Scanner] AI analysis of ${file.name} found ${aiAnalysis.length} potential issues`);
+        
+        if (aiAnalysis.length > 0) {
+          aiAnalysis.forEach((vuln, index) => {
+            console.log(`   🚨 Issue ${index + 1}: [${vuln.severity}] ${vuln.title}`);
+            console.log(`      File: ${vuln.file_path}${vuln.line_number ? `:${vuln.line_number}` : ''}`);
+            console.log(`      Category: ${vuln.category}`);
+            console.log(`      Description: ${vuln.description}`);
+          });
+        } else {
+          console.log(`   ✅ No security issues found in ${file.name}`);
+        }
+        
         vulnerabilities.push(...aiAnalysis);
+      } catch (error) {
+        console.error(`❌ [AI Scanner] Error analyzing ${file.name}:`, error);
       }
     }
+
+    console.log(`✅ [AI Scanner] Analysis complete for ${owner}/${repo}`);
+    console.log(`📊 [AI Scanner] Total vulnerabilities found: ${vulnerabilities.length}`);
+    console.log(`📈 [AI Scanner] Files analyzed: ${codeFiles.length}/${files.length} total files`);
 
     return vulnerabilities;
   }

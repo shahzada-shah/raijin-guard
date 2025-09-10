@@ -8,7 +8,6 @@ import {
   HelpCircle,
   Search,
   X,
-  Bell,
   ChevronDown,
   ChevronUp,
   LogOut,
@@ -53,11 +52,9 @@ type SecurityRow = {
 export default function UserDashboard() {
   const navigate = useNavigate();
   const [activeMenuItem, setActiveMenuItem] = useState('Home');
-  const [showNotification, setShowNotification] = useState(true);
   const [isCollapsed, setIsCollapsed] = useState(true);
-  const [showNotificationDropdown, setShowNotificationDropdown] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
-  const [activeNavItem, setActiveNavItem] = useState('MESSAGES');
+  const [activeNavItem, setActiveNavItem] = useState('DASHBOARD');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRepo, setSelectedRepo] = useState<SecurityRow | null>(null);
   const [showDrawer, setShowDrawer] = useState(false);
@@ -70,6 +67,88 @@ export default function UserDashboard() {
   const [repoError, setRepoError] = useState('');
   const [securityReports, setSecurityReports] = useState<Map<string, RepositorySecurityReport>>(new Map());
   const [isScanning, setIsScanning] = useState(false);
+  const [scanningRepos, setScanningRepos] = useState<Set<string>>(new Set());
+  const [hasInitialScanned, setHasInitialScanned] = useState(false);
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
+  const [showAllAiVulns, setShowAllAiVulns] = useState<Map<string, boolean>>(new Map());
+
+  // Calculate security metrics from scan results
+  const calculateSecurityMetrics = () => {
+    const reports = Array.from(securityReports.values());
+    
+    if (reports.length === 0) {
+      return {
+        totalVulnerabilities: 0,
+        criticalVulnerabilities: 0,
+        highVulnerabilities: 0,
+        mediumVulnerabilities: 0,
+        lowVulnerabilities: 0,
+        totalRepos: rows.length,
+        scannedRepos: reports.length,
+        avgRiskScore: 0,
+        healthyRepos: 0,
+        criticalRepos: 0
+      };
+    }
+
+    const totalVulnerabilities = reports.reduce((sum, report) => sum + report.summary.total_vulnerabilities, 0);
+    const criticalVulnerabilities = reports.reduce((sum, report) => sum + report.summary.critical, 0);
+    const highVulnerabilities = reports.reduce((sum, report) => sum + report.summary.high, 0);
+    const mediumVulnerabilities = reports.reduce((sum, report) => sum + report.summary.medium, 0);
+    const lowVulnerabilities = reports.reduce((sum, report) => sum + report.summary.low, 0);
+    const avgRiskScore = reports.reduce((sum, report) => sum + report.summary.risk_score, 0) / reports.length;
+    
+    const healthyRepos = reports.filter(report => report.summary.total_vulnerabilities === 0).length;
+    const criticalRepos = reports.filter(report => report.summary.critical > 0 || report.summary.high > 5).length;
+
+    return {
+      totalVulnerabilities,
+      criticalVulnerabilities,
+      highVulnerabilities,
+      mediumVulnerabilities,
+      lowVulnerabilities,
+      totalRepos: rows.length,
+      scannedRepos: reports.length,
+      avgRiskScore: Math.round(avgRiskScore),
+      healthyRepos,
+      criticalRepos
+    };
+  };
+
+  const metrics = calculateSecurityMetrics();
+
+  // Load scan results from localStorage
+  const loadScanResults = () => {
+    try {
+      const saved = localStorage.getItem('securityScanResults');
+      if (saved) {
+        const data = JSON.parse(saved);
+        const reportsMap = new Map(Object.entries(data));
+        setSecurityReports(reportsMap);
+        
+        // Update rows with saved scan data
+        setRows(prevRows => prevRows.map(row => {
+          const report = reportsMap.get(row.full_name);
+          if (report) {
+            return updateRowWithSecurityData(row, report);
+          }
+          return row;
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to load scan results from localStorage:', error);
+    }
+  };
+
+  // Save scan results to localStorage
+  const saveScanResults = (reports: Map<string, RepositorySecurityReport>) => {
+    try {
+      const data = Object.fromEntries(reports);
+      localStorage.setItem('securityScanResults', JSON.stringify(data));
+    } catch (error) {
+      console.error('Failed to save scan results to localStorage:', error);
+    }
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -90,8 +169,17 @@ export default function UserDashboard() {
           const securityRepos = githubApiServer.transformToSecurityData(rawRepos);
           setRows(securityRepos);
           
-          // Start security scanning for each repository
-          await scanAllRepositories(rawRepos);
+          // Load saved scan results
+          loadScanResults();
+          
+          // Run initial scan if not already done
+          if (!hasInitialScanned) {
+            setHasInitialScanned(true);
+            // Small delay to let repos load first
+            setTimeout(() => {
+              runInitialScan();
+            }, 1000);
+          }
         } else {
           setLogin(null);
           setRows([]);
@@ -127,8 +215,7 @@ export default function UserDashboard() {
       const securityRepos = githubApiServer.transformToSecurityData(rawRepos);
       setRows(securityRepos);
       
-      // Re-scan all repositories
-      await scanAllRepositories(rawRepos);
+      // Don't auto-scan repositories - only scan when user requests it
     } catch (e: any) {
       setRepoError(e?.message || 'Failed to refresh repositories');
     } finally {
@@ -137,6 +224,9 @@ export default function UserDashboard() {
   };
 
   const scanAllRepositories = async (repos: any[]) => {
+    console.log(`🚀 [Dashboard] Starting batch scan for ${repos.length} repositories`);
+    console.log(`📋 [Dashboard] Repositories to scan:`, repos.map(r => r.full_name).join(', '));
+    
     setIsScanning(true);
     const newReports = new Map<string, RepositorySecurityReport>();
     
@@ -144,24 +234,41 @@ export default function UserDashboard() {
     const batchSize = 5;
     for (let i = 0; i < repos.length; i += batchSize) {
       const batch = repos.slice(i, i + batchSize);
+      console.log(`🔄 [Dashboard] Processing batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(repos.length/batchSize)}: ${batch.map(r => r.full_name).join(', ')}`);
+      
       const scanPromises = batch.map(async (repo) => {
         try {
+          console.log(`🎯 [Dashboard] Starting scan for: ${repo.full_name}`);
           const [owner, repoName] = repo.full_name.split('/');
           const report = await securityScanner.scanRepository(owner, repoName);
           newReports.set(repo.full_name, report);
           
+          // Console log batch scan results
+          console.log('🔄 [Dashboard] Batch Scan Results for:', repo.full_name);
+          console.log('📊 [Dashboard] Summary:', report.summary);
+          console.log('🚨 [Dashboard] Vulnerabilities Found:', report.vulnerabilities.length);
+          console.log('📈 [Dashboard] Full Report:', report);
+          
           // Update the row with real security data
           updateRowWithSecurityData(repo.full_name, report);
         } catch (error) {
-          console.error(`Failed to scan ${repo.full_name}:`, error);
+          console.error(`❌ [Dashboard] Failed to scan ${repo.full_name}:`, error);
         }
       });
       
       await Promise.all(scanPromises);
+      console.log(`✅ [Dashboard] Completed batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(repos.length/batchSize)}`);
     }
     
+    console.log(`🎉 [Dashboard] Batch scan completed for all ${repos.length} repositories`);
     setSecurityReports(newReports);
+    saveScanResults(newReports); // Save to localStorage
     setIsScanning(false);
+  };
+
+  const runInitialScan = async () => {
+    console.log(`🚀 [Dashboard] Starting initial scan for all repositories`);
+    await scanAllRepositories(rows);
   };
 
   const updateRowWithSecurityData = (repoFullName: string, report: RepositorySecurityReport) => {
@@ -200,19 +307,69 @@ export default function UserDashboard() {
 
   const scanSingleRepository = async (repoFullName: string) => {
     try {
+      console.log(`🎯 [Dashboard] Starting scan for repository: ${repoFullName}`);
+      console.log(`⏰ [Dashboard] Scan initiated at: ${new Date().toLocaleString()}`);
+      
+      // Add to scanning set
+      setScanningRepos(prev => new Set(prev).add(repoFullName));
+
       const [owner, repoName] = repoFullName.split('/');
+      console.log(`🔍 [Dashboard] Calling security scanner for ${owner}/${repoName}`);
       const report = await securityScanner.scanRepository(owner, repoName);
       
-      setSecurityReports(prev => new Map(prev).set(repoFullName, report));
+      // Console log all scan results
+      console.log('🔍 Security Scan Results for:', repoFullName);
+      console.log('📊 Summary:', report.summary);
+      console.log('🚨 GitHub Vulnerabilities:', report.vulnerabilities.filter(v => !v.id.startsWith('ai-')));
+      console.log('🤖 AI Analysis Results:', report.ai_vulnerabilities || []);
+      console.log('📁 AI Files Analyzed:', report.ai_files_analyzed || 0);
+      console.log('📈 Total Files Scanned:', report.files_scanned || 0);
+      console.log('🔧 Dependencies Scanned:', report.dependencies_scanned || 0);
+      
+      if (report.ai_vulnerabilities && report.ai_vulnerabilities.length > 0) {
+        console.log('🚨 AI Found Security Issues:');
+        report.ai_vulnerabilities.forEach((vuln, index) => {
+          console.log(`   ${index + 1}. [${vuln.severity}] ${vuln.title} in ${vuln.file_path}`);
+          console.log(`      Category: ${vuln.category}`);
+          console.log(`      Remediation: ${vuln.remediation}`);
+        });
+      } else if (report.ai_files_analyzed > 0) {
+        console.log('✅ AI Analysis Complete - No security vulnerabilities detected in analyzed files');
+        console.log('💡 Consider implementing additional security measures like input validation, rate limiting, and regular security audits');
+      }
+      
+      console.log('📈 Full Report:', report);
+      
+      // Scan completed
+      
+      setSecurityReports(prev => {
+        const newReports = new Map(prev).set(repoFullName, report);
+        saveScanResults(newReports); // Save to localStorage
+        return newReports;
+      });
       updateRowWithSecurityData(repoFullName, report);
+      
+      // Remove from scanning set after a brief delay
+      setTimeout(() => {
+        setScanningRepos(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(repoFullName);
+          return newSet;
+        });
+      }, 1000);
     } catch (error) {
       console.error(`Failed to scan ${repoFullName}:`, error);
+      // Remove from scanning set on error
+      setScanningRepos(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(repoFullName);
+        return newSet;
+      });
     }
   };
 
   const menuItems = useMemo(() => [
-    { name: 'Home', icon: Home, active: false },
-    { name: 'Repositories', icon: FolderOpen, active: false }
+    { name: 'Home', icon: Home, active: false }
   ], []);
 
   const bottomMenuItems = useMemo(() => [
@@ -220,7 +377,7 @@ export default function UserDashboard() {
     { name: 'Settings', icon: Settings }
   ], []);
 
-  const navItems = useMemo(() => ['MESSAGES', 'PROTOCOLS', 'ANALYTICS', 'TOOLS', 'DNS'], []);
+  const navItems = useMemo(() => [], []);
 
   const messagesData = useMemo(() => [{ value: 2200 }, { value: 2300 }, { value: 2100 }, { value: 2400 }, { value: 2350 }, { value: 2450 }, { value: 2400 }, { value: 2500 }], []);
   const protocolsData = useMemo(() => [{ value: 25 }, { value: 28 }, { value: 30 }, { value: 27 }, { value: 32 }, { value: 30 }, { value: 29 }, { value: 30 }], []);
@@ -231,16 +388,68 @@ export default function UserDashboard() {
   const filteredRows = rows.filter(repo =>
     repo.repo.toLowerCase().includes(searchTerm.toLowerCase()) ||
     repo.language.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    repo.status.toLowerCase().includes(searchTerm.toLowerCase())
+    repo.status.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (repo.private ? 'private' : 'public').includes(searchTerm.toLowerCase()) ||
+    repo.full_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const recentScans = useMemo(() => [
-    { repo: 'main-app', status: 'Critical', time: '2 hours ago', type: 'Scheduled' },
-    { repo: 'notification-service', status: 'Healthy', time: '1 hour ago', type: 'Manual' },
-    { repo: 'auth-service', status: 'Critical', time: '4 hours ago', type: 'Triggered' },
-    { repo: 'file-storage', status: 'Healthy', time: '3 hours ago', type: 'Scheduled' },
-    { repo: 'analytics-engine', status: 'Healthy', time: '5 hours ago', type: 'Manual' }
-  ], []);
+  const recentScans = useMemo(() => {
+    if (securityReports.size === 0) {
+      return [];
+    }
+
+    // Convert security reports to recent scans format
+    const scans = Array.from(securityReports.entries()).map(([repoName, report]) => {
+      const summary = report.summary;
+      let status: 'Critical' | 'Warning' | 'Healthy' | 'Offline' = 'Healthy';
+      
+      if (summary.critical > 0 || summary.high > 5) {
+        status = 'Critical';
+      } else if (summary.high > 0 || summary.medium > 3) {
+        status = 'Warning';
+      } else if (summary.total_vulnerabilities === 0) {
+        status = 'Healthy';
+      }
+
+      // Calculate time ago from last scan
+      const lastScanDate = new Date(summary.last_scan);
+      const now = new Date();
+      const diffMs = now.getTime() - lastScanDate.getTime();
+      const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+      const diffMinutes = Math.floor(diffMs / (1000 * 60));
+      
+      let timeAgo: string;
+      if (diffHours > 24) {
+        const days = Math.floor(diffHours / 24);
+        timeAgo = `${days} day${days > 1 ? 's' : ''} ago`;
+      } else if (diffHours > 0) {
+        timeAgo = `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+      } else if (diffMinutes > 0) {
+        timeAgo = `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
+      } else {
+        timeAgo = 'Just now';
+      }
+
+      return {
+        repo: repoName.split('/')[1] || repoName, // Just the repo name, not owner/repo
+        fullName: repoName,
+        status,
+        time: timeAgo,
+        type: 'Security Scan' as const,
+        vulnerabilities: summary.total_vulnerabilities,
+        riskScore: summary.risk_score
+      };
+    });
+
+    // Sort by most recent scan time and return top 5
+    return scans
+      .sort((a, b) => {
+        const aTime = new Date(securityReports.get(a.fullName)?.summary.last_scan || 0).getTime();
+        const bTime = new Date(securityReports.get(b.fullName)?.summary.last_scan || 0).getTime();
+        return bTime - aTime;
+      })
+      .slice(0, 5);
+  }, [securityReports]);
 
   const handleRowClick = (repo: SecurityRow) => {
     setSelectedRepo(repo);
@@ -250,6 +459,18 @@ export default function UserDashboard() {
   const closeDrawer = () => {
     setShowDrawer(false);
     setSelectedRepo(null);
+  };
+
+  const toggleSection = (sectionId: string) => {
+    setCollapsedSections(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(sectionId)) {
+        newSet.delete(sectionId);
+      } else {
+        newSet.add(sectionId);
+      }
+      return newSet;
+    });
   };
 
   return (
@@ -324,38 +545,18 @@ export default function UserDashboard() {
           </nav>
         </div>
 
-        {showNotification && !isCollapsed && (
-          <div className="m-3 bg-gradient-to-r from-white/10 to-zinc-300/10 border border-white/20 rounded-lg p-4 relative transition-opacity duration-300 backdrop-blur-sm">
-            <button onClick={() => setShowNotification(false)} className="absolute top-2 right-2 text-zinc-400 hover:text-white">
-              <X className="w-4 h-4" />
-            </button>
-            <div className="text-white text-sm font-medium mb-2">New security features available!</div>
-            <p className="text-zinc-300 text-xs mb-3">Enhanced vulnerability scanning and AI-powered threat detection are now live.</p>
-            <div className="flex items-center gap-2 px-2 py-1 bg-white/10 rounded text-xs">
-              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-              <span className="text-white">System operational</span>
-            </div>
-          </div>
-        )}
       </div>
 
       <div className={`flex-1 flex flex-col transition-all duration-300 ${isCollapsed ? 'ml-16' : 'ml-64'}`}>
         <header className="fixed top-0 right-0 left-0 bg-zinc-900/30 border-b border-zinc-800/50 backdrop-blur-sm z-50" style={{ left: isCollapsed ? '64px' : '256px' }}>
           <div className="px-6 py-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-8">
-                {navItems.map(item => (
-                  <button
-                    key={item}
-                    onClick={() => setActiveNavItem(item)}
-                    className={`text-sm font-medium transition-all duration-300 ease-out ${activeNavItem === item ? 'text-white drop-shadow-[0_0_6px_rgba(255,255,255,0.25)]' : 'text-zinc-400 hover:text-white hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.2)]'}`}
-                  >
-                    {item}
-                  </button>
-                ))}
+              <div className="flex-1"></div>
+              <div className="text-center">
+                <h1 className="text-xl font-bold text-white">Security Dashboard</h1>
               </div>
-
-              <div className="flex items-center gap-4">
+              <div className="flex-1 flex justify-end">
+                <div className="flex items-center gap-8">
                 {isConnected ? (
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-2 px-3 py-1.5 bg-green-500/20 border border-green-500/30 rounded-lg">
@@ -370,53 +571,16 @@ export default function UserDashboard() {
                     </button>
                   </div>
                 ) : (
-                  <button onClick={handleGitHubConnect} className="flex items-center gap-2 px-4 py-2 bg-white text-zinc-900 rounded-lg font-medium hover:bg-zinc-200 transition-colors">
-                    <Github className="w-4 h-4" />
+                  <button onClick={handleGitHubConnect} className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800/50 text-zinc-300 rounded-md text-xs font-medium hover:bg-zinc-700/50 transition-colors border border-zinc-700/50">
+                    <Github className="w-3 h-3" />
                     Connect GitHub
                   </button>
                 )}
+              </div>
 
-                <div className="relative dropdown-container">
-                  <button onClick={() => { setShowNotificationDropdown(v => !v); setShowUserDropdown(false); }} className="text-zinc-400 hover:text-white transition-colors relative">
-                    <Bell className="w-5 h-5" />
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
-                  </button>
-                  {showNotificationDropdown && (
-                    <div className="absolute right-0 mt-2 w-80 bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl backdrop-blur-md z-[100]">
-                      <div className="p-4 border-b border-zinc-800/50">
-                        <h3 className="text-white font-medium">Notifications</h3>
-                      </div>
-                      <div className="max-h-64 overflow-y-auto">
-                        <div className="p-4 border-b border-zinc-800/30 hover:bg-zinc-800/30 transition-colors">
-                          <div className="flex items-start gap-3">
-                            <div className="w-2 h-2 bg-red-400 rounded-full mt-2"></div>
-                            <div>
-                              <p className="text-white text-sm font-medium">Critical vulnerability detected</p>
-                              <p className="text-zinc-400 text-xs">SQL injection in main-app repository</p>
-                              <p className="text-zinc-500 text-xs mt-1">2 hours ago</p>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="p-4 border-b border-zinc-800/30 hover:bg-zinc-800/30 transition-colors">
-                          <div className="flex items-start gap-3">
-                            <div className="w-2 h-2 bg-green-400 rounded-full mt-2"></div>
-                            <div>
-                              <p className="text-white text-sm font-medium">Security scan completed</p>
-                              <p className="text-zinc-400 text-xs">api-service passed all checks</p>
-                              <p className="text-zinc-500 text-xs mt-1">4 hours ago</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="p-3 border-t border-zinc-800/50">
-                        <button className="text-white text-sm hover:text-zinc-300 transition-colors">View all notifications</button>
-                      </div>
-                    </div>
-                  )}
-                </div>
 
-                <div className="relative dropdown-container">
-                  <button onClick={() => { setShowUserDropdown(v => !v); setShowNotificationDropdown(false); }} className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors">
+              <div className="relative dropdown-container">
+                  <button onClick={() => setShowUserDropdown(v => !v)} className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors">
                     <div className="w-8 h-8 bg-zinc-700 rounded-full flex items-center justify-center">
                       <FaUser className="w-4 h-4 text-zinc-300" />
                     </div>
@@ -469,76 +633,151 @@ export default function UserDashboard() {
             <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-2">
                 <div>
-                  <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">Messages (24h)</p>
-                  <p className="text-white text-2xl font-bold">2,450</p>
+                  <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">Total Vulnerabilities</p>
+                  {isScanning || !hasInitialScanned ? (
+                    <div className="flex flex-col items-center justify-center gap-4 h-20">
+                      <div className="w-6 h-6 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
+                      <p className="text-zinc-400 text-sm">Loading...</p>
+                    </div>
+                  ) : (
+                    <p className="text-white text-2xl font-bold">{metrics.totalVulnerabilities}</p>
+                  )}
                 </div>
               </div>
               <div className="h-8">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={[{ value: 2200 }, { value: 2300 }, { value: 2100 }, { value: 2400 }, { value: 2350 }, { value: 2450 }, { value: 2400 }, { value: 2500 }]}>
-                    <Line type="monotone" dataKey="value" stroke="#ffffff" strokeWidth={1.5} dot={false} />
-                  </LineChart>
-                </ResponsiveContainer>
+                {isScanning || !hasInitialScanned ? (
+                  <div className="w-full h-full bg-zinc-800/50 rounded animate-pulse"></div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={[
+                      { value: metrics.criticalVulnerabilities },
+                      { value: metrics.highVulnerabilities },
+                      { value: metrics.mediumVulnerabilities },
+                      { value: metrics.lowVulnerabilities }
+                    ]}>
+                      <Line type="monotone" dataKey="value" stroke="#ffffff" strokeWidth={1.5} dot={false} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                )}
               </div>
             </div>
             <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-2">
                 <div>
-                  <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">Protocols</p>
-                  <p className="text-white text-2xl font-bold">30</p>
+                  <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">Repositories</p>
+                  {isScanning || !hasInitialScanned ? (
+                    <div className="flex flex-col items-center justify-center gap-4 h-20">
+                      <div className="w-6 h-6 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
+                      <p className="text-zinc-400 text-sm">Loading...</p>
+                    </div>
+                  ) : (
+                    <p className="text-white text-2xl font-bold">{metrics.scannedRepos}/{metrics.totalRepos}</p>
+                  )}
                 </div>
               </div>
               <div className="h-8">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={[{ value: 25 }, { value: 28 }, { value: 30 }, { value: 27 }, { value: 32 }, { value: 30 }, { value: 29 }, { value: 30 }]}>
-                    <Bar dataKey="value" fill="#6b7280" />
-                  </BarChart>
-                </ResponsiveContainer>
+                {isScanning || !hasInitialScanned ? (
+                  <div className="w-full h-full bg-zinc-800/50 rounded animate-pulse"></div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={[
+                      { value: metrics.scannedRepos },
+                      { value: metrics.healthyRepos },
+                      { value: metrics.criticalRepos }
+                    ]}>
+                      <Bar dataKey="value" fill="#6b7280" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
               </div>
             </div>
             <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-2">
                 <div>
-                  <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">API Uptime</p>
-                  <p className="text-white text-2xl font-bold">99.9%</p>
+                  <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">Avg Risk Score</p>
+                  {isScanning || !hasInitialScanned ? (
+                    <div className="flex flex-col items-center justify-center gap-4 h-20">
+                      <div className="w-6 h-6 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
+                      <p className="text-zinc-400 text-sm">Loading...</p>
+                    </div>
+                  ) : (
+                    <p className="text-white text-2xl font-bold">{metrics.avgRiskScore}/100</p>
+                  )}
                 </div>
               </div>
               <div className="h-8">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={[{ value: 95 }, { value: 97 }, { value: 99 }, { value: 98 }, { value: 99.5 }, { value: 99.9 }, { value: 99.8 }, { value: 99.9 }]}>
-                    <Bar dataKey="value" fill="#6b7280" />
-                  </BarChart>
-                </ResponsiveContainer>
+                {isScanning || !hasInitialScanned ? (
+                  <div className="w-full h-full bg-zinc-800/50 rounded animate-pulse"></div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={[
+                      { value: metrics.avgRiskScore },
+                      { value: 100 - metrics.avgRiskScore }
+                    ]}>
+                      <Bar dataKey="value" fill="#6b7280" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
               </div>
             </div>
             <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-2">
                 <div>
-                  <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">Security Incidents (24h)</p>
-                  <p className="text-white text-2xl font-bold">15</p>
+                  <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">Critical Issues</p>
+                  {isScanning || !hasInitialScanned ? (
+                    <div className="flex flex-col items-center justify-center gap-4 h-20">
+                      <div className="w-6 h-6 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
+                      <p className="text-zinc-400 text-sm">Loading...</p>
+                    </div>
+                  ) : (
+                    <p className="text-white text-2xl font-bold">{metrics.criticalVulnerabilities}</p>
+                  )}
                 </div>
               </div>
               <div className="h-8">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={[{ value: 20 }, { value: 18 }, { value: 15 }, { value: 12 }, { value: 10 }, { value: 15 }, { value: 13 }, { value: 15 }]}>
-                    <Line type="monotone" dataKey="value" stroke="#ef4444" strokeWidth={1.5} dot={false} />
-                  </LineChart>
-                </ResponsiveContainer>
+                {isScanning || !hasInitialScanned ? (
+                  <div className="w-full h-full bg-zinc-800/50 rounded animate-pulse"></div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={[
+                      { value: metrics.criticalVulnerabilities },
+                      { value: metrics.highVulnerabilities },
+                      { value: metrics.mediumVulnerabilities }
+                    ]}>
+                      <Line type="monotone" dataKey="value" stroke="#ef4444" strokeWidth={1.5} dot={false} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                )}
               </div>
             </div>
             <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-2">
                 <div>
-                  <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">Errors (24h)</p>
-                  <p className="text-white text-2xl font-bold">7</p>
+                  <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">High Severity</p>
+                  {isScanning || !hasInitialScanned ? (
+                    <div className="flex flex-col items-center justify-center gap-4 h-20">
+                      <div className="w-6 h-6 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
+                      <p className="text-zinc-400 text-sm">Loading...</p>
+                    </div>
+                  ) : (
+                    <p className="text-white text-2xl font-bold">{metrics.highVulnerabilities}</p>
+                  )}
                 </div>
               </div>
               <div className="h-8">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={[{ value: 12 }, { value: 10 }, { value: 8 }, { value: 6 }, { value: 5 }, { value: 7 }, { value: 6 }, { value: 7 }]}>
-                    <Line type="monotone" dataKey="value" stroke="#ef4444" strokeWidth={1.5} dot={false} />
-                  </LineChart>
-                </ResponsiveContainer>
+                {isScanning || !hasInitialScanned ? (
+                  <div className="w-full h-full bg-zinc-800/50 rounded animate-pulse"></div>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={[
+                      { value: metrics.highVulnerabilities },
+                      { value: metrics.mediumVulnerabilities },
+                      { value: metrics.lowVulnerabilities }
+                    ]}>
+                      <Line type="monotone" dataKey="value" stroke="#ef4444" strokeWidth={1.5} dot={false} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                )}
               </div>
             </div>
           </div>
@@ -557,23 +796,52 @@ export default function UserDashboard() {
             </div>
             {showRecentScans && (
               <div className="p-6">
-                <div className="space-y-3">
-                  {recentScans.map((scan, i) => (
-                    <div key={i} className="flex items-center justify-between py-3 px-4 bg-zinc-800/20 rounded-lg hover:bg-zinc-800/30 transition-colors">
+                {recentScans.length === 0 ? (
+                  <div className="text-center py-8">
+                    {isScanning || !hasInitialScanned ? (
+                      <div className="flex flex-col items-center gap-3">
+                        <div className="w-8 h-8 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
+                        <p className="text-zinc-400">Scanning repositories...</p>
+                        <p className="text-zinc-500 text-sm">Recent scan results will appear here</p>
+                      </div>
+                    ) : (
+                      <div className="text-center py-8">
+                        <p className="text-zinc-400 mb-2">No scan results available</p>
+                        <p className="text-zinc-500 text-sm">Run a security scan to see recent results</p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {recentScans.map((scan, i) => (
+                    <div 
+                      key={i} 
+                      className="flex items-center justify-between py-3 px-4 bg-zinc-800/20 rounded-lg hover:bg-zinc-800/30 transition-colors cursor-pointer"
+                      onClick={() => {
+                        const repo = rows.find(r => r.full_name === scan.fullName);
+                        if (repo) {
+                          handleRowClick(repo);
+                        }
+                      }}
+                    >
                       <div className="flex items-center gap-4">
                         <div className={`w-2 h-2 rounded-full ${scan.status === 'Critical' ? 'bg-red-400' : scan.status === 'Warning' ? 'bg-yellow-400' : scan.status === 'Healthy' ? 'bg-green-400' : 'bg-gray-400'}`}></div>
-                        <div>
+                        <div className="flex-1">
                           <div className="text-white font-medium">{scan.repo}</div>
-                          <div className="text-zinc-400 text-sm">{scan.time}</div>
+                          <div className="flex items-center gap-2 text-sm">
+                            <span className={`font-medium ${scan.status === 'Critical' ? 'text-red-400' : scan.status === 'Warning' ? 'text-yellow-400' : scan.status === 'Healthy' ? 'text-green-400' : 'text-gray-400'}`}>{scan.status}</span>
+                            <span className="text-zinc-500">•</span>
+                            <span className="text-zinc-400">{scan.time}</span>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4">
-                        <span className={`text-sm font-medium ${scan.status === 'Critical' ? 'text-red-400' : scan.status === 'Warning' ? 'text-yellow-400' : scan.status === 'Healthy' ? 'text-green-400' : 'text-gray-400'}`}>{scan.status}</span>
+                      <div className="flex items-center">
                         <span className="text-zinc-500 text-sm">{scan.type}</span>
                       </div>
                     </div>
                   ))}
-                </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -609,7 +877,7 @@ export default function UserDashboard() {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-500" />
                   <input
                     type="text"
-                    placeholder="Search by repository name or address"
+                    placeholder="Search by name, language, privacy, or status"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="bg-zinc-800/50 text-white pl-10 pr-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white focus:bg-zinc-700/50 transition-colors backdrop-blur-sm w-80"
@@ -642,11 +910,11 @@ export default function UserDashboard() {
               )}
 
               {isLoadingRepos && (
-                <div className="mb-4 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                <div className="mb-4 p-4 bg-zinc-800/20 border border-zinc-700/30 rounded-lg">
                   <div className="flex items-center gap-3">
-                    <RefreshCw className="w-5 h-5 text-blue-400 animate-spin" />
+                    <RefreshCw className="w-5 h-5 text-zinc-400 animate-spin" />
                     <div>
-                      <p className="text-blue-400 font-medium">Loading Repositories</p>
+                      <p className="text-zinc-400 font-medium">Loading Repositories</p>
                       <p className="text-zinc-400 text-sm">Fetching your GitHub repositories...</p>
                     </div>
                   </div>
@@ -658,13 +926,12 @@ export default function UserDashboard() {
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-zinc-800/30">
-                    <th className="text-left py-4 px-6 text-zinc-400 font-medium text-sm uppercase tracking-wider">Status</th>
+                    <th className="text-left py-4 px-6 text-zinc-400 font-medium text-sm uppercase tracking-wider">Security Status</th>
                     <th className="text-left py-4 px-6 text-zinc-400 font-medium text-sm uppercase tracking-wider">Repository</th>
                     <th className="text-left py-4 px-6 text-zinc-400 font-medium text-sm uppercase tracking-wider">Language</th>
-                    <th className="text-left py-4 px-6 text-zinc-400 font-medium text-sm uppercase tracking-wider">Risk Score</th>
-                    <th className="text-left py-4 px-6 text-zinc-400 font-medium text-sm uppercase tracking-wider">Last Scan</th>
                     <th className="text-left py-4 px-6 text-zinc-400 font-medium text-sm uppercase tracking-wider">Vulnerabilities</th>
-                    <th className="text-left py-4 px-6 text-zinc-400 font-medium text-sm uppercase tracking-wider">Branch</th>
+                    <th className="text-left py-4 px-6 text-zinc-400 font-medium text-sm uppercase tracking-wider">Last Scan</th>
+                    <th className="text-left py-4 px-6 text-zinc-400 font-medium text-sm uppercase tracking-wider">Risk Score</th>
                     <th className="text-right py-4 px-6 text-zinc-400 font-medium text-sm uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
@@ -689,34 +956,47 @@ export default function UserDashboard() {
                         <span className="text-zinc-300 text-sm">{repo.language}</span>
                       </td>
                       <td className="py-4 px-6">
+                        <span className={`text-sm font-medium ${
+                          repo.vulnerabilities > 10 ? 'text-red-400' : 
+                          repo.vulnerabilities > 5 ? 'text-yellow-400' : 
+                          repo.vulnerabilities > 0 ? 'text-orange-400' :
+                          'text-green-400'
+                        }`}>
+                          {repo.vulnerabilities}
+                        </span>
+                      </td>
+                      <td className="py-4 px-6">
+                        <span className="text-zinc-400 text-sm">
+                          {repo.lastScan}
+                        </span>
+                      </td>
+                      <td className="py-4 px-6">
                         <span className={`text-sm font-medium ${parseFloat(repo.risk) > 50 ? 'text-red-400' : parseFloat(repo.risk) > 5 ? 'text-yellow-400' : 'text-green-400'}`}>{repo.risk}</span>
                       </td>
-                      <td className="py-4 px-6">
-                        <span className="text-zinc-400 text-sm">{repo.lastScan}</span>
-                      </td>
-                      <td className="py-4 px-6">
-                        <span className={`text-sm font-medium ${repo.vulnerabilities > 10 ? 'text-red-400' : repo.vulnerabilities > 5 ? 'text-yellow-400' : 'text-green-400'}`}>{repo.vulnerabilities}</span>
-                      </td>
-                      <td className="py-4 px-6">
-                        <span className="text-zinc-400 text-sm font-mono">{repo.branch}</span>
-                      </td>
                       <td className="py-4 px-6 text-right">
-                        <button 
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            scanSingleRepository(repo.full_name);
-                          }}
-                          disabled={isScanning}
-                          className="border border-white text-white hover:bg-white hover:text-zinc-900 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ease-out disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          {isScanning ? 'Scanning...' : 'Scan Now'}
-                        </button>
+                        {scanningRepos.has(repo.full_name) ? (
+                          <div className="flex items-center gap-2">
+                            <div className="w-4 h-4 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
+                            <span className="text-zinc-400 text-xs font-medium">Scanning...</span>
+                          </div>
+                        ) : (
+                          <button 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              scanSingleRepository(repo.full_name);
+                            }}
+                            disabled={isScanning}
+                            className="bg-zinc-800/50 hover:bg-zinc-700/50 text-zinc-300 hover:text-white px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ease-out disabled:opacity-50 disabled:cursor-not-allowed border border-zinc-700/50 hover:border-zinc-600/50"
+                          >
+                            Scan
+                          </button>
+                        )}
                       </td>
                     </tr>
                   ))}
                   {!filteredRows.length && (
                     <tr>
-                      <td className="py-4 px-6 text-zinc-500" colSpan={8}>No repositories</td>
+                      <td className="py-4 px-6 text-zinc-500" colSpan={7}>No repositories</td>
                     </tr>
                   )}
                 </tbody>
@@ -725,7 +1005,7 @@ export default function UserDashboard() {
 
             <div className="p-4 border-t border-zinc-800/30 bg-zinc-900/20">
               <p className="text-zinc-500 text-sm text-center">
-                The platform found <span className="text-white font-medium">{filteredRows.reduce((sum, repo) => sum + repo.vulnerabilities, 0)} DVN</span> for your request
+                The platform found <span className="text-white font-medium">{filteredRows.reduce((sum, repo) => sum + repo.vulnerabilities, 0)} vulnerabilities</span> across your repositories
               </p>
             </div>
           </div>
@@ -754,108 +1034,363 @@ export default function UserDashboard() {
                 </div>
 
                 <div className="p-8 border-b border-zinc-800/30">
-                  <div className="grid grid-cols-3 gap-8 mb-8">
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-white mb-2">{selectedRepo.messages}</div>
-                      <div className="text-xs text-zinc-400 uppercase tracking-wider mb-3">Messages (24h)</div>
-                      <div className="h-12 mt-3">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={[{ v: 1 }, { v: 2 }, { v: 1 }, { v: 3 }, { v: 2 }]}>
-                            <Bar dataKey="v" fill="#6b7280" />
-                          </BarChart>
-                        </ResponsiveContainer>
+                  <div className="grid grid-cols-3 gap-0 mb-8">
+                    <div className="text-center border-r border-zinc-700/50 pr-8">
+                      <div className="text-3xl font-bold text-white mb-2">
+                        {securityReports.has(selectedRepo.full_name) 
+                          ? securityReports.get(selectedRepo.full_name)!.files_scanned || 0
+                          : 0
+                        }
                       </div>
+                      <div className="text-xs text-zinc-400 uppercase tracking-wider">Files Scanned</div>
                     </div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-white mb-2">{selectedRepo.uptime}</div>
-                      <div className="text-xs text-zinc-400 uppercase tracking-wider mb-3">Uptime (24h)</div>
-                      <div className="h-12 mt-3">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={[{ v: 99 }, { v: 100 }, { v: 99 }, { v: 100 }, { v: 99 }]}>
-                            <Bar dataKey="v" fill="#6b7280" />
-                          </BarChart>
-                        </ResponsiveContainer>
+                    <div className="text-center border-r border-zinc-700/50 px-8">
+                      <div className="text-3xl font-bold text-white mb-2">
+                        {securityReports.has(selectedRepo.full_name) 
+                          ? securityReports.get(selectedRepo.full_name)!.dependencies_scanned || 0
+                          : 0
+                        }
                       </div>
+                      <div className="text-xs text-zinc-400 uppercase tracking-wider">Dependencies</div>
                     </div>
-                    <div className="text-center">
-                      <div className="text-3xl font-bold text-white mb-2">{selectedRepo.incidents}</div>
-                      <div className="text-xs text-zinc-400 uppercase tracking-wider mb-3">Incidents (24h)</div>
-                      <div className="h-12 mt-3">
-                        <ResponsiveContainer width="100%" height="100%">
-                          <BarChart data={[{ v: 1 }, { v: 0 }, { v: 2 }, { v: 1 }, { v: 0 }]}>
-                            <Bar dataKey="v" fill="#6b7280" />
-                          </BarChart>
-                        </ResponsiveContainer>
+                    <div className="text-center pl-8">
+                      <div className="text-3xl font-bold text-white mb-2">
+                        {securityReports.has(selectedRepo.full_name) 
+                          ? securityReports.get(selectedRepo.full_name)!.ai_files_analyzed || 0
+                          : 0
+                        }
                       </div>
+                      <div className="text-xs text-zinc-400 uppercase tracking-wider">AI Analyzed</div>
                     </div>
                   </div>
                 </div>
 
                 <div className="p-8 border-b border-zinc-800/30">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-white font-medium text-lg">Status</h3>
-                    <button className="text-zinc-400 hover:text-white">
-                      <ChevronUp className="w-4 h-4" />
+                    <h3 className="text-white font-medium text-lg">Security Scan Results</h3>
+                    <button 
+                      onClick={() => scanSingleRepository(selectedRepo.full_name)}
+                      disabled={scanningRepos.has(selectedRepo.full_name)}
+                      className="text-zinc-400 hover:text-zinc-300 text-sm font-medium disabled:opacity-50"
+                    >
+                      {scanningRepos.has(selectedRepo.full_name) ? 'Scanning...' : 'Re-scan'}
                     </button>
                   </div>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-zinc-400">Uptime</span>
-                      <span className="text-white font-medium">{selectedRepo.uptime}</span>
+                  
+                  {scanningRepos.has(selectedRepo.full_name) && (
+                    <div className="mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-5 h-5 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
+                        <span className="text-sm text-zinc-400">Scanning in progress...</span>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-zinc-400">Last Scan</span>
-                      <span className="text-white font-medium">{selectedRepo.lastScan}</span>
+                  )}
+                  
+                  {securityReports.has(selectedRepo.full_name) ? (
+                    <div className="space-y-4">
+                      {(() => {
+                        const report = securityReports.get(selectedRepo.full_name)!;
+                        const summary = report.summary;
+                        const githubVulns = report.vulnerabilities.filter(v => !v.id.startsWith('ai-'));
+                        const aiVulns = report.vulnerabilities.filter(v => v.id.startsWith('ai-'));
+                        
+                        return (
+                          <>
+                            {/* Scan Summary */}
+                            <div className="grid grid-cols-2 gap-4 mb-4">
+                              <div className="bg-zinc-800/30 rounded-lg p-3">
+                                <div className="text-2xl font-bold text-white mb-1">{summary.total_vulnerabilities}</div>
+                                <div className="text-zinc-400 text-xs">Total Vulnerabilities</div>
+                              </div>
+                              <div className="bg-zinc-800/30 rounded-lg p-3">
+                                <div className="text-2xl font-bold text-white mb-1">{summary.risk_score}</div>
+                                <div className="text-zinc-400 text-xs">Risk Score</div>
+                              </div>
+                            </div>
+
+                            {/* Scan Statistics */}
+                            <div className="bg-zinc-800/20 rounded-lg p-3 mb-4">
+                              <h4 className="text-white font-medium mb-2">Scan Statistics</h4>
+                              <div className="grid grid-cols-2 gap-2 text-sm">
+                                <div className="flex justify-between">
+                                  <span className="text-zinc-400">Files Scanned:</span>
+                                  <span className="text-white">{report.files_scanned || 0}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-zinc-400">AI Files Analyzed:</span>
+                                  <span className="text-white">{report.ai_files_analyzed || 0}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-zinc-400">Dependencies:</span>
+                                  <span className="text-white">{report.dependencies_scanned || 0}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                  <span className="text-zinc-400">Last Scan:</span>
+                                  <span className="text-white">{new Date(summary.last_scan).toLocaleString()}</span>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            {/* Severity Breakdown */}
+                            <div className="space-y-3">
+                              <h4 className="text-white font-medium">Severity Breakdown</h4>
+                              <div className="flex items-center justify-between">
+                                <span className="text-zinc-400">Critical</span>
+                                <span className="text-red-400 font-medium">{summary.critical}</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-zinc-400">High</span>
+                                <span className="text-orange-400 font-medium">{summary.high}</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-zinc-400">Medium</span>
+                                <span className="text-yellow-400 font-medium">{summary.medium}</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-zinc-400">Low</span>
+                                <span className="text-green-400 font-medium">{summary.low}</span>
+                              </div>
+                            </div>
+                            
+                            {/* GitHub Vulnerabilities */}
+                            {githubVulns.length > 0 && (
+                              <div className="mt-4">
+                                <h4 className="text-white font-medium mb-2">GitHub Security Alerts</h4>
+                                <div className="space-y-2 max-h-32 overflow-y-auto">
+                                  {githubVulns.slice(0, 3).map((vuln, index) => (
+                                    <div key={index} className="bg-zinc-800/20 rounded p-2">
+                                      <div className="flex items-center justify-between mb-1">
+                                        <span className={`text-xs px-2 py-1 rounded ${
+                                          vuln.severity === 'Critical' ? 'bg-red-500/20 text-red-400' :
+                                          vuln.severity === 'High' ? 'bg-orange-500/20 text-orange-400' :
+                                          vuln.severity === 'Medium' ? 'bg-yellow-500/20 text-yellow-400' :
+                                          'bg-green-500/20 text-green-400'
+                                        }`}>
+                                          {vuln.severity}
+                                        </span>
+                                        <span className="text-zinc-500 text-xs">{vuln.category}</span>
+                                      </div>
+                                      <div className="text-white text-sm font-medium">{vuln.title}</div>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* AI Analysis Results */}
+                            {aiVulns.length > 0 ? (
+                              <div className="mt-4">
+                                <div className="flex items-center justify-between mb-2">
+                                  <h4 className="text-white font-medium">AI Security Analysis</h4>
+                                  <button 
+                                    onClick={() => toggleSection('ai-vulnerabilities')}
+                                    className="text-zinc-400 hover:text-white"
+                                  >
+                                    {collapsedSections.has('ai-vulnerabilities') ? 
+                                      <ChevronDown className="w-4 h-4" /> : 
+                                      <ChevronUp className="w-4 h-4" />
+                                    }
+                                  </button>
+                                </div>
+                                {!collapsedSections.has('ai-vulnerabilities') && (
+                                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                                    {(showAllAiVulns.get(selectedRepo.full_name) ? aiVulns : aiVulns.slice(0, 3)).map((vuln, index) => (
+                                      <div key={index} className="bg-zinc-800/20 border border-zinc-700/30 rounded p-3">
+                                        <div className="flex items-center justify-between mb-2">
+                                          <span className={`text-xs px-2 py-1 rounded ${
+                                            vuln.severity === 'Critical' ? 'bg-red-500/20 text-red-400' :
+                                            vuln.severity === 'High' ? 'bg-orange-500/20 text-orange-400' :
+                                            vuln.severity === 'Medium' ? 'bg-yellow-500/20 text-yellow-400' :
+                                            'bg-green-500/20 text-green-400'
+                                          }`}>
+                                            {vuln.severity}
+                                          </span>
+                                          <span className="text-zinc-400 text-xs">{vuln.file_path}</span>
+                                        </div>
+                                        <div className="text-white text-sm font-medium mb-1">{vuln.title}</div>
+                                        <div className="text-zinc-400 text-xs mb-2">{vuln.description}</div>
+                                        <div className="text-green-400 text-xs">
+                                          <strong>Fix:</strong> {vuln.remediation}
+                                        </div>
+                                      </div>
+                                    ))}
+                                    {aiVulns.length > 3 && !showAllAiVulns.get(selectedRepo.full_name) && (
+                                      <button
+                                        onClick={() => setShowAllAiVulns(prev => new Map(prev).set(selectedRepo.full_name, true))}
+                                        className="w-full mt-2 text-zinc-400 hover:text-zinc-300 text-sm font-medium py-2 border border-zinc-700/30 rounded hover:bg-zinc-800/10 transition-colors"
+                                      >
+                                        Load More ({aiVulns.length - 3} more)
+                                      </button>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            ) : report.ai_files_analyzed > 0 && (
+                              <div className="mt-4">
+                                <div className="flex items-center justify-between mb-2">
+                                  <h4 className="text-white font-medium">AI Security Analysis</h4>
+                                  <button 
+                                    onClick={() => toggleSection('ai-analysis')}
+                                    className="text-zinc-400 hover:text-white"
+                                  >
+                                    {collapsedSections.has('ai-analysis') ? 
+                                      <ChevronDown className="w-4 h-4" /> : 
+                                      <ChevronUp className="w-4 h-4" />
+                                    }
+                                  </button>
+                                </div>
+                                {!collapsedSections.has('ai-analysis') && (
+                                  <div className="bg-green-500/10 border border-green-500/20 rounded p-3">
+                                    <div className="text-green-400 text-sm font-medium mb-2">No security vulnerabilities detected</div>
+                                    <div className="text-zinc-400 text-xs mb-3">AI analyzed {report.ai_files_analyzed} files and found no security issues.</div>
+                                    
+                                    {/* AI-Generated Recommendations */}
+                                    {report.ai_recommendations && report.ai_recommendations.length > 0 ? (
+                                      <div className="text-zinc-300 text-xs">
+                                        <div className="font-medium mb-2">AI-Generated Security Recommendations:</div>
+                                        <div className="space-y-2">
+                                          {report.ai_recommendations.map((rec, index) => (
+                                            <div key={index} className="bg-zinc-800/30 rounded p-2 border border-zinc-700/30">
+                                              <div className="flex items-center gap-2 mb-1">
+                                                <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${
+                                                  rec.priority === 'High' ? 'bg-red-500/20 text-red-400' :
+                                                  rec.priority === 'Medium' ? 'bg-yellow-500/20 text-yellow-400' :
+                                                  'bg-zinc-800/20 text-zinc-400'
+                                                }`}>
+                                                  {rec.priority}
+                                                </span>
+                                                <span className="text-xs text-zinc-400 capitalize">{rec.category}</span>
+                                              </div>
+                                              <h6 className="text-xs font-medium text-white mb-1">{rec.title}</h6>
+                                              <p className="text-xs text-zinc-400">{rec.description}</p>
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    ) : (
+                                      <div className="text-zinc-300 text-xs">
+                                        <div className="font-medium mb-1">General Security Recommendations:</div>
+                                        <ul className="space-y-1 text-xs">
+                                          <li>• Implement input validation for user inputs</li>
+                                          <li>• Store API keys in environment variables</li>
+                                          <li>• Add rate limiting to prevent attacks</li>
+                                          <li>• Set up security monitoring and logging</li>
+                                        </ul>
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                          </>
+                        );
+                      })()}
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-zinc-400">Branch</span>
-                      <span className="text-white font-medium font-mono">{selectedRepo.branch}</span>
+                  ) : (
+                    <div className="text-center py-8">
+                      <div className="text-zinc-400 mb-2">No scan results available</div>
+                      <button 
+                        onClick={() => scanSingleRepository(selectedRepo.full_name)}
+                        disabled={scanningRepos.has(selectedRepo.full_name)}
+                        className="text-zinc-400 hover:text-zinc-300 text-sm font-medium disabled:opacity-50"
+                      >
+                        {scanningRepos.has(selectedRepo.full_name) ? 'Scanning...' : 'Run Security Scan'}
+                      </button>
                     </div>
-                  </div>
+                  )}
                 </div>
 
                 <div className="p-8 border-b border-zinc-800/30">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-white font-medium text-lg">Performance</h3>
-                    <button className="text-zinc-400 hover:text-white">
-                      <ChevronUp className="w-4 h-4" />
+                    <h3 className="text-white font-medium text-lg">Security Status</h3>
+                    <button 
+                      onClick={() => toggleSection('security-status')}
+                      className="text-zinc-400 hover:text-white"
+                    >
+                      {collapsedSections.has('security-status') ? 
+                        <ChevronDown className="w-4 h-4" /> : 
+                        <ChevronUp className="w-4 h-4" />
+                      }
                     </button>
                   </div>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-zinc-400">Messages (24h)</span>
-                      <span className="text-white font-medium">{selectedRepo.messages} messages</span>
+                  {!collapsedSections.has('security-status') && (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-zinc-400">Risk Score</span>
+                        <span className={`font-medium ${
+                          securityReports.has(selectedRepo.full_name) && securityReports.get(selectedRepo.full_name)!.summary.risk_score > 50 
+                            ? 'text-red-400' 
+                            : securityReports.has(selectedRepo.full_name) && securityReports.get(selectedRepo.full_name)!.summary.risk_score > 10
+                            ? 'text-yellow-400'
+                            : 'text-green-400'
+                        }`}>
+                          {securityReports.has(selectedRepo.full_name) 
+                            ? `${securityReports.get(selectedRepo.full_name)!.summary.risk_score}/100`
+                            : '0/100'
+                          }
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-zinc-400">Last Scan</span>
+                        <span className="text-white font-medium">
+                          {securityReports.has(selectedRepo.full_name) 
+                            ? new Date(securityReports.get(selectedRepo.full_name)!.summary.last_scan).toLocaleString()
+                            : 'Never'
+                          }
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-zinc-400">Branch</span>
+                        <span className="text-white font-medium font-mono">{selectedRepo.branch}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-zinc-400">Latency</span>
-                      <span className="text-white font-medium">45ms</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-zinc-400">Success Rate</span>
-                      <span className="text-white font-medium">{selectedRepo.successRate}</span>
-                    </div>
-                  </div>
+                  )}
                 </div>
 
                 <div className="p-8 border-b border-zinc-800/30">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-white font-medium text-lg">Security</h3>
-                    <button className="text-zinc-400 hover:text-white text-sm text-white">See more</button>
+                    <h3 className="text-white font-medium text-lg">Security Metrics</h3>
+                    <button 
+                      onClick={() => toggleSection('security-metrics')}
+                      className="text-zinc-400 hover:text-white"
+                    >
+                      {collapsedSections.has('security-metrics') ? 
+                        <ChevronDown className="w-4 h-4" /> : 
+                        <ChevronUp className="w-4 h-4" />
+                      }
+                    </button>
                   </div>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <span className="text-zinc-400">Security Score</span>
-                      <span className={`${selectedRepo.color === 'red' ? 'text-red-400' : selectedRepo.color === 'yellow' ? 'text-yellow-400' : selectedRepo.color === 'green' ? 'text-green-400' : 'text-gray-400'} font-medium`}>{selectedRepo.securityScore}</span>
+                  {!collapsedSections.has('security-metrics') && (
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <span className="text-zinc-400">Total Vulnerabilities</span>
+                        <span className="text-white font-medium">
+                          {securityReports.has(selectedRepo.full_name) 
+                            ? securityReports.get(selectedRepo.full_name)!.summary.total_vulnerabilities
+                            : 0
+                          }
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-zinc-400">Critical Issues</span>
+                        <span className="text-red-400 font-medium">
+                          {securityReports.has(selectedRepo.full_name) 
+                            ? securityReports.get(selectedRepo.full_name)!.summary.critical
+                            : 0
+                          }
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-zinc-400">High Priority</span>
+                        <span className="text-orange-400 font-medium">
+                          {securityReports.has(selectedRepo.full_name) 
+                            ? securityReports.get(selectedRepo.full_name)!.summary.high
+                            : 0
+                          }
+                        </span>
+                      </div>
                     </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-zinc-400">Active Alerts</span>
-                      <span className="text-white font-medium">{selectedRepo.activeAlerts}</span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-zinc-400">Success Rate</span>
-                      <span className="text-white font-medium">{selectedRepo.successRate}</span>
-                    </div>
-                  </div>
+                  )}
                 </div>
 
                 <div className="p-8 pb-12">
