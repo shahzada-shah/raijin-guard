@@ -154,6 +154,13 @@ export default function UserDashboard() {
     let mounted = true;
     (async () => {
       try {
+        // Check for auth success parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('auth') === 'success') {
+          // Clean up the URL
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+
         const authStatus = await githubAuthServer.status();
         if (!mounted) return;
         setIsConnected(authStatus.connected);
@@ -175,9 +182,9 @@ export default function UserDashboard() {
           // Run initial scan if not already done
           if (!hasInitialScanned) {
             setHasInitialScanned(true);
-            // Small delay to let repos load first
+            // Small delay to let repos load first, then scan the newly loaded repositories
             setTimeout(() => {
-              runInitialScan();
+              runInitialScan(securityRepos);
             }, 1000);
           }
         } else {
@@ -215,7 +222,10 @@ export default function UserDashboard() {
       const securityRepos = githubApiServer.transformToSecurityData(rawRepos);
       setRows(securityRepos);
       
-      // Don't auto-scan repositories - only scan when user requests it
+      // Auto-scan repositories when refreshed
+      setTimeout(() => {
+        runInitialScan(securityRepos);
+      }, 500);
     } catch (e: any) {
       setRepoError(e?.message || 'Failed to refresh repositories');
     } finally {
@@ -266,9 +276,10 @@ export default function UserDashboard() {
     setIsScanning(false);
   };
 
-  const runInitialScan = async () => {
+  const runInitialScan = async (repos?: any[]) => {
+    const repositoriesToScan = repos || rows;
     console.log(`🚀 [Dashboard] Starting initial scan for all repositories`);
-    await scanAllRepositories(rows);
+    await scanAllRepositories(repositoriesToScan);
   };
 
   const updateRowWithSecurityData = (repoFullName: string, report: RepositorySecurityReport) => {
@@ -551,35 +562,41 @@ export default function UserDashboard() {
         <header className="fixed top-0 right-0 left-0 bg-zinc-900/30 border-b border-zinc-800/50 backdrop-blur-sm z-50" style={{ left: isCollapsed ? '64px' : '256px' }}>
           <div className="px-6 py-4">
             <div className="flex items-center justify-between">
-              <div className="flex-1"></div>
-              <div className="text-center">
-                <h1 className="text-xl font-bold text-white">Security Dashboard</h1>
-              </div>
-              <div className="flex-1 flex justify-end">
-                <div className="flex items-center gap-8">
+              <div className="flex-1 flex items-center">
                 {isConnected ? (
                   <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-green-500/20 border border-green-500/30 rounded-lg">
-                      <Github className="w-4 h-4 text-green-400" />
-                      <span className="text-green-400 text-sm font-medium">{login || 'Connected'}</span>
+                    <div className="flex items-center gap-2 px-2 py-1 bg-zinc-800/30 text-zinc-400 rounded-sm text-xs font-normal border border-zinc-700/30">
+                      <Github className="w-3 h-3" />
+                      <span>{login || 'Connected'}</span>
                     </div>
-                    <button onClick={refreshRepositories} disabled={isLoadingRepos} className="text-zinc-400 hover:text-white transition-colors disabled:opacity-50" title="Refresh repositories">
-                      <RefreshCw className={`w-4 h-4 ${isLoadingRepos ? 'animate-spin' : ''}`} />
+                    <button 
+                      onClick={refreshRepositories} 
+                      disabled={isLoadingRepos} 
+                      className="p-1.5 text-zinc-400 hover:text-white hover:bg-zinc-700/30 rounded-sm transition-colors disabled:opacity-50" 
+                      title="Refresh repositories"
+                    >
+                      <RefreshCw className={`w-3 h-3 ${isLoadingRepos ? 'animate-spin' : ''}`} />
                     </button>
-                    <button onClick={handleGitHubDisconnect} className="text-zinc-400 hover:text-red-400 transition-colors text-sm" title="Disconnect GitHub">
-                      Disconnect
+                    <button 
+                      onClick={handleGitHubDisconnect} 
+                      className="p-1.5 text-zinc-400 hover:text-red-400 hover:bg-zinc-700/30 rounded-sm transition-colors" 
+                      title="Disconnect GitHub"
+                    >
+                      <LogOut className="w-3 h-3" />
                     </button>
                   </div>
                 ) : (
-                  <button onClick={handleGitHubConnect} className="flex items-center gap-2 px-3 py-1.5 bg-zinc-800/50 text-zinc-300 rounded-md text-xs font-medium hover:bg-zinc-700/50 transition-colors border border-zinc-700/50">
+                  <button onClick={handleGitHubConnect} className="flex items-center gap-2 px-2 py-1 bg-zinc-800/30 text-zinc-400 rounded-sm text-xs font-normal hover:bg-zinc-700/30 transition-colors border border-zinc-700/30">
                     <Github className="w-3 h-3" />
                     Connect GitHub
                   </button>
                 )}
               </div>
-
-
-              <div className="relative dropdown-container">
+              <div className="text-center">
+                <h1 className="text-xl font-bold text-white">Security Dashboard</h1>
+              </div>
+              <div className="flex-1 flex justify-end">
+                <div className="relative dropdown-container">
                   <button onClick={() => setShowUserDropdown(v => !v)} className="flex items-center gap-2 text-zinc-400 hover:text-white transition-colors">
                     <div className="w-8 h-8 bg-zinc-700 rounded-full flex items-center justify-center">
                       <FaUser className="w-4 h-4 text-zinc-300" />

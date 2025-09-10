@@ -139,8 +139,8 @@ app.get('/api/auth/github/callback', async (req, res) => {
     });
     if (u.ok) req.session.githubUser = await u.json();
 
-    // Redirect back to frontend dashboard after successful authentication
-    res.redirect('http://localhost:5173/user-dashboard');
+    // Redirect back to frontend dashboard with success
+    res.redirect('http://localhost:5173/user-dashboard?auth=success');
   } catch (e) {
     console.error('Callback error:', e);
     res.status(500).send('Server error');

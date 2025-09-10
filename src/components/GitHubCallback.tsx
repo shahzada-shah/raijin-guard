@@ -5,25 +5,51 @@ import { githubAuthServer } from '../services/githubAuthServer';
 export default function GitHubCallback() {
   const navigate = useNavigate();
   const [err, setErr] = useState<string | null>(null);
+  const [status, setStatus] = useState<string>('Completing sign-in...');
 
   useEffect(() => {
     (async () => {
-      const p = new URLSearchParams(window.location.search);
-      const code = p.get('code');
-      const state = p.get('state');
-      if (!code || !state) { setErr('Missing code/state'); return; }
       try {
-        await githubAuthServer.handleCallback(code, state);
-        navigate('/user-dashboard', { replace: true });
+        setStatus('Verifying authentication...');
+        
+        // Check if we're authenticated by checking the auth status
+        const authStatus = await githubAuthServer.status();
+        
+        if (authStatus.connected) {
+          setStatus('Authentication successful! Redirecting...');
+          // Small delay to show success message
+          setTimeout(() => {
+            navigate('/user-dashboard', { replace: true });
+          }, 1000);
+        } else {
+          setErr('Authentication failed - not connected');
+        }
       } catch (e: any) {
+        console.error('OAuth callback error:', e);
         setErr(e?.message || 'OAuth failed');
       }
     })();
   }, [navigate]);
 
   return (
-    <div style={{ color: '#fff', padding: 16 }}>
-      Completing sign-in... {err && <span style={{ color: '#f66' }}>OAuth callback failed: {err}</span>}
+    <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
+      <div className="text-center">
+        <div className="text-white text-lg mb-4">{status}</div>
+        {err && (
+          <div className="text-red-400 mb-4">
+            OAuth callback failed: {err}
+          </div>
+        )}
+        <div className="text-zinc-400 text-sm">
+          If you're not redirected automatically, 
+          <button 
+            onClick={() => navigate('/user-dashboard')} 
+            className="text-blue-400 hover:text-blue-300 underline ml-1"
+          >
+            click here
+          </button>
+        </div>
+      </div>
     </div>
   );
 }
