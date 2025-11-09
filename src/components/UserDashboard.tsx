@@ -938,10 +938,13 @@ export default function UserDashboard() {
         </header>
 
         <main className="flex-1 p-6 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 pt-24">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">Security Dashboard</h1>
-            <p className="text-zinc-400 text-base">Comprehensive threat detection and vulnerability analysis for your repositories.</p>
-          </div>
+          {/* Dashboard View */}
+          {activeMenuItem === 'Dashboard' && (
+            <>
+              <div className="mb-8">
+                <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">Security Dashboard</h1>
+                <p className="text-zinc-400 text-base">Comprehensive threat detection and vulnerability analysis for your repositories.</p>
+              </div>
 
           <div className="grid grid-cols-2 md:grid-cols-5 gap-6 mb-8">
             <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm animate-slide-up-fade" style={{ animationDelay: '0.1s' }}>
@@ -1727,6 +1730,393 @@ export default function UserDashboard() {
                   </div>
                 </div>
 
+              </div>
+            </div>
+          )}
+
+          {/* Support Modal */}
+          {showSupportModal && (
+            <div className="fixed inset-0 z-[60] flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-backdrop-fade" onClick={() => setShowSupportModal(false)}></div>
+              <div className="relative bg-zinc-900 border border-zinc-800/50 rounded-lg shadow-2xl w-full max-w-md p-6 m-4 animate-modal-appear">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold text-white tracking-tight">Support Center</h2>
+                  <button onClick={() => setShowSupportModal(false)} className="text-zinc-400 hover:text-white transition-colors">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  <p className="text-zinc-400 text-sm">
+                    Need assistance with RaijinGuard? Our security team is here to help.
+                  </p>
+                  <div className="space-y-3">
+                    <a href="#" onClick={(e) => e.preventDefault()} className="block p-3 bg-zinc-800/30 hover:bg-zinc-800/50 rounded-lg transition-colors border border-zinc-700/30">
+                      <div className="flex items-center gap-3">
+                        <HelpCircle className="w-5 h-5 text-zinc-400" />
+                        <div>
+                          <div className="text-white font-medium text-sm">Documentation</div>
+                          <div className="text-zinc-400 text-xs">Browse our security guides</div>
+                        </div>
+                      </div>
+                    </a>
+                    <a href="#" onClick={(e) => e.preventDefault()} className="block p-3 bg-zinc-800/30 hover:bg-zinc-800/50 rounded-lg transition-colors border border-zinc-700/30">
+                      <div className="flex items-center gap-3">
+                        <AlertTriangle className="w-5 h-5 text-zinc-400" />
+                        <div>
+                          <div className="text-white font-medium text-sm">Report Issue</div>
+                          <div className="text-zinc-400 text-xs">Submit a security concern</div>
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                  <div className="pt-4 border-t border-zinc-800/50">
+                    <p className="text-zinc-500 text-xs">
+                      Email: <span className="text-white">security@raijinguard.com</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Settings Modal */}
+          {showSettingsModal && (
+            <div className="fixed inset-0 z-[60] flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-backdrop-fade" onClick={() => setShowSettingsModal(false)}></div>
+              <div className="relative bg-zinc-900 border border-zinc-800/50 rounded-lg shadow-2xl w-full max-w-md p-6 m-4 animate-modal-appear">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold text-white tracking-tight">Settings</h2>
+                  <button onClick={() => setShowSettingsModal(false)} className="text-zinc-400 hover:text-white transition-colors">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-sm font-medium text-white mb-3">Security Preferences</h3>
+                    <div className="space-y-3">
+                      <label className="flex items-center justify-between p-4 bg-zinc-800/30 rounded-lg border border-zinc-700/30 cursor-pointer hover:bg-zinc-800/50 hover:border-zinc-600/50 transition-all duration-300 gap-4">
+                        <div className="flex-1">
+                          <div className="text-white text-sm font-medium">Auto-scan new repositories</div>
+                          <div className="text-zinc-400 text-xs mt-1">Automatically scan when repos are added</div>
+                        </div>
+                        <div className="flex-shrink-0">
+                          <input 
+                            type="checkbox" 
+                            defaultChecked 
+                            className="w-5 h-5 rounded bg-zinc-700/50 border-2 border-zinc-600 checked:bg-white checked:border-white appearance-none cursor-pointer relative transition-all duration-300 ease-out hover:border-zinc-500 checked:hover:bg-zinc-200 checked:hover:border-zinc-200 after:content-[''] after:absolute after:inset-0 after:bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iOSIgdmlld0JveD0iMCAwIDEyIDkiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0xIDRMNC41IDcuNUwxMSAxIiBzdHJva2U9IiMxODE4MWIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=')] after:bg-center after:bg-no-repeat after:opacity-0 checked:after:opacity-100 after:transition-opacity after:duration-200" 
+                          />
+                        </div>
+                      </label>
+                      <label className="flex items-center justify-between p-4 bg-zinc-800/30 rounded-lg border border-zinc-700/30 cursor-pointer hover:bg-zinc-800/50 hover:border-zinc-600/50 transition-all duration-300 gap-4">
+                        <div className="flex-1">
+                          <div className="text-white text-sm font-medium">Security notifications</div>
+                          <div className="text-zinc-400 text-xs mt-1">Receive alerts for critical issues</div>
+                        </div>
+                        <div className="flex-shrink-0">
+                          <input 
+                            type="checkbox" 
+                            defaultChecked 
+                            className="w-5 h-5 rounded bg-zinc-700/50 border-2 border-zinc-600 checked:bg-white checked:border-white appearance-none cursor-pointer relative transition-all duration-300 ease-out hover:border-zinc-500 checked:hover:bg-zinc-200 checked:hover:border-zinc-200 after:content-[''] after:absolute after:inset-0 after:bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iOSIgdmlld0JveD0iMCAwIDEyIDkiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0xIDRMNC41IDcuNUwxMSAxIiBzdHJva2U9IiMxODE4MWIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=')] after:bg-center after:bg-no-repeat after:opacity-0 checked:after:opacity-100 after:transition-opacity after:duration-200" 
+                          />
+                        </div>
+                      </label>
+                      <label className="flex items-center justify-between p-4 bg-zinc-800/30 rounded-lg border border-zinc-700/30 cursor-pointer hover:bg-zinc-800/50 hover:border-zinc-600/50 transition-all duration-300 gap-4">
+                        <div className="flex-1">
+                          <div className="text-white text-sm font-medium">Weekly reports</div>
+                          <div className="text-zinc-400 text-xs mt-1">Email summary of security status</div>
+                        </div>
+                        <div className="flex-shrink-0">
+                          <input 
+                            type="checkbox" 
+                            className="w-5 h-5 rounded bg-zinc-700/50 border-2 border-zinc-600 checked:bg-white checked:border-white appearance-none cursor-pointer relative transition-all duration-300 ease-out hover:border-zinc-500 checked:hover:bg-zinc-200 checked:hover:border-zinc-200 after:content-[''] after:absolute after:inset-0 after:bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iOSIgdmlld0JveD0iMCAwIDEyIDkiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0xIDRMNC41IDcuNUwxMSAxIiBzdHJva2U9IiMxODE4MWIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=')] after:bg-center after:bg-no-repeat after:opacity-0 checked:after:opacity-100 after:transition-opacity after:duration-200" 
+                          />
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                  <div className="pt-4 border-t border-zinc-800/50">
+                    <button onClick={() => setShowSettingsModal(false)} className="w-full bg-white text-zinc-900 py-2 px-4 rounded-lg font-medium hover:bg-zinc-100 transition-colors text-sm">
+                      Save Changes
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+            </>
+          )}
+
+          {/* Security Scans View */}
+          {activeMenuItem === 'Security Scans' && (
+            <div className="animate-slide-up-fade">
+              <div className="mb-8">
+                <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">Security Scans</h1>
+                <p className="text-zinc-400 text-base">Active vulnerability scanning and threat detection operations.</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-6 backdrop-blur-sm animate-slide-up-fade" style={{ animationDelay: '0.1s' }}>
+                  <div className="flex items-center justify-between mb-4">
+                    <Shield className="w-8 h-8 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]" />
+                    <div className={`px-3 py-1 rounded-full text-xs font-semibold ${isScanning ? 'bg-yellow-500/20 text-yellow-400' : 'bg-green-500/20 text-green-400'}`}>
+                      {isScanning ? 'SCANNING' : 'READY'}
+                    </div>
+                  </div>
+                  <h3 className="text-white font-semibold text-lg mb-2">Active Scans</h3>
+                  <p className="text-4xl font-bold text-white mb-2">{scanningRepos.size}</p>
+                  <p className="text-zinc-400 text-sm">Currently running</p>
+                </div>
+
+                <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-6 backdrop-blur-sm animate-slide-up-fade" style={{ animationDelay: '0.2s' }}>
+                  <div className="flex items-center justify-between mb-4">
+                    <Clock className="w-8 h-8 text-zinc-400" />
+                  </div>
+                  <h3 className="text-white font-semibold text-lg mb-2">Completed Today</h3>
+                  <p className="text-4xl font-bold text-white mb-2">{hasInitialScanned ? rows.length : 0}</p>
+                  <p className="text-zinc-400 text-sm">Successful scans</p>
+                </div>
+
+                <div className="bg-zinc-900/30 border border-red-900/30 rounded-lg p-6 backdrop-blur-sm animate-slide-up-fade" style={{ animationDelay: '0.3s' }}>
+                  <div className="flex items-center justify-between mb-4">
+                    <AlertTriangle className="w-8 h-8 text-red-400" />
+                    {metrics.criticalVulnerabilities > 0 && (
+                      <div className="w-3 h-3 bg-red-500 rounded-full animate-critical-pulse"></div>
+                    )}
+                  </div>
+                  <h3 className="text-white font-semibold text-lg mb-2">Threats Detected</h3>
+                  <p className="text-4xl font-bold text-red-400 mb-2">{metrics.criticalVulnerabilities}</p>
+                  <p className="text-zinc-400 text-sm">Critical issues found</p>
+                </div>
+              </div>
+
+              <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg backdrop-blur-sm overflow-hidden mb-8 animate-slide-up-fade" style={{ animationDelay: '0.4s' }}>
+                <div className="p-6 border-b border-zinc-800/30">
+                  <h2 className="text-xl font-bold text-white tracking-tight">Scan Queue</h2>
+                </div>
+                <div className="p-6">
+                  <div className="space-y-4">
+                    {rows.slice(0, 5).map((repo, index) => (
+                      <div key={repo.full_name} className="flex items-center justify-between p-4 bg-zinc-800/30 rounded-lg border border-zinc-700/30 hover:border-zinc-600/50 transition-all duration-300">
+                        <div className="flex items-center gap-4">
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${scanningRepos.has(repo.full_name) ? 'bg-yellow-500/20' : 'bg-zinc-700/50'}`}>
+                            <Shield className={`w-5 h-5 ${scanningRepos.has(repo.full_name) ? 'text-yellow-400' : 'text-zinc-400'}`} />
+                          </div>
+                          <div>
+                            <p className="text-white font-medium">{repo.repo}</p>
+                            <p className="text-zinc-400 text-sm">{repo.full_name}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4">
+                          <div className="text-right">
+                            <p className="text-zinc-400 text-sm">Last scan</p>
+                            <p className="text-white text-sm font-medium">{repo.lastScan}</p>
+                          </div>
+                          {scanningRepos.has(repo.full_name) ? (
+                            <div className="w-5 h-5 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
+                          ) : (
+                            <button 
+                              onClick={() => scanSingleRepository(repo.full_name)}
+                              className="px-4 py-2 bg-zinc-800/50 hover:bg-white hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] text-zinc-300 hover:text-zinc-900 rounded-md text-sm font-medium transition-all duration-300 ease-out border border-zinc-700/50 hover:border-white"
+                            >
+                              Scan Now
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Reports View */}
+          {activeMenuItem === 'Reports' && (
+            <div className="animate-slide-up-fade">
+              <div className="mb-8">
+                <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">Security Reports</h1>
+                <p className="text-zinc-400 text-base">Comprehensive vulnerability analysis and intelligence reports.</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-6 backdrop-blur-sm animate-slide-up-fade" style={{ animationDelay: '0.1s' }}>
+                  <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-3">
+                      <FileText className="w-6 h-6 text-white" />
+                      <h3 className="text-white font-semibold text-lg">Vulnerability Summary</h3>
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-zinc-400">Critical</span>
+                      <div className="flex items-center gap-3">
+                        <div className="w-32 h-2 bg-zinc-800 rounded-full overflow-hidden">
+                          <div className="h-full bg-red-500" style={{ width: `${(metrics.criticalVulnerabilities / metrics.totalVulnerabilities) * 100}%` }}></div>
+                        </div>
+                        <span className="text-red-400 font-bold w-8 text-right">{metrics.criticalVulnerabilities}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-zinc-400">High</span>
+                      <div className="flex items-center gap-3">
+                        <div className="w-32 h-2 bg-zinc-800 rounded-full overflow-hidden">
+                          <div className="h-full bg-orange-500" style={{ width: `${(metrics.highVulnerabilities / metrics.totalVulnerabilities) * 100}%` }}></div>
+                        </div>
+                        <span className="text-orange-400 font-bold w-8 text-right">{metrics.highVulnerabilities}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-zinc-400">Medium</span>
+                      <div className="flex items-center gap-3">
+                        <div className="w-32 h-2 bg-zinc-800 rounded-full overflow-hidden">
+                          <div className="h-full bg-yellow-500" style={{ width: `${(metrics.mediumVulnerabilities / metrics.totalVulnerabilities) * 100}%` }}></div>
+                        </div>
+                        <span className="text-yellow-400 font-bold w-8 text-right">{metrics.mediumVulnerabilities}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-zinc-400">Low</span>
+                      <div className="flex items-center gap-3">
+                        <div className="w-32 h-2 bg-zinc-800 rounded-full overflow-hidden">
+                          <div className="h-full bg-green-500" style={{ width: `${(metrics.lowVulnerabilities / metrics.totalVulnerabilities) * 100}%` }}></div>
+                        </div>
+                        <span className="text-green-400 font-bold w-8 text-right">{metrics.lowVulnerabilities}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-6 backdrop-blur-sm animate-slide-up-fade" style={{ animationDelay: '0.2s' }}>
+                  <div className="flex items-center gap-3 mb-6">
+                    <Activity className="w-6 h-6 text-white" />
+                    <h3 className="text-white font-semibold text-lg">Repository Health</h3>
+                  </div>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+                      <span className="text-zinc-300">Healthy</span>
+                      <span className="text-green-400 font-bold text-xl">{metrics.healthyRepos}</span>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-red-500/10 rounded-lg border border-red-500/20">
+                      <span className="text-zinc-300">Critical</span>
+                      <span className="text-red-400 font-bold text-xl">{metrics.criticalRepos}</span>
+                    </div>
+                    <div className="flex items-center justify-between p-3 bg-zinc-700/20 rounded-lg border border-zinc-700/30">
+                      <span className="text-zinc-300">Total Repositories</span>
+                      <span className="text-white font-bold text-xl">{metrics.totalRepos}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg backdrop-blur-sm overflow-hidden animate-slide-up-fade" style={{ animationDelay: '0.3s' }}>
+                <div className="p-6 border-b border-zinc-800/30">
+                  <h2 className="text-xl font-bold text-white tracking-tight">Generated Reports</h2>
+                </div>
+                <div className="p-6">
+                  <div className="space-y-3">
+                    {[
+                      { name: 'Weekly Security Digest', date: 'Nov 9, 2025', type: 'Summary', severity: 'info' },
+                      { name: 'Critical Vulnerabilities Report', date: 'Nov 8, 2025', type: 'Alert', severity: 'critical' },
+                      { name: 'Dependency Analysis', date: 'Nov 7, 2025', type: 'Analysis', severity: 'info' },
+                      { name: 'Compliance Audit', date: 'Nov 6, 2025', type: 'Audit', severity: 'warning' },
+                    ].map((report, index) => (
+                      <div key={index} className="flex items-center justify-between p-4 bg-zinc-800/30 rounded-lg border border-zinc-700/30 hover:bg-zinc-800/50 hover:border-zinc-600/50 transition-all duration-300 cursor-pointer group">
+                        <div className="flex items-center gap-4">
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                            report.severity === 'critical' ? 'bg-red-500/20' :
+                            report.severity === 'warning' ? 'bg-yellow-500/20' :
+                            'bg-zinc-700/50'
+                          }`}>
+                            <FileText className={`w-5 h-5 ${
+                              report.severity === 'critical' ? 'text-red-400' :
+                              report.severity === 'warning' ? 'text-yellow-400' :
+                              'text-zinc-400'
+                            }`} />
+                          </div>
+                          <div>
+                            <p className="text-white font-medium group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] transition-all">{report.name}</p>
+                            <p className="text-zinc-400 text-sm">{report.type} • {report.date}</p>
+                          </div>
+                        </div>
+                        <button className="px-4 py-2 bg-zinc-800/50 hover:bg-white hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] text-zinc-300 hover:text-zinc-900 rounded-md text-sm font-medium transition-all duration-300 ease-out border border-zinc-700/50 hover:border-white">
+                          View
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Activity View */}
+          {activeMenuItem === 'Activity' && (
+            <div className="animate-slide-up-fade">
+              <div className="mb-8">
+                <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">Activity Log</h1>
+                <p className="text-zinc-400 text-base">Real-time monitoring and audit trail of all security operations.</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+                <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm animate-slide-up-fade" style={{ animationDelay: '0.1s' }}>
+                  <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium mb-2">Events Today</p>
+                  <p className="text-white text-3xl font-bold">{hasInitialScanned ? rows.length * 3 : 0}</p>
+                </div>
+                <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm animate-slide-up-fade" style={{ animationDelay: '0.2s' }}>
+                  <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium mb-2">Active Users</p>
+                  <p className="text-white text-3xl font-bold">1</p>
+                </div>
+                <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm animate-slide-up-fade" style={{ animationDelay: '0.3s' }}>
+                  <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium mb-2">API Calls</p>
+                  <p className="text-white text-3xl font-bold">{hasInitialScanned ? rows.length * 5 : 0}</p>
+                </div>
+                <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm animate-slide-up-fade" style={{ animationDelay: '0.4s' }}>
+                  <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium mb-2">Alerts Sent</p>
+                  <p className="text-white text-3xl font-bold">{metrics.criticalVulnerabilities}</p>
+                </div>
+              </div>
+
+              <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg backdrop-blur-sm overflow-hidden animate-slide-up-fade" style={{ animationDelay: '0.5s' }}>
+                <div className="p-6 border-b border-zinc-800/30">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-xl font-bold text-white tracking-tight">Recent Activity</h2>
+                    <div className="flex items-center gap-2 px-3 py-1 bg-green-500/20 border border-green-500/30 rounded text-xs">
+                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                      <span className="text-green-400 font-medium">Live</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="p-6">
+                  <div className="space-y-4">
+                    {[
+                      { action: 'Security scan completed', repo: rows[0]?.repo || 'repository-1', time: '2 minutes ago', type: 'scan', severity: 'success' },
+                      { action: 'Critical vulnerability detected', repo: rows[1]?.repo || 'repository-2', time: '15 minutes ago', type: 'alert', severity: 'critical' },
+                      { action: 'User authenticated', repo: 'GitHub OAuth', time: '1 hour ago', type: 'auth', severity: 'info' },
+                      { action: 'Repository added', repo: rows[2]?.repo || 'repository-3', time: '2 hours ago', type: 'repo', severity: 'info' },
+                      { action: 'Scan initiated', repo: rows[3]?.repo || 'repository-4', time: '3 hours ago', type: 'scan', severity: 'info' },
+                      { action: 'Report generated', repo: 'Weekly Summary', time: '5 hours ago', type: 'report', severity: 'success' },
+                    ].map((activity, index) => (
+                      <div key={index} className="flex items-start gap-4 p-4 bg-zinc-800/20 rounded-lg border border-zinc-700/30 hover:bg-zinc-800/30 transition-all duration-300">
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                          activity.severity === 'critical' ? 'bg-red-500/20' :
+                          activity.severity === 'success' ? 'bg-green-500/20' :
+                          'bg-zinc-700/50'
+                        }`}>
+                          {activity.type === 'scan' && <Shield className={`w-5 h-5 ${activity.severity === 'success' ? 'text-green-400' : 'text-zinc-400'}`} />}
+                          {activity.type === 'alert' && <AlertTriangle className="w-5 h-5 text-red-400" />}
+                          {activity.type === 'auth' && <UserIcon className="w-5 h-5 text-zinc-400" />}
+                          {activity.type === 'repo' && <Github className="w-5 h-5 text-zinc-400" />}
+                          {activity.type === 'report' && <FileText className="w-5 h-5 text-green-400" />}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white font-medium">{activity.action}</p>
+                          <p className="text-zinc-400 text-sm truncate">{activity.repo}</p>
+                        </div>
+                        <span className="text-zinc-500 text-sm whitespace-nowrap">{activity.time}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           )}
