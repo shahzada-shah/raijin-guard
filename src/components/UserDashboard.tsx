@@ -74,50 +74,82 @@ export default function UserDashboard() {
   const [showSupportModal, setShowSupportModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
 
+  // Hardcoded control center data
+  const MOCK_METRICS = {
+    totalVulnerabilities: 47,
+    criticalVulnerabilities: 8,
+    highVulnerabilities: 15,
+    mediumVulnerabilities: 18,
+    lowVulnerabilities: 6,
+    totalRepos: 12,
+    scannedRepos: 12,
+    avgRiskScore: 68,
+    healthyRepos: 5,
+    criticalRepos: 3
+  };
+
+  const [animatedMetrics, setAnimatedMetrics] = useState({
+    totalVulnerabilities: 0,
+    criticalVulnerabilities: 0,
+    highVulnerabilities: 0,
+    mediumVulnerabilities: 0,
+    lowVulnerabilities: 0,
+    totalRepos: 0,
+    scannedRepos: 0,
+    avgRiskScore: 0,
+    healthyRepos: 0,
+    criticalRepos: 0
+  });
+
   // Calculate security metrics from scan results
   const calculateSecurityMetrics = () => {
-    const reports = Array.from(securityReports.values());
-    
-    if (reports.length === 0) {
-      return {
-        totalVulnerabilities: 0,
-        criticalVulnerabilities: 0,
-        highVulnerabilities: 0,
-        mediumVulnerabilities: 0,
-        lowVulnerabilities: 0,
-        totalRepos: rows.length,
-        scannedRepos: reports.length,
-        avgRiskScore: 0,
-        healthyRepos: 0,
-        criticalRepos: 0
-      };
-    }
-
-    const totalVulnerabilities = reports.reduce((sum, report) => sum + report.summary.total_vulnerabilities, 0);
-    const criticalVulnerabilities = reports.reduce((sum, report) => sum + report.summary.critical, 0);
-    const highVulnerabilities = reports.reduce((sum, report) => sum + report.summary.high, 0);
-    const mediumVulnerabilities = reports.reduce((sum, report) => sum + report.summary.medium, 0);
-    const lowVulnerabilities = reports.reduce((sum, report) => sum + report.summary.low, 0);
-    const avgRiskScore = reports.reduce((sum, report) => sum + report.summary.risk_score, 0) / reports.length;
-    
-    const healthyRepos = reports.filter(report => report.summary.total_vulnerabilities === 0).length;
-    const criticalRepos = reports.filter(report => report.summary.critical > 0 || report.summary.high > 5).length;
-
-    return {
-      totalVulnerabilities,
-      criticalVulnerabilities,
-      highVulnerabilities,
-      mediumVulnerabilities,
-      lowVulnerabilities,
-      totalRepos: rows.length,
-      scannedRepos: reports.length,
-      avgRiskScore: Math.round(avgRiskScore),
-      healthyRepos,
-      criticalRepos
-    };
+    return animatedMetrics;
   };
 
   const metrics = calculateSecurityMetrics();
+
+  // Animate metrics on load
+  useEffect(() => {
+    // Simulate loading delay
+    const loadTimer = setTimeout(() => {
+      setHasInitialScanned(true);
+
+      // Animate each metric individually
+      const duration = 1500;
+      const steps = 60;
+      const stepDuration = duration / steps;
+
+      let currentStep = 0;
+
+      const animationInterval = setInterval(() => {
+        currentStep++;
+        const progress = currentStep / steps;
+        const easeOutProgress = 1 - Math.pow(1 - progress, 3); // Ease-out cubic
+
+        setAnimatedMetrics({
+          totalVulnerabilities: Math.round(MOCK_METRICS.totalVulnerabilities * easeOutProgress),
+          criticalVulnerabilities: Math.round(MOCK_METRICS.criticalVulnerabilities * easeOutProgress),
+          highVulnerabilities: Math.round(MOCK_METRICS.highVulnerabilities * easeOutProgress),
+          mediumVulnerabilities: Math.round(MOCK_METRICS.mediumVulnerabilities * easeOutProgress),
+          lowVulnerabilities: Math.round(MOCK_METRICS.lowVulnerabilities * easeOutProgress),
+          totalRepos: Math.round(MOCK_METRICS.totalRepos * easeOutProgress),
+          scannedRepos: Math.round(MOCK_METRICS.scannedRepos * easeOutProgress),
+          avgRiskScore: Math.round(MOCK_METRICS.avgRiskScore * easeOutProgress),
+          healthyRepos: Math.round(MOCK_METRICS.healthyRepos * easeOutProgress),
+          criticalRepos: Math.round(MOCK_METRICS.criticalRepos * easeOutProgress)
+        });
+
+        if (currentStep >= steps) {
+          clearInterval(animationInterval);
+          setAnimatedMetrics(MOCK_METRICS);
+        }
+      }, stepDuration);
+
+      return () => clearInterval(animationInterval);
+    }, 2000); // 2 second loading delay
+
+    return () => clearTimeout(loadTimer);
+  }, []);
 
   // Load scan results from localStorage
   const loadScanResults = () => {
@@ -152,56 +184,313 @@ export default function UserDashboard() {
     }
   };
 
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        // Check for auth success parameter
-        const urlParams = new URLSearchParams(window.location.search);
-        if (urlParams.get('auth') === 'success') {
-          // Clean up the URL
-          window.history.replaceState({}, document.title, window.location.pathname);
-        }
+  // Hardcoded mock repositories
+  const MOCK_REPOS: SecurityRow[] = [
+    {
+      status: 'Critical',
+      repo: 'web-api-gateway',
+      language: 'TypeScript',
+      risk: '85',
+      lastScan: '2 mins ago',
+      vulnerabilities: 12,
+      branch: 'main',
+      color: 'red',
+      description: 'Core API gateway service',
+      uptime: '99.2%',
+      messages: '24',
+      incidents: '3',
+      securityScore: '62',
+      activeAlerts: 5,
+      successRate: '94.5%',
+      full_name: 'company/web-api-gateway',
+      html_url: 'https://github.com/company/web-api-gateway',
+      stargazers_count: 234,
+      forks_count: 45,
+      open_issues_count: 8,
+      updated_at: new Date().toISOString(),
+      private: true
+    },
+    {
+      status: 'Warning',
+      repo: 'auth-service',
+      language: 'Go',
+      risk: '58',
+      lastScan: '5 mins ago',
+      vulnerabilities: 6,
+      branch: 'main',
+      color: 'yellow',
+      description: 'Authentication microservice',
+      uptime: '99.8%',
+      messages: '12',
+      incidents: '1',
+      securityScore: '78',
+      activeAlerts: 2,
+      successRate: '98.2%',
+      full_name: 'company/auth-service',
+      html_url: 'https://github.com/company/auth-service',
+      stargazers_count: 156,
+      forks_count: 32,
+      open_issues_count: 4,
+      updated_at: new Date().toISOString(),
+      private: true
+    },
+    {
+      status: 'Healthy',
+      repo: 'frontend-dashboard',
+      language: 'React',
+      risk: '22',
+      lastScan: '10 mins ago',
+      vulnerabilities: 0,
+      branch: 'main',
+      color: 'green',
+      description: 'Main web dashboard',
+      uptime: '99.9%',
+      messages: '8',
+      incidents: '0',
+      securityScore: '94',
+      activeAlerts: 0,
+      successRate: '99.7%',
+      full_name: 'company/frontend-dashboard',
+      html_url: 'https://github.com/company/frontend-dashboard',
+      stargazers_count: 89,
+      forks_count: 23,
+      open_issues_count: 2,
+      updated_at: new Date().toISOString(),
+      private: false
+    },
+    {
+      status: 'Critical',
+      repo: 'payment-processor',
+      language: 'Python',
+      risk: '92',
+      lastScan: '1 min ago',
+      vulnerabilities: 18,
+      branch: 'main',
+      color: 'red',
+      description: 'Payment processing service',
+      uptime: '98.5%',
+      messages: '45',
+      incidents: '7',
+      securityScore: '45',
+      activeAlerts: 8,
+      successRate: '91.3%',
+      full_name: 'company/payment-processor',
+      html_url: 'https://github.com/company/payment-processor',
+      stargazers_count: 312,
+      forks_count: 67,
+      open_issues_count: 15,
+      updated_at: new Date().toISOString(),
+      private: true
+    },
+    {
+      status: 'Warning',
+      repo: 'data-pipeline',
+      language: 'Java',
+      risk: '64',
+      lastScan: '8 mins ago',
+      vulnerabilities: 8,
+      branch: 'develop',
+      color: 'yellow',
+      description: 'ETL data pipeline',
+      uptime: '99.4%',
+      messages: '18',
+      incidents: '2',
+      securityScore: '71',
+      activeAlerts: 3,
+      successRate: '96.8%',
+      full_name: 'company/data-pipeline',
+      html_url: 'https://github.com/company/data-pipeline',
+      stargazers_count: 178,
+      forks_count: 41,
+      open_issues_count: 6,
+      updated_at: new Date().toISOString(),
+      private: true
+    },
+    {
+      status: 'Healthy',
+      repo: 'mobile-app',
+      language: 'Swift',
+      risk: '18',
+      lastScan: '15 mins ago',
+      vulnerabilities: 1,
+      branch: 'main',
+      color: 'green',
+      description: 'iOS mobile application',
+      uptime: '99.9%',
+      messages: '5',
+      incidents: '0',
+      securityScore: '96',
+      activeAlerts: 0,
+      successRate: '99.8%',
+      full_name: 'company/mobile-app',
+      html_url: 'https://github.com/company/mobile-app',
+      stargazers_count: 445,
+      forks_count: 92,
+      open_issues_count: 3,
+      updated_at: new Date().toISOString(),
+      private: false
+    },
+    {
+      status: 'Warning',
+      repo: 'notification-service',
+      language: 'Node.js',
+      risk: '52',
+      lastScan: '12 mins ago',
+      vulnerabilities: 4,
+      branch: 'main',
+      color: 'yellow',
+      description: 'Real-time notification system',
+      uptime: '99.6%',
+      messages: '15',
+      incidents: '1',
+      securityScore: '82',
+      activeAlerts: 1,
+      successRate: '97.5%',
+      full_name: 'company/notification-service',
+      html_url: 'https://github.com/company/notification-service',
+      stargazers_count: 98,
+      forks_count: 28,
+      open_issues_count: 5,
+      updated_at: new Date().toISOString(),
+      private: true
+    },
+    {
+      status: 'Critical',
+      repo: 'legacy-monolith',
+      language: 'PHP',
+      risk: '88',
+      lastScan: '3 mins ago',
+      vulnerabilities: 15,
+      branch: 'master',
+      color: 'red',
+      description: 'Legacy core system',
+      uptime: '97.8%',
+      messages: '67',
+      incidents: '12',
+      securityScore: '38',
+      activeAlerts: 10,
+      successRate: '89.2%',
+      full_name: 'company/legacy-monolith',
+      html_url: 'https://github.com/company/legacy-monolith',
+      stargazers_count: 12,
+      forks_count: 8,
+      open_issues_count: 23,
+      updated_at: new Date().toISOString(),
+      private: true
+    },
+    {
+      status: 'Healthy',
+      repo: 'cdn-manager',
+      language: 'Rust',
+      risk: '12',
+      lastScan: '20 mins ago',
+      vulnerabilities: 0,
+      branch: 'main',
+      color: 'green',
+      description: 'CDN management service',
+      uptime: '99.99%',
+      messages: '3',
+      incidents: '0',
+      securityScore: '98',
+      activeAlerts: 0,
+      successRate: '99.9%',
+      full_name: 'company/cdn-manager',
+      html_url: 'https://github.com/company/cdn-manager',
+      stargazers_count: 567,
+      forks_count: 134,
+      open_issues_count: 1,
+      updated_at: new Date().toISOString(),
+      private: false
+    },
+    {
+      status: 'Warning',
+      repo: 'analytics-engine',
+      language: 'Scala',
+      risk: '61',
+      lastScan: '7 mins ago',
+      vulnerabilities: 7,
+      branch: 'develop',
+      color: 'yellow',
+      description: 'Real-time analytics processor',
+      uptime: '99.3%',
+      messages: '22',
+      incidents: '2',
+      securityScore: '74',
+      activeAlerts: 3,
+      successRate: '95.8%',
+      full_name: 'company/analytics-engine',
+      html_url: 'https://github.com/company/analytics-engine',
+      stargazers_count: 203,
+      forks_count: 56,
+      open_issues_count: 9,
+      updated_at: new Date().toISOString(),
+      private: true
+    },
+    {
+      status: 'Healthy',
+      repo: 'docs-portal',
+      language: 'Vue',
+      risk: '15',
+      lastScan: '18 mins ago',
+      vulnerabilities: 0,
+      branch: 'main',
+      color: 'green',
+      description: 'Documentation website',
+      uptime: '99.95%',
+      messages: '6',
+      incidents: '0',
+      securityScore: '97',
+      activeAlerts: 0,
+      successRate: '99.6%',
+      full_name: 'company/docs-portal',
+      html_url: 'https://github.com/company/docs-portal',
+      stargazers_count: 145,
+      forks_count: 67,
+      open_issues_count: 2,
+      updated_at: new Date().toISOString(),
+      private: false
+    },
+    {
+      status: 'Warning',
+      repo: 'email-service',
+      language: 'Ruby',
+      risk: '55',
+      lastScan: '9 mins ago',
+      vulnerabilities: 5,
+      branch: 'main',
+      color: 'yellow',
+      description: 'Email delivery service',
+      uptime: '99.5%',
+      messages: '19',
+      incidents: '1',
+      securityScore: '79',
+      activeAlerts: 2,
+      successRate: '96.3%',
+      full_name: 'company/email-service',
+      html_url: 'https://github.com/company/email-service',
+      stargazers_count: 67,
+      forks_count: 19,
+      open_issues_count: 7,
+      updated_at: new Date().toISOString(),
+      private: true
+    }
+  ];
 
-        const authStatus = await githubAuthServer.status();
-        if (!mounted) return;
-        setIsConnected(authStatus.connected);
-        
-        if (authStatus.connected) {
-          // Get user info from auth status
-          setLogin(authStatus.login || null);
-          
-          // Get repositories
-          setIsLoadingRepos(true);
-          const rawRepos = await githubApiServer.getUserRepositories();
-          if (!mounted) return;
-          const securityRepos = githubApiServer.transformToSecurityData(rawRepos);
-          setRows(securityRepos);
-          
-          // Load saved scan results
-          loadScanResults();
-          
-          // Run initial scan if not already done
-          if (!hasInitialScanned) {
-            setHasInitialScanned(true);
-            // Small delay to let repos load first, then scan the newly loaded repositories
-            setTimeout(() => {
-              runInitialScan(securityRepos);
-            }, 1000);
-          }
-        } else {
-          setLogin(null);
-          setRows([]);
-        }
-      } catch (e: any) {
-        setRepoError(e?.message || 'Failed to load repositories');
-      } finally {
-        setIsLoadingRepos(false);
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
+  useEffect(() => {
+    // Simulate loading repos with animation
+    setIsConnected(true);
+    setLogin('control-center-user');
+
+    const loadTimer = setTimeout(() => {
+      // Add repos one by one for smooth animation
+      MOCK_REPOS.forEach((repo, index) => {
+        setTimeout(() => {
+          setRows(prev => [...prev, repo]);
+        }, index * 150);
+      });
+    }, 1500);
+
+    return () => clearTimeout(loadTimer);
   }, []);
 
   const handleGitHubConnect = () => {
@@ -942,10 +1231,11 @@ export default function UserDashboard() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredRows.map((repo) => (
+                  {filteredRows.map((repo, index) => (
                     <tr
                       key={repo.full_name}
-                      className="border-b border-zinc-800/20 hover:bg-zinc-800/20 transition-colors cursor-pointer"
+                      className="border-b border-zinc-800/20 hover:bg-zinc-800/20 transition-all duration-500 cursor-pointer animate-fadeIn"
+                      style={{ animationDelay: `${index * 0.1}s`, opacity: 0, animationFillMode: 'forwards' }}
                       onClick={() => handleRowClick(repo)}
                     >
                       <td className="py-4 px-6">
