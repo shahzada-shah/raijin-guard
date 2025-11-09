@@ -182,21 +182,13 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
 
           {/* Header actions — simplified */}
           <div className="hidden md:flex items-center gap-4">
-            {/* text link (Sign in style) */}
+            {/* outline pill (Login style) */}
             <button
               onClick={handleLoginClick}
-              className="uppercase text-xs tracking-widest font-semibold text-gray-300 hover:text-white transition-all duration-300 ease-out"
-            >
-              Login
-            </button>
-
-            {/* outline pill (Start Audit style) */}
-            <button
-              onClick={handleStartAudit}
               className="rounded-full px-5 py-2 uppercase text-[11px] font-semibold tracking-widest
                          border border-white text-white hover:bg-white hover:text-gray-900 transition-all duration-300 ease-out"
             >
-              Start Audit
+              Login
             </button>
           </div>
 
@@ -233,15 +225,9 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
           ))}
 
           <div className="pt-4 pb-3 border-t border-gray-700">
-            <div className="px-3 flex items-center gap-3">
-              <button 
-                onClick={handleLoginClick}
-                className="uppercase text-xs tracking-widest font-semibold text-gray-300 hover:text-white transition-colors"
-              >
+            <div className="px-3 flex items-center justify-center">
+              <button onClick={handleLoginClick} className="w-full rounded-full px-5 py-2 uppercase text-[11px] font-semibold tracking-widest border border-white text-white hover:bg-white hover:text-gray-900 transition-all duration-300 ease-out">
                 Login
-              </button>
-              <button onClick={handleStartAudit} className="ml-auto rounded-full px-5 py-2 uppercase text-[11px] font-semibold tracking-widest border border-white text-white hover:bg-white hover:text-gray-900 transition-all duration-300 ease-out">
-                Start Audit
               </button>
             </div>
           </div>

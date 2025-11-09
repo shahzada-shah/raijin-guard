@@ -626,11 +626,11 @@ export default function UserDashboard() {
                         </div>
                       </div>
                       <div className="py-2">
-                        <button onClick={(e) => e.preventDefault()} className="w-full px-4 py-2 text-left text-zinc-300 hover:text-white hover:bg-zinc-800/30 transition-colors flex items-center gap-3">
+                        <button onClick={() => { setShowUserDropdown(false); setShowSettingsModal(true); }} className="w-full px-4 py-2 text-left text-zinc-300 hover:text-white hover:bg-zinc-800/30 transition-colors flex items-center gap-3">
                           <UserIcon className="w-4 h-4" />
                           Profile Settings
                         </button>
-                        <button onClick={(e) => e.preventDefault()} className="w-full px-4 py-2 text-left text-zinc-300 hover:text-white hover:bg-zinc-800/30 transition-colors flex items-center gap-3">
+                        <button onClick={() => { setShowUserDropdown(false); setShowSettingsModal(true); }} className="w-full px-4 py-2 text-left text-zinc-300 hover:text-white hover:bg-zinc-800/30 transition-colors flex items-center gap-3">
                           <Settings className="w-4 h-4" />
                           Account Settings
                         </button>
@@ -657,19 +657,15 @@ export default function UserDashboard() {
 
           <div className="grid grid-cols-2 md:grid-cols-5 gap-6 mb-8">
             <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-2">
-                <div>
-                  <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">Total Vulnerabilities</p>
-                  {isScanning || !hasInitialScanned ? (
-                    <div className="flex flex-col items-center justify-center gap-2 h-20 w-full">
-                      <div className="w-6 h-6 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
-                      <p className="text-zinc-400 text-xs">Loading...</p>
-                    </div>
-                  ) : (
-                    <p className="text-white text-2xl font-bold">{metrics.totalVulnerabilities}</p>
-                  )}
+              <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium mb-2">Total Vulnerabilities</p>
+              {isScanning || !hasInitialScanned ? (
+                <div className="flex flex-col items-center justify-center gap-2 h-20">
+                  <div className="w-6 h-6 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
+                  <p className="text-zinc-400 text-xs">Loading...</p>
                 </div>
-              </div>
+              ) : (
+                <p className="text-white text-2xl font-bold mb-2">{metrics.totalVulnerabilities}</p>
+              )}
               <div className="h-8">
                 {isScanning || !hasInitialScanned ? (
                   <div className="w-full h-full bg-zinc-800/50 rounded animate-pulse"></div>
@@ -688,19 +684,15 @@ export default function UserDashboard() {
               </div>
             </div>
             <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-2">
-                <div>
-                  <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">Repositories</p>
-                  {isScanning || !hasInitialScanned ? (
-                    <div className="flex flex-col items-center justify-center gap-2 h-20 w-full">
-                      <div className="w-6 h-6 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
-                      <p className="text-zinc-400 text-xs">Loading...</p>
-                    </div>
-                  ) : (
-                    <p className="text-white text-2xl font-bold">{metrics.scannedRepos}/{metrics.totalRepos}</p>
-                  )}
+              <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium mb-2">Repositories</p>
+              {isScanning || !hasInitialScanned ? (
+                <div className="flex flex-col items-center justify-center gap-2 h-20">
+                  <div className="w-6 h-6 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
+                  <p className="text-zinc-400 text-xs">Loading...</p>
                 </div>
-              </div>
+              ) : (
+                <p className="text-white text-2xl font-bold mb-2">{metrics.scannedRepos}/{metrics.totalRepos}</p>
+              )}
               <div className="h-8">
                 {isScanning || !hasInitialScanned ? (
                   <div className="w-full h-full bg-zinc-800/50 rounded animate-pulse"></div>
@@ -718,19 +710,15 @@ export default function UserDashboard() {
               </div>
             </div>
             <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-2">
-                <div>
-                  <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">Avg Risk Score</p>
-                  {isScanning || !hasInitialScanned ? (
-                    <div className="flex flex-col items-center justify-center gap-2 h-20 w-full">
-                      <div className="w-6 h-6 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
-                      <p className="text-zinc-400 text-xs">Loading...</p>
-                    </div>
-                  ) : (
-                    <p className="text-white text-2xl font-bold">{metrics.avgRiskScore}/100</p>
-                  )}
+              <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium mb-2">Avg Risk Score</p>
+              {isScanning || !hasInitialScanned ? (
+                <div className="flex flex-col items-center justify-center gap-2 h-20">
+                  <div className="w-6 h-6 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
+                  <p className="text-zinc-400 text-xs">Loading...</p>
                 </div>
-              </div>
+              ) : (
+                <p className="text-white text-2xl font-bold mb-2">{metrics.avgRiskScore}/100</p>
+              )}
               <div className="h-8">
                 {isScanning || !hasInitialScanned ? (
                   <div className="w-full h-full bg-zinc-800/50 rounded animate-pulse"></div>
@@ -747,19 +735,15 @@ export default function UserDashboard() {
               </div>
             </div>
             <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-2">
-                <div>
-                  <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">Critical Issues</p>
-                  {isScanning || !hasInitialScanned ? (
-                    <div className="flex flex-col items-center justify-center gap-2 h-20 w-full">
-                      <div className="w-6 h-6 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
-                      <p className="text-zinc-400 text-xs">Loading...</p>
-                    </div>
-                  ) : (
-                    <p className="text-white text-2xl font-bold">{metrics.criticalVulnerabilities}</p>
-                  )}
+              <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium mb-2">Critical Issues</p>
+              {isScanning || !hasInitialScanned ? (
+                <div className="flex flex-col items-center justify-center gap-2 h-20">
+                  <div className="w-6 h-6 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
+                  <p className="text-zinc-400 text-xs">Loading...</p>
                 </div>
-              </div>
+              ) : (
+                <p className="text-white text-2xl font-bold mb-2">{metrics.criticalVulnerabilities}</p>
+              )}
               <div className="h-8">
                 {isScanning || !hasInitialScanned ? (
                   <div className="w-full h-full bg-zinc-800/50 rounded animate-pulse"></div>
@@ -777,19 +761,15 @@ export default function UserDashboard() {
               </div>
             </div>
             <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm">
-              <div className="flex items-center justify-between mb-2">
-                <div>
-                  <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">High Severity</p>
-                  {isScanning || !hasInitialScanned ? (
-                    <div className="flex flex-col items-center justify-center gap-2 h-20 w-full">
-                      <div className="w-6 h-6 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
-                      <p className="text-zinc-400 text-xs">Loading...</p>
-                    </div>
-                  ) : (
-                    <p className="text-white text-2xl font-bold">{metrics.highVulnerabilities}</p>
-                  )}
+              <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium mb-2">High Severity</p>
+              {isScanning || !hasInitialScanned ? (
+                <div className="flex flex-col items-center justify-center gap-2 h-20">
+                  <div className="w-6 h-6 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
+                  <p className="text-zinc-400 text-xs">Loading...</p>
                 </div>
-              </div>
+              ) : (
+                <p className="text-white text-2xl font-bold mb-2">{metrics.highVulnerabilities}</p>
+              )}
               <div className="h-8">
                 {isScanning || !hasInitialScanned ? (
                   <div className="w-full h-full bg-zinc-800/50 rounded animate-pulse"></div>
@@ -1517,21 +1497,21 @@ export default function UserDashboard() {
                           <div className="text-white text-sm font-medium">Auto-scan new repositories</div>
                           <div className="text-zinc-400 text-xs">Automatically scan when repos are added</div>
                         </div>
-                        <input type="checkbox" defaultChecked className="w-4 h-4 rounded bg-zinc-700 border-zinc-600" />
+                        <input type="checkbox" defaultChecked className="w-5 h-5 rounded bg-zinc-700 border-2 border-zinc-600 checked:bg-white checked:border-white appearance-none cursor-pointer relative after:content-['✓'] after:absolute after:top-0 after:left-0 after:right-0 after:bottom-0 after:flex after:items-center after:justify-center after:text-zinc-900 after:text-xs after:font-bold after:hidden checked:after:block" />
                       </label>
                       <label className="flex items-center justify-between p-3 bg-zinc-800/30 rounded-lg border border-zinc-700/30 cursor-pointer hover:bg-zinc-800/50 transition-colors">
                         <div>
                           <div className="text-white text-sm font-medium">Security notifications</div>
                           <div className="text-zinc-400 text-xs">Receive alerts for critical issues</div>
                         </div>
-                        <input type="checkbox" defaultChecked className="w-4 h-4 rounded bg-zinc-700 border-zinc-600" />
+                        <input type="checkbox" defaultChecked className="w-5 h-5 rounded bg-zinc-700 border-2 border-zinc-600 checked:bg-white checked:border-white appearance-none cursor-pointer relative after:content-['✓'] after:absolute after:top-0 after:left-0 after:right-0 after:bottom-0 after:flex after:items-center after:justify-center after:text-zinc-900 after:text-xs after:font-bold after:hidden checked:after:block" />
                       </label>
                       <label className="flex items-center justify-between p-3 bg-zinc-800/30 rounded-lg border border-zinc-700/30 cursor-pointer hover:bg-zinc-800/50 transition-colors">
                         <div>
                           <div className="text-white text-sm font-medium">Weekly reports</div>
                           <div className="text-zinc-400 text-xs">Email summary of security status</div>
                         </div>
-                        <input type="checkbox" className="w-4 h-4 rounded bg-zinc-700 border-zinc-600" />
+                        <input type="checkbox" className="w-5 h-5 rounded bg-zinc-700 border-2 border-zinc-600 checked:bg-white checked:border-white appearance-none cursor-pointer relative after:content-['✓'] after:absolute after:top-0 after:left-0 after:right-0 after:bottom-0 after:flex after:items-center after:justify-center after:text-zinc-900 after:text-xs after:font-bold after:hidden checked:after:block" />
                       </label>
                     </div>
                   </div>
