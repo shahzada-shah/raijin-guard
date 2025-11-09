@@ -13,7 +13,10 @@ import {
   User as UserIcon,
   Clock,
   Github,
-  RefreshCw
+  RefreshCw,
+  Shield,
+  FileText,
+  Activity
 } from 'lucide-react';
 import { FaUser } from 'react-icons/fa';
 import { LineChart, Line, ResponsiveContainer, BarChart, Bar } from 'recharts';
@@ -50,7 +53,7 @@ type SecurityRow = {
 
 export default function UserDashboard() {
   const navigate = useNavigate();
-  const [activeMenuItem, setActiveMenuItem] = useState('Home');
+  const [activeMenuItem, setActiveMenuItem] = useState('Dashboard');
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -576,7 +579,10 @@ export default function UserDashboard() {
   };
 
   const menuItems = useMemo(() => [
-    { name: 'Home', icon: Home, active: false }
+    { name: 'Dashboard', icon: Home, active: false },
+    { name: 'Security Scans', icon: Shield, active: false },
+    { name: 'Reports', icon: FileText, active: false },
+    { name: 'Activity', icon: Activity, active: false }
   ], []);
 
   const bottomMenuItems = useMemo(() => [
@@ -896,33 +902,32 @@ export default function UserDashboard() {
                     <ChevronDown className="w-4 h-4" />
                   </button>
                   {showUserDropdown && (
-                    <div className="absolute right-0 mt-2 w-48 bg-zinc-900 border border-zinc-700 rounded-lg shadow-2xl backdrop-blur-md z-[100]">
-                      <div className="p-4 border-b border-zinc-800/50">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
-                            <span className="text-zinc-900 font-bold text-sm">JD</span>
+                    <div className="absolute right-0 mt-2 w-80 bg-zinc-900/95 border border-zinc-700/50 rounded-lg shadow-2xl backdrop-blur-xl z-[100] animate-modal-appear">
+                      <div className="p-5 border-b border-zinc-800/50">
+                        <div className="flex items-center gap-4">
+                          <div className="w-12 h-12 bg-gradient-to-br from-white to-zinc-300 rounded-full flex items-center justify-center shadow-lg">
+                            <span className="text-zinc-900 font-bold text-base">JD</span>
                           </div>
-                          <div>
-                            <p className="text-white font-medium text-sm">John Doe</p>
-                            <p className="text-zinc-400 text-xs">john@company.com</p>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white font-semibold text-base tracking-tight">John Doe</p>
+                            <p className="text-zinc-400 text-sm truncate">john@company.com</p>
                           </div>
                         </div>
                       </div>
                       <div className="py-2">
-                        <button onClick={() => { setShowUserDropdown(false); setShowSettingsModal(true); }} className="w-full px-4 py-2 text-left text-zinc-300 hover:text-white hover:bg-zinc-800/30 transition-colors flex items-center gap-3">
-                          <UserIcon className="w-4 h-4" />
-                          Profile Settings
+                        <button onClick={() => { setShowUserDropdown(false); setShowSettingsModal(true); }} className="w-full px-5 py-3 text-left text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition-all duration-200 flex items-center gap-3 group">
+                          <UserIcon className="w-4 h-4 group-hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.4)] transition-all" />
+                          <span className="text-sm font-medium">Profile Settings</span>
                         </button>
-                        <button onClick={() => { setShowUserDropdown(false); setShowSettingsModal(true); }} className="w-full px-4 py-2 text-left text-zinc-300 hover:text-white hover:bg-zinc-800/30 transition-colors flex items-center gap-3">
-                          <Settings className="w-4 h-4" />
-                          Account Settings
+                        <button onClick={() => { setShowUserDropdown(false); setShowSettingsModal(true); }} className="w-full px-5 py-3 text-left text-zinc-300 hover:text-white hover:bg-zinc-800/50 transition-all duration-200 flex items-center gap-3 group">
+                          <Settings className="w-4 h-4 group-hover:drop-shadow-[0_0_6px_rgba(255,255,255,0.4)] transition-all" />
+                          <span className="text-sm font-medium">Account Settings</span>
                         </button>
-                        <div className="border-t border-zinc-800/50 mt-2 pt-2">
-                          <button onClick={() => navigate('/')} className="w-full px-4 py-2 text-left text-red-400 hover:text-red-300 hover:bg-zinc-800/30 transition-colors flex items-center gap-3">
-                            <LogOut className="w-4 h-4" />
-                            Sign Out
-                          </button>
-                        </div>
+                        <div className="border-t border-zinc-800/50 my-2"></div>
+                        <button onClick={() => navigate('/')} className="w-full px-5 py-3 text-left text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-all duration-200 flex items-center gap-3 group">
+                          <LogOut className="w-4 h-4 group-hover:drop-shadow-[0_0_8px_rgba(239,68,68,0.5)] transition-all" />
+                          <span className="text-sm font-medium">Sign Out</span>
+                        </button>
                       </div>
                     </div>
                   )}
