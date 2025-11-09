@@ -109,6 +109,11 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
   const handleLoginClick = () => {
     navigate('/login-auth');
   };
+
+  const handleStartAudit = (e: React.MouseEvent) => {
+    e.preventDefault();
+    // Mockup - no action
+  };
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${
       isScrolled 
@@ -170,6 +175,7 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
 
             {/* outline pill (Start Audit style) */}
             <button
+              onClick={handleStartAudit}
               className="rounded-full px-5 py-2 uppercase text-[11px] font-semibold tracking-widest
                          border border-white text-white hover:bg-white hover:text-gray-900 transition-all duration-300 ease-out"
             >
@@ -217,7 +223,7 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
               >
                 Login
               </button>
-              <button className="ml-auto rounded-full px-5 py-2 uppercase text-[11px] font-semibold tracking-widest border border-white text-white hover:bg-white hover:text-gray-900 transition-all duration-300 ease-out">
+              <button onClick={handleStartAudit} className="ml-auto rounded-full px-5 py-2 uppercase text-[11px] font-semibold tracking-widest border border-white text-white hover:bg-white hover:text-gray-900 transition-all duration-300 ease-out">
                 Start Audit
               </button>
             </div>

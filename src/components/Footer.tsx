@@ -19,28 +19,31 @@ export default function Footer() {
 
           {/* Description */}
           <p className="text-gray-300 max-w-md leading-relaxed mb-8 text-sm">
-            RaijinGuard is designed to eliminate the guesswork and inefficiencies of security 
-            management, giving you more time to focus on growing your business.
+            RaijinGuard provides enterprise-grade security monitoring and threat detection,
+            empowering development teams to build with confidence and deploy with certainty.
           </p>
 
           {/* Social Links */}
           <div className="flex items-center gap-6">
-            <a 
-              href="#" 
+            <a
+              href="#"
+              onClick={(e) => e.preventDefault()}
               className="text-zinc-400 hover:text-white transition-all duration-300 ease-out flex items-center gap-2 group"
             >
               <Linkedin className="w-5 h-5 group-hover:drop-shadow-[0_0_10px_rgba(255,255,255,0.45)] transition-all duration-300 ease-out" />
               <span className="text-sm group-hover:drop-shadow-[0_0_10px_rgba(255,255,255,0.45)] transition-all duration-300 ease-out">LinkedIn</span>
             </a>
-            <a 
-              href="#" 
+            <a
+              href="#"
+              onClick={(e) => e.preventDefault()}
               className="text-zinc-400 hover:text-white transition-all duration-300 ease-out flex items-center gap-2 group"
             >
               <Twitter className="w-5 h-5 group-hover:drop-shadow-[0_0_10px_rgba(255,255,255,0.45)] transition-all duration-300 ease-out" />
               <span className="text-sm group-hover:drop-shadow-[0_0_10px_rgba(255,255,255,0.45)] transition-all duration-300 ease-out">X (Twitter)</span>
             </a>
-            <a 
-              href="#" 
+            <a
+              href="#"
+              onClick={(e) => e.preventDefault()}
               className="text-zinc-400 hover:text-white transition-all duration-300 ease-out flex items-center gap-2 group"
             >
               <MessageCircle className="w-5 h-5 group-hover:drop-shadow-[0_0_10px_rgba(255,255,255,0.45)] transition-all duration-300 ease-out" />

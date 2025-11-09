@@ -545,6 +545,7 @@ export default function UserDashboard() {
               return (
                 <button
                   key={item.name}
+                  onClick={(e) => e.preventDefault()}
                   className="w-full flex items-center px-3 py-2.5 text-sm font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/30 rounded-lg transition-all duration-300 ease-out hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.2)]"
                   title={isCollapsed ? item.name : ''}
                 >
@@ -617,11 +618,11 @@ export default function UserDashboard() {
                         </div>
                       </div>
                       <div className="py-2">
-                        <button className="w-full px-4 py-2 text-left text-zinc-300 hover:text-white hover:bg-zinc-800/30 transition-colors flex items-center gap-3">
+                        <button onClick={(e) => e.preventDefault()} className="w-full px-4 py-2 text-left text-zinc-300 hover:text-white hover:bg-zinc-800/30 transition-colors flex items-center gap-3">
                           <UserIcon className="w-4 h-4" />
                           Profile Settings
                         </button>
-                        <button className="w-full px-4 py-2 text-left text-zinc-300 hover:text-white hover:bg-zinc-800/30 transition-colors flex items-center gap-3">
+                        <button onClick={(e) => e.preventDefault()} className="w-full px-4 py-2 text-left text-zinc-300 hover:text-white hover:bg-zinc-800/30 transition-colors flex items-center gap-3">
                           <Settings className="w-4 h-4" />
                           Account Settings
                         </button>
@@ -642,8 +643,8 @@ export default function UserDashboard() {
 
         <main className="flex-1 p-6 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 pt-24">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">Security Dashboard</h1>
-            <p className="text-zinc-400">Monitor your repository security and manage your projects.</p>
+            <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">Security Dashboard</h1>
+            <p className="text-zinc-400 text-base">Comprehensive threat detection and vulnerability analysis for your repositories.</p>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-5 gap-6 mb-8">
@@ -804,7 +805,7 @@ export default function UserDashboard() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <Clock className="w-5 h-5 text-zinc-400" />
-                  <h2 className="text-xl font-bold text-white">Recent Scans</h2>
+                  <h2 className="text-xl font-bold text-white tracking-tight">Recent Scans</h2>
                 </div>
                 <button onClick={() => setShowRecentScans(!showRecentScans)} className="text-zinc-400 hover:text-white transition-colors">
                   {showRecentScans ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
@@ -867,7 +868,7 @@ export default function UserDashboard() {
             <div className="p-6 border-b border-zinc-800/30">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <h2 className="text-xl font-bold text-white">Repository Security Status</h2>
+                  <h2 className="text-xl font-bold text-white tracking-tight">Repository Security Status</h2>
                   {isConnected ? (
                     <div className={`flex items-center gap-2 px-2 py-1 rounded text-xs ${
                       isScanning 
@@ -894,7 +895,7 @@ export default function UserDashboard() {
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-zinc-500" />
                   <input
                     type="text"
-                    placeholder="Search by name, language, privacy, or status"
+                    placeholder="Search repositories by name, language, or status"
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="bg-zinc-800/50 text-white pl-10 pr-4 py-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-white focus:bg-zinc-700/50 transition-colors backdrop-blur-sm w-80"
@@ -907,8 +908,8 @@ export default function UserDashboard() {
                   <div className="flex items-center gap-3">
                     <AlertTriangle className="w-5 h-5 text-yellow-400" />
                     <div>
-                      <p className="text-yellow-400 font-medium">Not connected</p>
-                      <p className="text-zinc-400 text-sm">Connect GitHub to fetch your repositories.</p>
+                      <p className="text-yellow-400 font-medium">Authentication Required</p>
+                      <p className="text-zinc-400 text-sm">Connect your GitHub account to begin security monitoring.</p>
                     </div>
                   </div>
                 </div>
@@ -1021,8 +1022,8 @@ export default function UserDashboard() {
             </div>
 
             <div className="p-4 border-t border-zinc-800/30 bg-zinc-900/20">
-              <p className="text-zinc-500 text-sm text-center">
-                The platform found <span className="text-white font-medium">{filteredRows.reduce((sum, repo) => sum + repo.vulnerabilities, 0)} vulnerabilities</span> across your repositories
+              <p className="text-zinc-400 text-sm text-center">
+                Security analysis detected <span className="text-white font-semibold">{filteredRows.reduce((sum, repo) => sum + repo.vulnerabilities, 0)} vulnerabilities</span> across {filteredRows.length} monitored repositories
               </p>
             </div>
           </div>

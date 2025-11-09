@@ -57,8 +57,10 @@ export default function LoginPage() {
 
   const handleGitHubAuth = () => {
     setIsGitHubLoading(true);
-    // Redirect to GitHub OAuth
-    window.location.href = 'http://localhost:3001/api/auth/github';
+    // Mockup - simulate loading and redirect to dashboard
+    setTimeout(() => {
+      navigate('/user-dashboard');
+    }, 1500);
   };
 
   const resetForm = () => {
@@ -110,8 +112,8 @@ export default function LoginPage() {
             <h1 className="text-3xl font-bold text-white mb-2">
               {isSignUp ? 'Get started' : 'Welcome back'}
             </h1>
-            <p className="text-zinc-400">
-              {isSignUp ? 'Create a new account' : 'Sign in to your account'}
+            <p className="text-zinc-400 text-base">
+              {isSignUp ? 'Create your security monitoring account' : 'Access your security dashboard'}
             </p>
           </div>
 
@@ -368,8 +370,8 @@ export default function LoginPage() {
           {/* Legal Text */}
           <p className="text-xs text-zinc-500 text-center mt-8">
             By continuing, you agree to RaijinGuard's{' '}
-            <a href="#" className="text-white hover:underline">Terms of Service</a> and{' '}
-            <a href="#" className="text-white hover:underline">Privacy Policy</a>, and to receive periodic emails with updates.
+            <a href="#" onClick={(e) => e.preventDefault()} className="text-white hover:underline">Terms of Service</a> and{' '}
+            <a href="#" onClick={(e) => e.preventDefault()} className="text-white hover:underline">Privacy Policy</a>, and to receive periodic security updates.
           </p>
         </div>
       </div>
@@ -382,9 +384,8 @@ export default function LoginPage() {
           
           {/* Testimonial */}
           <blockquote className="text-white text-xl leading-relaxed mb-8">
-            RaijinGuard is just 🔥. Now I see why a lot of developers love using it for their security audits. 
-            I am really impressed with how easy it is to set up automated scanning and then just focus on building. 
-            The AI-powered vulnerability detection is incredible! #security #devtools
+            RaijinGuard transformed our security workflow. The automated scanning caught vulnerabilities we would have missed,
+            and the AI-powered analysis provides actionable insights that actually make sense. It's become essential to our development process.
           </blockquote>
           
           {/* Author */}

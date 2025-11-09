@@ -15,8 +15,8 @@ export default function PricingSection() {
             PRICING
           </h2>
           <p className="text-sm md:text-base text-gray-300 max-w-2xl mx-auto leading-relaxed">
-            Use RaijinGuard for free with your whole team. Upgrade to enable unlimited security 
-            scans, enhanced repository monitoring, and additional features.
+            Begin with comprehensive security monitoring at no cost. Scale to enterprise-grade
+            protection with advanced threat detection and automated compliance reporting.
           </p>
         </div>
 
@@ -53,7 +53,7 @@ export default function PricingSection() {
               </div>
             </div>
 
-            <button className="w-full border border-white text-white hover:bg-white hover:text-gray-900 py-4 px-6 rounded-full font-semibold text-sm uppercase tracking-widest transition-all duration-300 ease-out">
+            <button onClick={(e) => e.preventDefault()} className="w-full border border-white text-white hover:bg-white hover:text-gray-900 py-4 px-6 rounded-full font-semibold text-sm uppercase tracking-widest transition-all duration-300 ease-out">
               START NOW
             </button>
           </div>
