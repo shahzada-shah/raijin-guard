@@ -17,37 +17,54 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
   const navigate = useNavigate();
 
   useEffect(() => {
+    let rafId: number;
+    let lastSection = 'SECURITY';
+
     const handleScroll = () => {
-      const scrollTop = window.scrollY;
-      setIsScrolled(scrollTop > 20);
-
-      // Auto-update active nav based on scroll position
-      const sections = [
-        { id: 'hero', name: 'SECURITY' },
-        { id: 'core-benefits', name: 'ADVANTAGES' },
-        { id: 'features', name: 'FEATURES' },
-        { id: 'pricing', name: 'PRICING' },
-        { id: 'faq', name: 'FAQ' }
-      ];
-
-      let currentSection = 'SECURITY'; // Default to SECURITY
-
-      for (const section of sections) {
-        const element = document.getElementById(section.id);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          // Check if section is in view (top of section is above middle of viewport)
-          if (rect.top <= window.innerHeight / 2) {
-            currentSection = section.name;
-          }
-        }
+      if (rafId) {
+        cancelAnimationFrame(rafId);
       }
 
-      setActiveNav(currentSection);
+      rafId = requestAnimationFrame(() => {
+        const scrollTop = window.scrollY;
+        setIsScrolled(scrollTop > 20);
+
+        // Auto-update active nav based on scroll position
+        const sections = [
+          { id: 'hero', name: 'SECURITY' },
+          { id: 'core-benefits', name: 'ADVANTAGES' },
+          { id: 'features', name: 'FEATURES' },
+          { id: 'pricing', name: 'PRICING' },
+          { id: 'faq', name: 'FAQ' }
+        ];
+
+        let currentSection = 'SECURITY';
+
+        for (const section of sections) {
+          const element = document.getElementById(section.id);
+          if (element) {
+            const rect = element.getBoundingClientRect();
+            if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
+              currentSection = section.name;
+            }
+          }
+        }
+
+        // Only update if section actually changed
+        if (currentSection !== lastSection) {
+          lastSection = currentSection;
+          setActiveNav(currentSection);
+        }
+      });
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+      }
+    };
   }, [setActiveNav]);
 
   const navItems: NavItem[] = [

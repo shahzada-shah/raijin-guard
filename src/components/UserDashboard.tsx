@@ -71,6 +71,8 @@ export default function UserDashboard() {
   const [hasInitialScanned, setHasInitialScanned] = useState(false);
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
   const [showAllAiVulns, setShowAllAiVulns] = useState<Map<string, boolean>>(new Map());
+  const [showSupportModal, setShowSupportModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   // Calculate security metrics from scan results
   const calculateSecurityMetrics = () => {
@@ -203,7 +205,7 @@ export default function UserDashboard() {
   }, []);
 
   const handleGitHubConnect = () => {
-    githubAuthServer.initiateAuth();
+    // Mockup - no action
   };
 
   const handleGitHubDisconnect = async () => {
@@ -545,7 +547,13 @@ export default function UserDashboard() {
               return (
                 <button
                   key={item.name}
-                  onClick={(e) => e.preventDefault()}
+                  onClick={() => {
+                    if (item.name === 'Support') {
+                      setShowSupportModal(true);
+                    } else if (item.name === 'Settings') {
+                      setShowSettingsModal(true);
+                    }
+                  }}
                   className="w-full flex items-center px-3 py-2.5 text-sm font-medium text-zinc-400 hover:text-white hover:bg-zinc-800/30 rounded-lg transition-all duration-300 ease-out hover:drop-shadow-[0_0_4px_rgba(255,255,255,0.2)]"
                   title={isCollapsed ? item.name : ''}
                 >
@@ -653,9 +661,9 @@ export default function UserDashboard() {
                 <div>
                   <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">Total Vulnerabilities</p>
                   {isScanning || !hasInitialScanned ? (
-                    <div className="flex flex-col items-center justify-center gap-4 h-20">
+                    <div className="flex flex-col items-center justify-center gap-2 h-20 w-full">
                       <div className="w-6 h-6 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
-                      <p className="text-zinc-400 text-sm">Loading...</p>
+                      <p className="text-zinc-400 text-xs">Loading...</p>
                     </div>
                   ) : (
                     <p className="text-white text-2xl font-bold">{metrics.totalVulnerabilities}</p>
@@ -684,9 +692,9 @@ export default function UserDashboard() {
                 <div>
                   <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">Repositories</p>
                   {isScanning || !hasInitialScanned ? (
-                    <div className="flex flex-col items-center justify-center gap-4 h-20">
+                    <div className="flex flex-col items-center justify-center gap-2 h-20 w-full">
                       <div className="w-6 h-6 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
-                      <p className="text-zinc-400 text-sm">Loading...</p>
+                      <p className="text-zinc-400 text-xs">Loading...</p>
                     </div>
                   ) : (
                     <p className="text-white text-2xl font-bold">{metrics.scannedRepos}/{metrics.totalRepos}</p>
@@ -714,9 +722,9 @@ export default function UserDashboard() {
                 <div>
                   <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">Avg Risk Score</p>
                   {isScanning || !hasInitialScanned ? (
-                    <div className="flex flex-col items-center justify-center gap-4 h-20">
+                    <div className="flex flex-col items-center justify-center gap-2 h-20 w-full">
                       <div className="w-6 h-6 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
-                      <p className="text-zinc-400 text-sm">Loading...</p>
+                      <p className="text-zinc-400 text-xs">Loading...</p>
                     </div>
                   ) : (
                     <p className="text-white text-2xl font-bold">{metrics.avgRiskScore}/100</p>
@@ -743,9 +751,9 @@ export default function UserDashboard() {
                 <div>
                   <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">Critical Issues</p>
                   {isScanning || !hasInitialScanned ? (
-                    <div className="flex flex-col items-center justify-center gap-4 h-20">
+                    <div className="flex flex-col items-center justify-center gap-2 h-20 w-full">
                       <div className="w-6 h-6 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
-                      <p className="text-zinc-400 text-sm">Loading...</p>
+                      <p className="text-zinc-400 text-xs">Loading...</p>
                     </div>
                   ) : (
                     <p className="text-white text-2xl font-bold">{metrics.criticalVulnerabilities}</p>
@@ -773,9 +781,9 @@ export default function UserDashboard() {
                 <div>
                   <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium">High Severity</p>
                   {isScanning || !hasInitialScanned ? (
-                    <div className="flex flex-col items-center justify-center gap-4 h-20">
+                    <div className="flex flex-col items-center justify-center gap-2 h-20 w-full">
                       <div className="w-6 h-6 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
-                      <p className="text-zinc-400 text-sm">Loading...</p>
+                      <p className="text-zinc-400 text-xs">Loading...</p>
                     </div>
                   ) : (
                     <p className="text-white text-2xl font-bold">{metrics.highVulnerabilities}</p>
@@ -1440,6 +1448,99 @@ export default function UserDashboard() {
                   </div>
                 </div>
 
+              </div>
+            </div>
+          )}
+
+          {/* Support Modal */}
+          {showSupportModal && (
+            <div className="fixed inset-0 z-[60] flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowSupportModal(false)}></div>
+              <div className="relative bg-zinc-900 border border-zinc-800/50 rounded-lg shadow-2xl w-full max-w-md p-6 m-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold text-white tracking-tight">Support Center</h2>
+                  <button onClick={() => setShowSupportModal(false)} className="text-zinc-400 hover:text-white transition-colors">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  <p className="text-zinc-400 text-sm">
+                    Need assistance with RaijinGuard? Our security team is here to help.
+                  </p>
+                  <div className="space-y-3">
+                    <a href="#" onClick={(e) => e.preventDefault()} className="block p-3 bg-zinc-800/30 hover:bg-zinc-800/50 rounded-lg transition-colors border border-zinc-700/30">
+                      <div className="flex items-center gap-3">
+                        <HelpCircle className="w-5 h-5 text-zinc-400" />
+                        <div>
+                          <div className="text-white font-medium text-sm">Documentation</div>
+                          <div className="text-zinc-400 text-xs">Browse our security guides</div>
+                        </div>
+                      </div>
+                    </a>
+                    <a href="#" onClick={(e) => e.preventDefault()} className="block p-3 bg-zinc-800/30 hover:bg-zinc-800/50 rounded-lg transition-colors border border-zinc-700/30">
+                      <div className="flex items-center gap-3">
+                        <AlertTriangle className="w-5 h-5 text-zinc-400" />
+                        <div>
+                          <div className="text-white font-medium text-sm">Report Issue</div>
+                          <div className="text-zinc-400 text-xs">Submit a security concern</div>
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                  <div className="pt-4 border-t border-zinc-800/50">
+                    <p className="text-zinc-500 text-xs">
+                      Email: <span className="text-white">security@raijinguard.com</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Settings Modal */}
+          {showSettingsModal && (
+            <div className="fixed inset-0 z-[60] flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowSettingsModal(false)}></div>
+              <div className="relative bg-zinc-900 border border-zinc-800/50 rounded-lg shadow-2xl w-full max-w-md p-6 m-4">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-xl font-bold text-white tracking-tight">Settings</h2>
+                  <button onClick={() => setShowSettingsModal(false)} className="text-zinc-400 hover:text-white transition-colors">
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-sm font-medium text-white mb-3">Security Preferences</h3>
+                    <div className="space-y-3">
+                      <label className="flex items-center justify-between p-3 bg-zinc-800/30 rounded-lg border border-zinc-700/30 cursor-pointer hover:bg-zinc-800/50 transition-colors">
+                        <div>
+                          <div className="text-white text-sm font-medium">Auto-scan new repositories</div>
+                          <div className="text-zinc-400 text-xs">Automatically scan when repos are added</div>
+                        </div>
+                        <input type="checkbox" defaultChecked className="w-4 h-4 rounded bg-zinc-700 border-zinc-600" />
+                      </label>
+                      <label className="flex items-center justify-between p-3 bg-zinc-800/30 rounded-lg border border-zinc-700/30 cursor-pointer hover:bg-zinc-800/50 transition-colors">
+                        <div>
+                          <div className="text-white text-sm font-medium">Security notifications</div>
+                          <div className="text-zinc-400 text-xs">Receive alerts for critical issues</div>
+                        </div>
+                        <input type="checkbox" defaultChecked className="w-4 h-4 rounded bg-zinc-700 border-zinc-600" />
+                      </label>
+                      <label className="flex items-center justify-between p-3 bg-zinc-800/30 rounded-lg border border-zinc-700/30 cursor-pointer hover:bg-zinc-800/50 transition-colors">
+                        <div>
+                          <div className="text-white text-sm font-medium">Weekly reports</div>
+                          <div className="text-zinc-400 text-xs">Email summary of security status</div>
+                        </div>
+                        <input type="checkbox" className="w-4 h-4 rounded bg-zinc-700 border-zinc-600" />
+                      </label>
+                    </div>
+                  </div>
+                  <div className="pt-4 border-t border-zinc-800/50">
+                    <button onClick={() => setShowSettingsModal(false)} className="w-full bg-white text-zinc-900 py-2 px-4 rounded-lg font-medium hover:bg-zinc-100 transition-colors text-sm">
+                      Save Changes
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           )}
