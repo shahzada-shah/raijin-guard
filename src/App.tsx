@@ -1,7 +1,16 @@
+/**
+ * RaijinGuard - Security Dashboard Application
+ * 
+ * Main application component that handles routing and page layout.
+ * Provides GitHub repository security scanning and vulnerability detection.
+ * 
+ * @module App
+ */
+
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
-// Components
+// Core Components
 import Navigation from './components/Navigation';
 import HeroSection from './components/HeroSection';
 import CoreBenefitsSection from './components/CoreBenefitsSection';
@@ -9,11 +18,22 @@ import FeaturesSection from './components/FeaturesSection';
 import PricingSection from './components/PricingSection';
 import FAQSection from './components/FAQSection';
 import Footer from './components/Footer';
+
+// Authentication & Dashboard Components
 import LoginPage from './components/LoginPage';
 import UserDashboard from './components/UserDashboard';
 import GitHubCallback from './components/GitHubCallback';
 
+/**
+ * HomePage Component
+ * 
+ * Renders the main landing page with all marketing sections.
+ * Includes navigation, hero, benefits, features, pricing, FAQ, and footer.
+ * 
+ * @returns {JSX.Element} The complete homepage layout
+ */
 function HomePage() {
+  // Active navigation state for scroll-based section highlighting
   const [activeNav, setActiveNav] = useState('SECURITY');
 
   return (
@@ -49,14 +69,31 @@ function HomePage() {
   );
 }
 
+/**
+ * App Component
+ * 
+ * Root application component with React Router configuration.
+ * Manages all application routes including:
+ * - Landing page (/)
+ * - Authentication (/login-auth)
+ * - Dashboard (/dashboard, /user-dashboard)
+ * - OAuth callback (/auth/github/callback)
+ * 
+ * @returns {JSX.Element} The routed application
+ */
 function App() {
   return (
-    <Router>
+    <Router basename="/raijin-guard">
       <Routes>
+        {/* Public Routes */}
         <Route path="/" element={<HomePage />} />
         <Route path="/login-auth" element={<LoginPage />} />
+        
+        {/* Protected Routes - Dashboard */}
         <Route path="/dashboard" element={<UserDashboard />} />
         <Route path="/user-dashboard" element={<UserDashboard />} />
+        
+        {/* OAuth Callback Route */}
         <Route path="/auth/github/callback" element={<GitHubCallback />} />
       </Routes>
     </Router>
