@@ -1492,26 +1492,32 @@ export default function UserDashboard() {
                   <div>
                     <h3 className="text-sm font-medium text-white mb-3">Security Preferences</h3>
                     <div className="space-y-3">
-                      <label className="flex items-center justify-between p-3 bg-zinc-800/30 rounded-lg border border-zinc-700/30 cursor-pointer hover:bg-zinc-800/50 transition-colors">
-                        <div>
+                      <label className="flex items-start justify-between p-3 bg-zinc-800/30 rounded-lg border border-zinc-700/30 cursor-pointer hover:bg-zinc-800/50 transition-colors gap-3">
+                        <div className="flex-1">
                           <div className="text-white text-sm font-medium">Auto-scan new repositories</div>
-                          <div className="text-zinc-400 text-xs">Automatically scan when repos are added</div>
+                          <div className="text-zinc-400 text-xs mt-0.5">Automatically scan when repos are added</div>
                         </div>
-                        <input type="checkbox" defaultChecked className="w-5 h-5 rounded bg-zinc-700 border-2 border-zinc-600 checked:bg-white checked:border-white appearance-none cursor-pointer relative after:content-['✓'] after:absolute after:top-0 after:left-0 after:right-0 after:bottom-0 after:flex after:items-center after:justify-center after:text-zinc-900 after:text-xs after:font-bold after:hidden checked:after:block" />
+                        <div className="flex-shrink-0 pt-0.5">
+                          <input type="checkbox" defaultChecked className="w-5 h-5 rounded bg-zinc-700 border-2 border-zinc-600 checked:bg-white checked:border-white appearance-none cursor-pointer relative after:content-['✓'] after:absolute after:top-0 after:left-0 after:right-0 after:bottom-0 after:flex after:items-center after:justify-center after:text-zinc-900 after:text-xs after:font-bold after:hidden checked:after:block" />
+                        </div>
                       </label>
-                      <label className="flex items-center justify-between p-3 bg-zinc-800/30 rounded-lg border border-zinc-700/30 cursor-pointer hover:bg-zinc-800/50 transition-colors">
-                        <div>
+                      <label className="flex items-start justify-between p-3 bg-zinc-800/30 rounded-lg border border-zinc-700/30 cursor-pointer hover:bg-zinc-800/50 transition-colors gap-3">
+                        <div className="flex-1">
                           <div className="text-white text-sm font-medium">Security notifications</div>
-                          <div className="text-zinc-400 text-xs">Receive alerts for critical issues</div>
+                          <div className="text-zinc-400 text-xs mt-0.5">Receive alerts for critical issues</div>
                         </div>
-                        <input type="checkbox" defaultChecked className="w-5 h-5 rounded bg-zinc-700 border-2 border-zinc-600 checked:bg-white checked:border-white appearance-none cursor-pointer relative after:content-['✓'] after:absolute after:top-0 after:left-0 after:right-0 after:bottom-0 after:flex after:items-center after:justify-center after:text-zinc-900 after:text-xs after:font-bold after:hidden checked:after:block" />
+                        <div className="flex-shrink-0 pt-0.5">
+                          <input type="checkbox" defaultChecked className="w-5 h-5 rounded bg-zinc-700 border-2 border-zinc-600 checked:bg-white checked:border-white appearance-none cursor-pointer relative after:content-['✓'] after:absolute after:top-0 after:left-0 after:right-0 after:bottom-0 after:flex after:items-center after:justify-center after:text-zinc-900 after:text-xs after:font-bold after:hidden checked:after:block" />
+                        </div>
                       </label>
-                      <label className="flex items-center justify-between p-3 bg-zinc-800/30 rounded-lg border border-zinc-700/30 cursor-pointer hover:bg-zinc-800/50 transition-colors">
-                        <div>
+                      <label className="flex items-start justify-between p-3 bg-zinc-800/30 rounded-lg border border-zinc-700/30 cursor-pointer hover:bg-zinc-800/50 transition-colors gap-3">
+                        <div className="flex-1">
                           <div className="text-white text-sm font-medium">Weekly reports</div>
-                          <div className="text-zinc-400 text-xs">Email summary of security status</div>
+                          <div className="text-zinc-400 text-xs mt-0.5">Email summary of security status</div>
                         </div>
-                        <input type="checkbox" className="w-5 h-5 rounded bg-zinc-700 border-2 border-zinc-600 checked:bg-white checked:border-white appearance-none cursor-pointer relative after:content-['✓'] after:absolute after:top-0 after:left-0 after:right-0 after:bottom-0 after:flex after:items-center after:justify-center after:text-zinc-900 after:text-xs after:font-bold after:hidden checked:after:block" />
+                        <div className="flex-shrink-0 pt-0.5">
+                          <input type="checkbox" className="w-5 h-5 rounded bg-zinc-700 border-2 border-zinc-600 checked:bg-white checked:border-white appearance-none cursor-pointer relative after:content-['✓'] after:absolute after:top-0 after:left-0 after:right-0 after:bottom-0 after:flex after:items-center after:justify-center after:text-zinc-900 after:text-xs after:font-bold after:hidden checked:after:block" />
+                        </div>
                       </label>
                     </div>
                   </div>
