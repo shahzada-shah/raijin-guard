@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Linkedin, Twitter, MessageCircle } from 'lucide-react';
 
 export default function Footer() {
+  const [showCredits, setShowCredits] = useState(false);
+
   return (
     <footer className="relative z-20 bg-zinc-950 py-16 border-t border-zinc-800/50 mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -54,11 +56,28 @@ export default function Footer() {
 
         {/* Bottom Copyright */}
         <div className="pt-8 border-t border-zinc-800/50">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <p className="text-gray-400 text-xs">
-              © 2025 · RaijinGuard · All rights reserved. Platform developed by{' '}
-              <span className="text-white font-semibold hover:drop-shadow-[0_0_10px_rgba(255,255,255,0.45)] transition-all duration-300 ease-out cursor-pointer">KAZI DIGITAL STUDIO</span>
-            </p>
+          <div className="flex flex-col items-center gap-4">
+            <div className="text-center">
+              <p className="text-gray-400 text-xs mb-2">
+                © 2025 · RaijinGuard · All rights reserved. Platform developed by{' '}
+                <span
+                  className="text-white font-semibold hover:drop-shadow-[0_0_10px_rgba(255,255,255,0.45)] transition-all duration-300 ease-out cursor-pointer"
+                  onMouseEnter={() => setShowCredits(true)}
+                  onMouseLeave={() => setShowCredits(false)}
+                >
+                  KAZI DIGITAL STUDIO
+                </span>
+              </p>
+              <div
+                className={`text-zinc-500 text-xs transition-all duration-500 ease-out ${
+                  showCredits
+                    ? 'opacity-100 translate-y-0'
+                    : 'opacity-0 -translate-y-2 pointer-events-none'
+                }`}
+              >
+                Shahzada Shah — Lead Developer · Jimmy Carrera — Creative Director
+              </div>
+            </div>
           </div>
         </div>
       </div>
