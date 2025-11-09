@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import {
   Settings,
   Home,
-  FolderOpen,
   AlertTriangle,
   HelpCircle,
   Search,
@@ -19,7 +18,7 @@ import {
 import { FaUser } from 'react-icons/fa';
 import { LineChart, Line, ResponsiveContainer, BarChart, Bar } from 'recharts';
 import { githubAuthServer } from '../services/githubAuthServer';
-import { githubApiServer, RepositorySecurityData } from '../services/githubApiServer';
+import { githubApiServer } from '../services/githubApiServer';
 import { securityScanner, RepositorySecurityReport } from '../services/securityScanner';
 
 
@@ -54,7 +53,6 @@ export default function UserDashboard() {
   const [activeMenuItem, setActiveMenuItem] = useState('Home');
   const [isCollapsed, setIsCollapsed] = useState(true);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
-  const [activeNavItem, setActiveNavItem] = useState('DASHBOARD');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRepo, setSelectedRepo] = useState<SecurityRow | null>(null);
   const [showDrawer, setShowDrawer] = useState(false);
@@ -149,9 +147,11 @@ export default function UserDashboard() {
     }, 2000); // 2 second loading delay
 
     return () => clearTimeout(loadTimer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Load scan results from localStorage
+  // Scan results are now managed in state, localStorage is optional backup
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const loadScanResults = () => {
     try {
       const saved = localStorage.getItem('securityScanResults');
@@ -491,6 +491,7 @@ export default function UserDashboard() {
     }, 1500);
 
     return () => clearTimeout(loadTimer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleGitHubConnect = () => {
@@ -517,14 +518,15 @@ export default function UserDashboard() {
       setTimeout(() => {
         runInitialScan(securityRepos);
       }, 500);
-    } catch (e: any) {
-      setRepoError(e?.message || 'Failed to refresh repositories');
+    } catch (e) {
+      const error = e as Error;
+      setRepoError(error?.message || 'Failed to refresh repositories');
     } finally {
       setIsLoadingRepos(false);
     }
   };
 
-  const scanAllRepositories = async (repos: any[]) => {
+  const scanAllRepositories = async (repos: SecurityRow[]) => {
     console.log(`🚀 [Dashboard] Starting batch scan for ${repos.length} repositories`);
     console.log(`📋 [Dashboard] Repositories to scan:`, repos.map(r => r.full_name).join(', '));
     
@@ -567,11 +569,20 @@ export default function UserDashboard() {
     setIsScanning(false);
   };
 
-  const runInitialScan = async (repos?: any[]) => {
+  const runInitialScan = async (repos?: SecurityRow[]) => {
     const repositoriesToScan = repos || rows;
     console.log(`🚀 [Dashboard] Starting initial scan for all repositories`);
     await scanAllRepositories(repositoriesToScan);
   };
+
+  const menuItems = useMemo(() => [
+    { name: 'Home', icon: Home, active: false }
+  ], []);
+
+  const bottomMenuItems = useMemo(() => [
+    { name: 'Support', icon: HelpCircle },
+    { name: 'Settings', icon: Settings }
+  ], []);
 
   const updateRowWithSecurityData = (repoFullName: string, report: RepositorySecurityReport) => {
     setRows(prevRows => prevRows.map(row => {
@@ -669,23 +680,6 @@ export default function UserDashboard() {
       });
     }
   };
-
-  const menuItems = useMemo(() => [
-    { name: 'Home', icon: Home, active: false }
-  ], []);
-
-  const bottomMenuItems = useMemo(() => [
-    { name: 'Support', icon: HelpCircle },
-    { name: 'Settings', icon: Settings }
-  ], []);
-
-  const navItems = useMemo(() => [], []);
-
-  const messagesData = useMemo(() => [{ value: 2200 }, { value: 2300 }, { value: 2100 }, { value: 2400 }, { value: 2350 }, { value: 2450 }, { value: 2400 }, { value: 2500 }], []);
-  const protocolsData = useMemo(() => [{ value: 25 }, { value: 28 }, { value: 30 }, { value: 27 }, { value: 32 }, { value: 30 }, { value: 29 }, { value: 30 }], []);
-  const analyticsData = useMemo(() => [{ value: 95 }, { value: 97 }, { value: 99 }, { value: 98 }, { value: 99.5 }, { value: 99.9 }, { value: 99.8 }, { value: 99.9 }], []);
-  const securityData = useMemo(() => [{ value: 20 }, { value: 18 }, { value: 15 }, { value: 12 }, { value: 10 }, { value: 15 }, { value: 13 }, { value: 15 }], []);
-  const errorsData = useMemo(() => [{ value: 12 }, { value: 10 }, { value: 8 }, { value: 6 }, { value: 5 }, { value: 7 }, { value: 6 }, { value: 7 }], []);
 
   const filteredRows = rows.filter(repo =>
     repo.repo.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -945,7 +939,7 @@ export default function UserDashboard() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-5 gap-6 mb-8">
-            <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm">
+            <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm animate-slide-up-fade" style={{ animationDelay: '0.1s' }}>
               <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium mb-2">Total Vulnerabilities</p>
               {isScanning || !hasInitialScanned ? (
                 <div className="flex flex-col items-center justify-center gap-2 h-20">
@@ -972,7 +966,7 @@ export default function UserDashboard() {
                 )}
               </div>
             </div>
-            <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm">
+            <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm animate-slide-up-fade" style={{ animationDelay: '0.2s' }}>
               <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium mb-2">Repositories</p>
               {isScanning || !hasInitialScanned ? (
                 <div className="flex flex-col items-center justify-center gap-2 h-20">
@@ -998,7 +992,7 @@ export default function UserDashboard() {
                 )}
               </div>
             </div>
-            <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm">
+            <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm animate-slide-up-fade" style={{ animationDelay: '0.3s' }}>
               <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium mb-2">Avg Risk Score</p>
               {isScanning || !hasInitialScanned ? (
                 <div className="flex flex-col items-center justify-center gap-2 h-20">
@@ -1023,8 +1017,13 @@ export default function UserDashboard() {
                 )}
               </div>
             </div>
-            <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm">
-              <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium mb-2">Critical Issues</p>
+            <div className="bg-zinc-900/30 border border-red-900/30 rounded-lg p-4 backdrop-blur-sm animate-slide-up-fade" style={{ animationDelay: '0.4s' }}>
+              <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium mb-2 flex items-center gap-2">
+                <span>Critical Issues</span>
+                {!isScanning && hasInitialScanned && metrics.criticalVulnerabilities > 0 && (
+                  <span className="inline-block w-2 h-2 bg-red-500 rounded-full animate-critical-pulse"></span>
+                )}
+              </p>
               {isScanning || !hasInitialScanned ? (
                 <div className="flex flex-col items-center justify-center gap-2 h-20">
                   <div className="w-6 h-6 border-2 border-zinc-600 border-t-white rounded-full animate-spin"></div>
@@ -1049,7 +1048,7 @@ export default function UserDashboard() {
                 )}
               </div>
             </div>
-            <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm">
+            <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg p-4 backdrop-blur-sm animate-slide-up-fade" style={{ animationDelay: '0.5s' }}>
               <p className="text-zinc-400 text-xs uppercase tracking-wider font-medium mb-2">High Severity</p>
               {isScanning || !hasInitialScanned ? (
                 <div className="flex flex-col items-center justify-center gap-2 h-20">
@@ -1077,7 +1076,7 @@ export default function UserDashboard() {
             </div>
           </div>
 
-          <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg backdrop-blur-sm overflow-hidden mb-8">
+          <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg backdrop-blur-sm overflow-hidden mb-8 animate-slide-up-fade" style={{ animationDelay: '0.6s' }}>
             <div className="p-6 border-b border-zinc-800/30">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -1141,7 +1140,7 @@ export default function UserDashboard() {
             )}
           </div>
 
-          <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg backdrop-blur-sm overflow-hidden">
+          <div className="bg-zinc-900/30 border border-zinc-800/30 rounded-lg backdrop-blur-sm overflow-hidden animate-slide-up-fade" style={{ animationDelay: '0.7s' }}>
             <div className="p-6 border-b border-zinc-800/30">
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
@@ -1217,7 +1216,12 @@ export default function UserDashboard() {
               )}
             </div>
 
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto relative">
+              {isScanning && (
+                <div className="absolute inset-0 pointer-events-none z-10">
+                  <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/5 to-transparent h-8 animate-scan-line"></div>
+                </div>
+              )}
               <table className="w-full">
                 <thead>
                   <tr className="border-b border-zinc-800/30">
@@ -1234,18 +1238,18 @@ export default function UserDashboard() {
                   {filteredRows.map((repo, index) => (
                     <tr
                       key={repo.full_name}
-                      className="border-b border-zinc-800/20 hover:bg-zinc-800/20 transition-all duration-500 cursor-pointer animate-fadeIn"
+                      className="border-b border-zinc-800/20 hover:bg-zinc-800/30 hover:border-zinc-700/50 transition-all duration-300 cursor-pointer animate-fadeIn group"
                       style={{ animationDelay: `${index * 0.1}s`, opacity: 0, animationFillMode: 'forwards' }}
                       onClick={() => handleRowClick(repo)}
                     >
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-2">
-                          <div className={`w-2 h-2 rounded-full ${repo.color === 'red' ? 'bg-red-400' : repo.color === 'yellow' ? 'bg-yellow-400' : repo.color === 'green' ? 'bg-green-400' : 'bg-gray-400'}`}></div>
+                          <div className={`w-2 h-2 rounded-full ${repo.color === 'red' ? 'bg-red-400 animate-critical-pulse' : repo.color === 'yellow' ? 'bg-yellow-400' : repo.color === 'green' ? 'bg-green-400' : 'bg-gray-400'}`}></div>
                           <span className={`text-sm font-medium ${repo.color === 'red' ? 'text-red-400' : repo.color === 'yellow' ? 'text-yellow-400' : repo.color === 'green' ? 'text-green-400' : 'text-gray-400'}`}>{repo.status}</span>
                         </div>
                       </td>
                       <td className="py-4 px-6">
-                        <div className="text-white font-medium">{repo.repo}</div>
+                        <div className="text-white font-medium group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.3)] transition-all duration-300">{repo.repo}</div>
                         <div className="text-zinc-400 text-sm">{repo.full_name}</div>
                       </td>
                       <td className="py-4 px-6">
@@ -1282,7 +1286,7 @@ export default function UserDashboard() {
                               scanSingleRepository(repo.full_name);
                             }}
                             disabled={isScanning}
-                            className="bg-zinc-800/50 hover:bg-zinc-700/50 text-zinc-300 hover:text-white px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200 ease-out disabled:opacity-50 disabled:cursor-not-allowed border border-zinc-700/50 hover:border-zinc-600/50"
+                            className="bg-zinc-800/50 hover:bg-white hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] text-zinc-300 hover:text-zinc-900 px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-300 ease-out disabled:opacity-50 disabled:cursor-not-allowed border border-zinc-700/50 hover:border-white"
                           >
                             Scan
                           </button>
@@ -1308,8 +1312,8 @@ export default function UserDashboard() {
 
           {showDrawer && selectedRepo && (
             <div className="fixed inset-0 z-50 overflow-hidden">
-              <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={closeDrawer}></div>
-              <div className="absolute right-0 top-0 h-full w-[600px] bg-zinc-900/95 border-l border-zinc-800/50 backdrop-blur-md overflow-y-auto">
+              <div className="absolute inset-0 bg-black/50 backdrop-blur-sm animate-backdrop-fade" onClick={closeDrawer}></div>
+              <div className="absolute right-0 top-0 h-full w-[600px] bg-zinc-900/95 border-l border-zinc-800/50 backdrop-blur-md overflow-y-auto animate-modal-appear">
                 <div className="p-8 border-b border-zinc-800/30">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
@@ -1367,7 +1371,7 @@ export default function UserDashboard() {
                     <button 
                       onClick={() => scanSingleRepository(selectedRepo.full_name)}
                       disabled={scanningRepos.has(selectedRepo.full_name)}
-                      className="text-zinc-400 hover:text-zinc-300 text-sm font-medium disabled:opacity-50"
+                      className="px-4 py-2 bg-zinc-800/50 hover:bg-white hover:shadow-[0_0_20px_rgba(255,255,255,0.4)] text-zinc-300 hover:text-zinc-900 rounded-md text-sm font-medium transition-all duration-300 ease-out disabled:opacity-50 disabled:cursor-not-allowed border border-zinc-700/50 hover:border-white"
                     >
                       {scanningRepos.has(selectedRepo.full_name) ? 'Scanning...' : 'Re-scan'}
                     </button>
@@ -1725,8 +1729,8 @@ export default function UserDashboard() {
           {/* Support Modal */}
           {showSupportModal && (
             <div className="fixed inset-0 z-[60] flex items-center justify-center">
-              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowSupportModal(false)}></div>
-              <div className="relative bg-zinc-900 border border-zinc-800/50 rounded-lg shadow-2xl w-full max-w-md p-6 m-4">
+              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-backdrop-fade" onClick={() => setShowSupportModal(false)}></div>
+              <div className="relative bg-zinc-900 border border-zinc-800/50 rounded-lg shadow-2xl w-full max-w-md p-6 m-4 animate-modal-appear">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-bold text-white tracking-tight">Support Center</h2>
                   <button onClick={() => setShowSupportModal(false)} className="text-zinc-400 hover:text-white transition-colors">
@@ -1770,8 +1774,8 @@ export default function UserDashboard() {
           {/* Settings Modal */}
           {showSettingsModal && (
             <div className="fixed inset-0 z-[60] flex items-center justify-center">
-              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowSettingsModal(false)}></div>
-              <div className="relative bg-zinc-900 border border-zinc-800/50 rounded-lg shadow-2xl w-full max-w-md p-6 m-4">
+              <div className="absolute inset-0 bg-black/60 backdrop-blur-sm animate-backdrop-fade" onClick={() => setShowSettingsModal(false)}></div>
+              <div className="relative bg-zinc-900 border border-zinc-800/50 rounded-lg shadow-2xl w-full max-w-md p-6 m-4 animate-modal-appear">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-bold text-white tracking-tight">Settings</h2>
                   <button onClick={() => setShowSettingsModal(false)} className="text-zinc-400 hover:text-white transition-colors">
@@ -1782,31 +1786,42 @@ export default function UserDashboard() {
                   <div>
                     <h3 className="text-sm font-medium text-white mb-3">Security Preferences</h3>
                     <div className="space-y-3">
-                      <label className="flex items-start justify-between p-3 bg-zinc-800/30 rounded-lg border border-zinc-700/30 cursor-pointer hover:bg-zinc-800/50 transition-colors gap-3">
+                      <label className="flex items-center justify-between p-4 bg-zinc-800/30 rounded-lg border border-zinc-700/30 cursor-pointer hover:bg-zinc-800/50 hover:border-zinc-600/50 transition-all duration-300 gap-4">
                         <div className="flex-1">
                           <div className="text-white text-sm font-medium">Auto-scan new repositories</div>
-                          <div className="text-zinc-400 text-xs mt-0.5">Automatically scan when repos are added</div>
+                          <div className="text-zinc-400 text-xs mt-1">Automatically scan when repos are added</div>
                         </div>
-                        <div className="flex-shrink-0 pt-0.5">
-                          <input type="checkbox" defaultChecked className="w-5 h-5 rounded bg-zinc-700 border-2 border-zinc-600 checked:bg-white checked:border-white appearance-none cursor-pointer relative after:content-['✓'] after:absolute after:top-0 after:left-0 after:right-0 after:bottom-0 after:flex after:items-center after:justify-center after:text-zinc-900 after:text-xs after:font-bold after:hidden checked:after:block" />
+                        <div className="flex-shrink-0">
+                          <input 
+                            type="checkbox" 
+                            defaultChecked 
+                            className="w-5 h-5 rounded bg-zinc-700/50 border-2 border-zinc-600 checked:bg-white checked:border-white appearance-none cursor-pointer relative transition-all duration-300 ease-out hover:border-zinc-500 checked:hover:bg-zinc-200 checked:hover:border-zinc-200 after:content-[''] after:absolute after:inset-0 after:bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iOSIgdmlld0JveD0iMCAwIDEyIDkiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0xIDRMNC41IDcuNUwxMSAxIiBzdHJva2U9IiMxODE4MWIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=')] after:bg-center after:bg-no-repeat after:opacity-0 checked:after:opacity-100 after:transition-opacity after:duration-200" 
+                          />
                         </div>
                       </label>
-                      <label className="flex items-start justify-between p-3 bg-zinc-800/30 rounded-lg border border-zinc-700/30 cursor-pointer hover:bg-zinc-800/50 transition-colors gap-3">
+                      <label className="flex items-center justify-between p-4 bg-zinc-800/30 rounded-lg border border-zinc-700/30 cursor-pointer hover:bg-zinc-800/50 hover:border-zinc-600/50 transition-all duration-300 gap-4">
                         <div className="flex-1">
                           <div className="text-white text-sm font-medium">Security notifications</div>
-                          <div className="text-zinc-400 text-xs mt-0.5">Receive alerts for critical issues</div>
+                          <div className="text-zinc-400 text-xs mt-1">Receive alerts for critical issues</div>
                         </div>
-                        <div className="flex-shrink-0 pt-0.5">
-                          <input type="checkbox" defaultChecked className="w-5 h-5 rounded bg-zinc-700 border-2 border-zinc-600 checked:bg-white checked:border-white appearance-none cursor-pointer relative after:content-['✓'] after:absolute after:top-0 after:left-0 after:right-0 after:bottom-0 after:flex after:items-center after:justify-center after:text-zinc-900 after:text-xs after:font-bold after:hidden checked:after:block" />
+                        <div className="flex-shrink-0">
+                          <input 
+                            type="checkbox" 
+                            defaultChecked 
+                            className="w-5 h-5 rounded bg-zinc-700/50 border-2 border-zinc-600 checked:bg-white checked:border-white appearance-none cursor-pointer relative transition-all duration-300 ease-out hover:border-zinc-500 checked:hover:bg-zinc-200 checked:hover:border-zinc-200 after:content-[''] after:absolute after:inset-0 after:bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iOSIgdmlld0JveD0iMCAwIDEyIDkiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0xIDRMNC41IDcuNUwxMSAxIiBzdHJva2U9IiMxODE4MWIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=')] after:bg-center after:bg-no-repeat after:opacity-0 checked:after:opacity-100 after:transition-opacity after:duration-200" 
+                          />
                         </div>
                       </label>
-                      <label className="flex items-start justify-between p-3 bg-zinc-800/30 rounded-lg border border-zinc-700/30 cursor-pointer hover:bg-zinc-800/50 transition-colors gap-3">
+                      <label className="flex items-center justify-between p-4 bg-zinc-800/30 rounded-lg border border-zinc-700/30 cursor-pointer hover:bg-zinc-800/50 hover:border-zinc-600/50 transition-all duration-300 gap-4">
                         <div className="flex-1">
                           <div className="text-white text-sm font-medium">Weekly reports</div>
-                          <div className="text-zinc-400 text-xs mt-0.5">Email summary of security status</div>
+                          <div className="text-zinc-400 text-xs mt-1">Email summary of security status</div>
                         </div>
-                        <div className="flex-shrink-0 pt-0.5">
-                          <input type="checkbox" className="w-5 h-5 rounded bg-zinc-700 border-2 border-zinc-600 checked:bg-white checked:border-white appearance-none cursor-pointer relative after:content-['✓'] after:absolute after:top-0 after:left-0 after:right-0 after:bottom-0 after:flex after:items-center after:justify-center after:text-zinc-900 after:text-xs after:font-bold after:hidden checked:after:block" />
+                        <div className="flex-shrink-0">
+                          <input 
+                            type="checkbox" 
+                            className="w-5 h-5 rounded bg-zinc-700/50 border-2 border-zinc-600 checked:bg-white checked:border-white appearance-none cursor-pointer relative transition-all duration-300 ease-out hover:border-zinc-500 checked:hover:bg-zinc-200 checked:hover:border-zinc-200 after:content-[''] after:absolute after:inset-0 after:bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iOSIgdmlld0JveD0iMCAwIDEyIDkiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0xIDRMNC41IDcuNUwxMSAxIiBzdHJva2U9IiMxODE4MWIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIi8+Cjwvc3ZnPgo=')] after:bg-center after:bg-no-repeat after:opacity-0 checked:after:opacity-100 after:transition-opacity after:duration-200" 
+                          />
                         </div>
                       </label>
                     </div>

@@ -131,7 +131,23 @@ class SecurityScannerService {
 
     const alerts = await response.json();
     
-    return alerts.map((alert: any) => ({
+    return alerts.map((alert: { 
+      id: number; 
+      severity: string; 
+      security_advisory?: {
+        summary?: string;
+        description?: string;
+        cwe_ids?: Array<{ cwe_id: string }>;
+        cvss?: { score: number };
+        vulnerabilities?: Array<{ first_patched_version?: { identifier: string } }>;
+        references?: Array<{ url: string }>;
+      };
+      dependency?: {
+        package?: { name: string };
+        manifest_path?: string;
+      };
+      created_at: string;
+    }) => ({
       id: `github-${alert.id}`,
       severity: this.mapGitHubSeverity(alert.severity),
       title: alert.security_advisory?.summary || alert.dependency?.package?.name || 'Security Alert',
@@ -142,15 +158,17 @@ class SecurityScannerService {
       rule_id: `github-${alert.id}`,
       category: 'dependency' as const,
       remediation: alert.security_advisory?.vulnerabilities?.[0]?.first_patched_version?.identifier,
-      references: alert.security_advisory?.references?.map((ref: any) => ref.url),
+      references: alert.security_advisory?.references?.map((ref: { url: string }) => ref.url),
       detected_at: alert.created_at
     }));
   }
 
   /**
    * Scan dependencies using Snyk or similar service
+   * Currently returns mock data - integrate with actual Snyk API in production
    */
-  private async scanDependencies(owner: string, repo: string): Promise<VulnerabilityScanResult[]> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private async scanDependencies(_owner: string, _repo: string): Promise<VulnerabilityScanResult[]> {
     // This would integrate with Snyk API or similar
     // For now, return mock data - replace with actual Snyk integration
     return [
@@ -238,15 +256,23 @@ class SecurityScannerService {
 
     const secrets = await response.json();
     
-    return secrets.map((secret: any) => ({
+    return secrets.map((secret: {
+      id: number;
+      secret_type: string;
+      location?: {
+        path?: string;
+        start_line?: number;
+      };
+      created_at: string;
+    }) => ({
       id: `secret-${secret.id}`,
-      severity: 'Critical',
+      severity: 'Critical' as const,
       title: `Exposed secret: ${secret.secret_type}`,
       description: `Potential ${secret.secret_type} secret detected`,
       file_path: secret.location?.path,
       line_number: secret.location?.start_line,
       rule_id: `secret-${secret.secret_type}`,
-      category: 'secret',
+      category: 'secret' as const,
       remediation: 'Remove the exposed secret and rotate credentials',
       detected_at: secret.created_at
     }));
@@ -357,7 +383,7 @@ class SecurityScannerService {
     return lines.findIndex(line => line.includes(searchTerm)) + 1;
   }
 
-  private async getRepositoryFiles(owner: string, repo: string): Promise<any[]> {
+  private async getRepositoryFiles(owner: string, repo: string): Promise<{ name: string; type: string; path: string }[]> {
     const response = await fetch(`${this.apiBase}/api/github/repos/${owner}/${repo}/contents`, {
       credentials: 'include'
     });
@@ -375,12 +401,14 @@ class SecurityScannerService {
     return '';
   }
 
-  private async getDependencyCount(owner: string, repo: string): Promise<number> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private async getDependencyCount(_owner: string, _repo: string): Promise<number> {
     // This would count actual dependencies from package.json, requirements.txt, etc.
     return Math.floor(Math.random() * 50) + 10; // Mock data
   }
 
-  private async getFileCount(owner: string, repo: string): Promise<number> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private async getFileCount(_owner: string, _repo: string): Promise<number> {
     // This would count actual files in the repository
     return Math.floor(Math.random() * 200) + 50; // Mock data
   }

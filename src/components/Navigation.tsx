@@ -1,21 +1,64 @@
+/**
+ * RaijinGuard - Navigation Component
+ * 
+ * Main navigation bar with smooth scroll-based section highlighting.
+ * Features sticky positioning, backdrop blur effects, and responsive design.
+ * 
+ * Key Features:
+ * - Automatic section highlighting based on scroll position
+ * - Smooth scroll navigation
+ * - Glass morphism effect on scroll
+ * - Mobile responsive menu
+ * 
+ * @module Navigation
+ */
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+/**
+ * Navigation Item Interface
+ * Defines the structure of navigation menu items
+ */
 interface NavItem {
   name: string;
   href: string;
   active?: boolean;
 }
 
+/**
+ * Navigation Component Props
+ */
 interface NavigationProps {
+  /** Currently active navigation section */
   activeNav: string;
+  /** Function to update the active navigation section */
   setActiveNav: (nav: string) => void;
 }
 
+/**
+ * Navigation Component
+ * 
+ * Provides site-wide navigation with smooth scrolling and active section tracking.
+ * Uses IntersectionObserver for efficient scroll detection.
+ * 
+ * @param {NavigationProps} props - Component props
+ * @returns {JSX.Element} Rendered navigation bar
+ */
 export default function Navigation({ activeNav, setActiveNav }: NavigationProps) {
+  // Scroll state for background blur effect
   const [isScrolled, setIsScrolled] = useState(false);
   const navigate = useNavigate();
 
+  /**
+   * Scroll Effect Hook
+   * 
+   * Tracks scroll position and updates:
+   * - Background blur state
+   * - Active navigation section based on viewport position
+   * 
+   * Uses requestAnimationFrame for optimized performance
+   */
   useEffect(() => {
     let rafId: number;
     let lastSection = 'SECURITY';
@@ -40,17 +83,19 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
 
         let currentSection = 'SECURITY';
 
+        // Find which section is currently in view
         for (const section of sections) {
           const element = document.getElementById(section.id);
           if (element) {
             const rect = element.getBoundingClientRect();
+            // Check if section is in the middle of viewport
             if (rect.top <= window.innerHeight / 2 && rect.bottom >= window.innerHeight / 2) {
               currentSection = section.name;
             }
           }
         }
 
-        // Only update if section actually changed
+        // Only update if section actually changed (prevents unnecessary re-renders)
         if (currentSection !== lastSection) {
           lastSection = currentSection;
           setActiveNav(currentSection);
@@ -67,6 +112,9 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
     };
   }, [setActiveNav]);
 
+  /**
+   * Navigation items configuration
+   */
   const navItems: NavItem[] = [
     { name: 'SECURITY', href: '#security' },
     { name: 'ADVANTAGES', href: '#advantages' },
@@ -75,6 +123,12 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
     { name: 'FAQ', href: '#faq' },
   ];
 
+  /**
+   * Handles navigation item click
+   * Smoothly scrolls to the target section
+   * 
+   * @param item - The navigation item clicked
+   */
   const handleNavClick = (item: NavItem) => {
     setActiveNav(item.name);
     
@@ -123,14 +177,14 @@ export default function Navigation({ activeNav, setActiveNav }: NavigationProps)
     }
   };
 
+  /**
+   * Handles login button click
+   * Navigates to the login page
+   */
   const handleLoginClick = () => {
     navigate('/login-auth');
   };
 
-  const handleStartAudit = (e: React.MouseEvent) => {
-    e.preventDefault();
-    // Mockup - no action
-  };
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-out ${
       isScrolled 

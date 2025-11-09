@@ -24,9 +24,10 @@ export default function GitHubCallback() {
         } else {
           setErr('Authentication failed - not connected');
         }
-      } catch (e: any) {
+      } catch (e) {
         console.error('OAuth callback error:', e);
-        setErr(e?.message || 'OAuth failed');
+        const error = e as Error;
+        setErr(error?.message || 'OAuth failed');
       }
     })();
   }, [navigate]);

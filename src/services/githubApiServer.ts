@@ -1,3 +1,17 @@
+/**
+ * RaijinGuard - GitHub API Service
+ * 
+ * Handles communication with the GitHub REST API via the backend server.
+ * Fetches repository data and transforms it for security analysis.
+ * 
+ * @module GitHubApiServer
+ * @see {@link https://docs.github.com/en/rest | GitHub REST API Documentation}
+ */
+
+/**
+ * GitHub Repository Interface
+ * Complete data structure returned from GitHub API
+ */
 export interface GitHubRepository {
   id: number;
   name: string;
@@ -19,6 +33,10 @@ export interface GitHubRepository {
   topics?: string[];
 }
 
+/**
+ * Repository Security Data Interface
+ * Enhanced repository data structure with security information
+ */
 export interface RepositorySecurityData {
   status: 'Critical' | 'Warning' | 'Healthy' | 'Offline';
   repo: string;
@@ -44,26 +62,74 @@ export interface RepositorySecurityData {
   private: boolean;
 }
 
+/**
+ * GitHubApiServerService Class
+ * 
+ * Provides methods for fetching GitHub repositories and transforming
+ * the data into a format suitable for security analysis.
+ */
 class GitHubApiServerService {
+  /** Base URL for the backend API server */
   private readonly apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001';
 
+  /**
+   * Fetches all repositories for the authenticated GitHub user
+   * 
+   * @returns Promise resolving to an array of GitHub repositories
+   * @throws {Error} When not authenticated (401) or fetch fails
+   * 
+   * @example
+   * ```typescript
+   * const repos = await githubApiServer.getUserRepositories();
+   * console.log(`Found ${repos.length} repositories`);
+   * ```
+   */
   async getUserRepositories(): Promise<GitHubRepository[]> {
-    const r = await fetch(`${this.apiBase}/api/github/repos`, { credentials: 'include' });
-    if (r.status === 401) throw new Error('Not connected to GitHub');
-    if (!r.ok) throw new Error('Failed to fetch repositories');
-    return r.json();
+    const response = await fetch(`${this.apiBase}/api/github/repos`, { 
+      credentials: 'include' 
+    });
+
+    // Handle authentication errors
+    if (response.status === 401) {
+      throw new Error('Not connected to GitHub');
+    }
+
+    // Handle other errors
+    if (!response.ok) {
+      throw new Error('Failed to fetch repositories');
+    }
+
+    return response.json();
   }
 
+  /**
+   * Transforms GitHub repository data into security-ready format
+   * 
+   * Converts raw GitHub API data into a structure suitable for security
+   * scanning and dashboard display. Initial security values are placeholders
+   * that will be updated after vulnerability scanning.
+   * 
+   * @param repos - Array of GitHub repositories to transform
+   * @returns Array of RepositorySecurityData objects
+   * 
+   * @example
+   * ```typescript
+   * const repos = await githubApiServer.getUserRepositories();
+   * const securityData = githubApiServer.transformToSecurityData(repos);
+   * // Now ready for security scanning
+   * ```
+   */
   transformToSecurityData(repos: GitHubRepository[]): RepositorySecurityData[] {
     return repos.map((repo) => {
-      // Start with basic repo data - security data will be updated after scanning
+      // Initialize with default security values
+      // These will be updated after running security scans
       return {
         status: 'Healthy' as const,
         repo: repo.name,
         language: repo.language || 'Unknown',
-        risk: '0%', // Will be updated after scan
+        risk: '0%', // Updated after scan
         lastScan: 'Never scanned',
-        vulnerabilities: 0, // Will be updated after scan
+        vulnerabilities: 0, // Updated after scan
         branch: repo.default_branch,
         color: 'green' as const,
         description: repo.description || 'No description',
@@ -85,4 +151,5 @@ class GitHubApiServerService {
   }
 }
 
+/** Singleton instance of GitHubApiServerService for use throughout the app */
 export const githubApiServer = new GitHubApiServerService();

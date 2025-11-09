@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowRight, Mail, Lock, Eye, EyeOff, Github, BookOpen } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, Github } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export default function LoginPage() {
