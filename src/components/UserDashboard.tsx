@@ -54,7 +54,7 @@ type SecurityRow = {
 export default function UserDashboard() {
   const navigate = useNavigate();
   const [activeMenuItem, setActiveMenuItem] = useState('Dashboard');
-  const [isCollapsed, setIsCollapsed] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const [showUserDropdown, setShowUserDropdown] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRepo, setSelectedRepo] = useState<SecurityRow | null>(null);
@@ -74,6 +74,11 @@ export default function UserDashboard() {
   const [showAllAiVulns, setShowAllAiVulns] = useState<Map<string, boolean>>(new Map());
   const [showSupportModal, setShowSupportModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+
+  // Debug active menu item changes
+  useEffect(() => {
+    console.log('Active menu item changed to:', activeMenuItem);
+  }, [activeMenuItem]);
 
   // Hardcoded control center data
   const MOCK_METRICS = {
@@ -779,8 +784,6 @@ export default function UserDashboard() {
     <div className="min-h-screen bg-zinc-950 flex relative">
       <div
         className={`fixed left-0 top-0 h-full bg-zinc-900/50 border-r border-zinc-800/50 flex flex-col transition-all duration-300 ease-in-out backdrop-blur-sm z-50 ${isCollapsed ? 'w-16' : 'w-64'}`}
-        onMouseEnter={() => setIsCollapsed(false)}
-        onMouseLeave={() => setIsCollapsed(true)}
       >
         <div className="p-4 border-b border-zinc-800/50">
           <div className="flex items-center">
@@ -817,7 +820,10 @@ export default function UserDashboard() {
               return (
                 <button
                   key={item.name}
-                  onClick={() => setActiveMenuItem(item.name)}
+                  onClick={() => {
+                    console.log('Clicked menu item:', item.name);
+                    setActiveMenuItem(item.name);
+                  }}
                   className={`w-full flex items-center ${isCollapsed ? 'justify-center' : ''} px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-300 ease-out group ${isActive ? 'bg-zinc-800/50 text-white backdrop-blur-sm' : 'text-zinc-400 hover:text-white hover:bg-zinc-800/30'}`}
                   title={isCollapsed ? item.name : ''}
                 >
